@@ -60,23 +60,51 @@ class mock_CbusNetwork {
 							this.outputPNN(this.modules[moduleIndex].getNodeId());
 						}
 						break;
+					case '10':
+						// RQNP Format: <MjPri><MinPri=3><CANID>]<10>
+						winston.info({message: 'CBUS Network Sim: received RQNP *************************************'});
+						break;
+					case '11':
+						// RQMN Format: <MjPri><MinPri=3><CANID>]<11>
+						winston.info({message: 'CBUS Network Sim: received RQMN *************************************'});
+						break;
 					case '42':
-						// Format: [<MjPri><MinPri=3><CANID>]<42><NNHigh><NNLow>
+						// SNN Format: [<MjPri><MinPri=3><CANID>]<42><NNHigh><NNLow>
 						var nodeNumber = msg.nodeId();
 						winston.info({message: 'CBUS Network Sim: received SNN : new Node Number ' + nodeNumber});
 						// could renumber or create a new module, but not necessary at this time
 						break;
+					case '50':
+						// RQNN Format: [<MjPri><MinPri=3><CANID>]<50><NN hi><NN lo>
+						winston.info({message: 'CBUS Network Sim: received RQNN *************************************'});
+						break;
+					case '51':		// sent by node
+						break;
+					case '52':		// sent by node
+						break;
 					case '53':
-						// Format: [<MjPri><MinPri=3><CANID>]<53><NN hi><NN lo>
+						// NNLRN Format: [<MjPri><MinPri=3><CANID>]<53><NN hi><NN lo>
 						winston.info({message: 'CBUS Network Sim: received NNLRN'});
 						this.learningNode = msg.nodeId();
 						winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' put into learn mode' });
 						break;
 					case '54':
-						// Format: [<MjPri><MinPri=3><CANID>]<54><NN hi><NN lo>>
+						// NNULN Format: [<MjPri><MinPri=3><CANID>]<54><NN hi><NN lo>>
 						winston.info({message: 'CBUS Network Sim: received NNULN'});
 						this.learningNode = undefined;
 						winston.info({message: 'CBUS Network Sim: learn mode cancelled' });
+						break;
+					case '55':
+						// NNCLR Format: [<MjPri><MinPri=3><CANID>]<55><NN hi><NN lo>>
+						winston.info({message: 'CBUS Network Sim: received NNCLR'});
+						if ( msg.nodeId() == learningNode) {
+							this.getModule(msg.nodeId()).getStoredEvents() = [];
+							winston.info({message: 'CBUS Network Sim: Node ' + msg.nodeId() + " events cleared"});
+						}
+						break;
+					case '56':
+						// NNEVN Format: [<MjPri><MinPri=3><CANID>]<56><NN hi><NN lo>>
+						winston.info({message: 'CBUS Network Sim: received NNEVN *************************************'});
 						break;
 					case '57':
 						// NERD Format: [<MjPri><MinPri=3><CANID>]<57><NN hi><NN lo>
@@ -91,13 +119,22 @@ class mock_CbusNetwork {
 						winston.info({message: 'CBUS Network Sim: received RQEVN'});
 						this. outputNUMEV(msg.nodeId());
 						break;
+					case '59':		// WRACK - sent by node
+						break;
+					case '5C':
+						// BOOTM Format: [<MjPri><MinPri=3><CANID>]<5C><NN hi><NN lo>>
+						winston.info({message: 'CBUS Network Sim: received BOOTM *************************************'});
+						break;
+					case '6F':		// CMDERR - sent by node
+						break;
 					case '71':
 						// Format: [<MjPri><MinPri=3><CANID>]<71><NN hi><NN lo><NV#>
 						winston.info({message: 'CBUS Network Sim: received NVRD'});
-						this. outputNVANS(msg.nodeId(), msg.variableId());
+						var variableIndex = parseInt(msg.messageOutput().substr(13, 2), 16)
+						this.outputNVANS(msg.nodeId(), variableIndex);
 						break;
 					case '73':
-						// Format: [<MjPri><MinPri=3><CANID>]<73><NN hi><NN lo><Para#>
+						// RQNPN Format: [<MjPri><MinPri=3><CANID>]<73><NN hi><NN lo><Para#>
 						winston.info({message: 'CBUS Network Sim: received RQNPN'});
 						this. outputPARAN(msg.nodeId(), msg.paramId());
 						break;
@@ -114,11 +151,20 @@ class mock_CbusNetwork {
 						winston.info({message: 'CBUS Network Sim: received EVULN'});
 						break;
 					case '96':
-						// Format: [<MjPri><MinPri=3><CANID>]<96><NN hi><NN lo><NV# ><NV val>
+						// NVSET Format: [<MjPri><MinPri=3><CANID>]<96><NN hi><NN lo><NV# ><NV val>
 						winston.info({message: 'CBUS Network Sim: received NVSET'});
+						var variableIndex = parseInt(msg.messageOutput().substr(13, 2), 16)
+						var value = parseInt(msg.messageOutput().substr(15, 2), 16)
+						var variables = this.getModule(msg.nodeId()).getVariables();
+						if (variableIndex < variables.length) {
+							variables[variableIndex] = value;
+							winston.info({message: 'CBUS Network Sim: NVSET Nove variable ' + variableIndex + ' set to ' + value});
+						}
+						else
+							winston.info({message: 'CBUS Network Sim:  ************ NVSET variable index exceeded ************'});
 						break;
 					case '9C':
-						// Format: [<MjPri><MinPri=3><CANID>]<9C><NN hi><NN lo><EN#><EV#>
+						// REVAL Format: [<MjPri><MinPri=3><CANID>]<9C><NN hi><NN lo><EN#><EV#>
 						winston.info({message: 'CBUS Network Sim: received REVAL'});
 						var nodeId = msg.nodeId();
 						var eventIndex = parseInt(msg.messageOutput().substr(13, 2), 16)
@@ -126,7 +172,7 @@ class mock_CbusNetwork {
 						this.outputNEVAL(nodeId, eventIndex, eventVariableIndex)
 						break;
 					case 'D2':
-						// Format: [<MjPri><MinPri=3><CANID>]<D2><NN hi><NN lo><EN hi><EN lo><EV#><EV val>
+						// EVLRN Format: [<MjPri><MinPri=3><CANID>]<D2><NN hi><NN lo><EN hi><EN lo><EV#><EV val>
 						winston.info({message: 'CBUS Network Sim: received EVLRN'});
 						if (this.learningNode != undefined) {
 							// Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
@@ -269,10 +315,24 @@ class mock_CbusNetwork {
 	}
 
 
+	// 97
+	 outputNVANS(nodeId, variableIndex) {
+		// NVANS Format: [<MjPri><MinPri=3><CANID>]<97><NN hi><NN lo><NV# ><NV val>
+		var variables = this.getModule(nodeId).getVariables();
+		if (variableIndex < variables.length) {
+			var value = variables[variableIndex];
+			var msgData = ':S' + 'B780' + 'N' + '97' + decToHex(nodeId, 4) + decToHex(variableIndex, 2) + decToHex(value, 2) + ';'
+			this.socket.write(msgData);
+			winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
+		}
+		else
+			winston.info({message: 'CBUS Network Sim:  ************ NVANS variable index exceeded ************'});
+	 }
+
 	// 9B
 	 outputPARAN(nodeId, paramId) {
 		// Format: [<MjPri><MinPri=3><CANID>]<9B><NN hi><NN lo><Para#><Para val>
-		if (paramId < this.getModule(nodeId).getParameter(0)) {
+		if (paramId <= this.getModule(nodeId).getParameter(0)) {
 			var paramValue = this.getModule(nodeId).getParameter(paramId);
 			var msgData = ':S' + 'B780' + 'N' + '9B' + decToHex(nodeId, 4) + decToHex(paramId, 2) + decToHex(paramValue, 2) + ';'
 			winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
@@ -340,11 +400,14 @@ class CbusModule {
 								//	Bit 2	: FLiM Mode
 								//	Bit 3	: The module supports bootloading		
 							]
+		this.variables = [];					
 		this.events = []
 	}
 
 	getStoredEvents() { return this.events}
 	getStoredEventsCount() { return this.events.length}
+	
+	getVariables() { return this.variables}
 	
 	getParameter(i) {return this.parameters[i]}
 	
@@ -366,12 +429,14 @@ class CANACC5 extends CbusModule{
 	constructor(nodeId) {
 		super(nodeId);
 		this.setModuleId(2);
-		this.setManufacturerId(165);
-		this.setNodeFlags(0xD);			// not a producer
-		this.parameters[4] = 32;		// Number of supported events
-		this.parameters[5] = 2;			// Number of event variables
-		this.parameters[6] = 0;			// zero node variables
-
+		this.setManufacturerId(165);							// MERG
+		this.setNodeFlags(0xD);									// not a producer
+		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8 ); 		// 8 node variables + 1 (zero index)
+		
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 2;									// Number of event variables
+		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		
 		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
 		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
 		this.events.push({'eventName': 0x01020105, "variables":[ 1, 2, 3 ]})
