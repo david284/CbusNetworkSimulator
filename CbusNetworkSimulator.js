@@ -251,27 +251,21 @@ class mock_CbusNetwork {
 			if (events[eventIndex].eventName == eventName) return events[eventIndex];
 		}
 		// if we get here then event doesn't yet exist, so create it
-		events.push({'eventName': eventName, "variables":[ 1, 2, 3 ]});
-		return events[events.length - 1];		// adjust as array is zero based
+		return this.getModule(nodeId).addNewEvent(eventName);
 	}
 
 	deleteEventByName(nodeId, eventName) {
 		var events = this.getModule(nodeId).getStoredEvents();
 		var eventIndex;
+		// look for matching eventName in array
 		for (var index = 0; index < events.length; index++) {
 			if (events[index].eventName == eventName) {
 				eventIndex = index;
 				break;
 			}
 		}
-		if (eventIndex != undefined) {
-			if (eventIndex >= events.length - 1) {
-				events.pop();
-			}
-			else {
-				events.splice(eventIndex, 1)
-			}
-		}
+		// if a matching eventName was found, then remove entry from array
+		if (eventIndex != undefined) { events.splice(eventIndex, 1) }
 	}
 
 	// 21
@@ -435,6 +429,12 @@ class CbusModule {
 		this.events = []
 	}
 
+	addNewEvent(eventName) {
+		var variables = [];
+		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
+		this.events.push({'eventName': eventName, "variables": variables});
+		return this.events[this.events.length - 1];		// adjust as array is zero based		
+	}
 	getStoredEvents() { return this.events}
 	getStoredEventsCount() { return this.events.length}
 	
