@@ -54,7 +54,7 @@ class mock_CbusNetwork {
 					winston.info({message: 'CBUS Network Sim: <<IN [' + msgIndex + '] ' +  msgArray[msgIndex] + " " + msg.translateMessage()});
 					switch (msg.opCode()) {
 					case '0D':
-						// Format: <MjPri><MinPri=3><CANID>]<0D>
+						// QNN Format: <MjPri><MinPri=3><CANID>]<0D>
 						winston.info({message: 'CBUS Network Sim: received QNN'});
 						for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
 							this.outputPNN(this.modules[moduleIndex].getNodeId());
@@ -115,7 +115,7 @@ class mock_CbusNetwork {
 						}
 						break;
 					case '58':
-						// Format: [<MjPri><MinPri=3><CANID>]<58><NN hi><NN lo>
+						// RQEVN Format: [<MjPri><MinPri=3><CANID>]<58><NN hi><NN lo>
 						winston.info({message: 'CBUS Network Sim: received RQEVN'});
 						this. outputNUMEV(msg.nodeId());
 						break;
@@ -128,7 +128,7 @@ class mock_CbusNetwork {
 					case '6F':		// CMDERR - sent by node
 						break;
 					case '71':
-						// Format: [<MjPri><MinPri=3><CANID>]<71><NN hi><NN lo><NV#>
+						// NVRD Format: [<MjPri><MinPri=3><CANID>]<71><NN hi><NN lo><NV#>
 						winston.info({message: 'CBUS Network Sim: received NVRD'});
 						var variableIndex = parseInt(msg.messageOutput().substr(13, 2), 16)
 						this.outputNVANS(msg.nodeId(), variableIndex);
@@ -139,16 +139,24 @@ class mock_CbusNetwork {
 						this. outputPARAN(msg.nodeId(), msg.paramId());
 						break;
 					case '90':
-						// Format: [<MjPri><MinPri=3><CANID>]<90><NN hi><NN lo><EN hi><EN lo>
+						// ACON Format: [<MjPri><MinPri=3><CANID>]<90><NN hi><NN lo><EN hi><EN lo>
 						winston.info({message: 'CBUS Network Sim: received ACON'});
 						break;
 					case '91':
-						// Format: [<MjPri><MinPri=3><CANID>]<91><NN hi><NN lo><EN hi><EN lo>
+						// ACOF Format: [<MjPri><MinPri=3><CANID>]<91><NN hi><NN lo><EN hi><EN lo>
 						winston.info({message: 'CBUS Network Sim: received ACOF'});
 						break;
 					case '95':
-						// Format: [<MjPri><MinPri=3><CANID>]<95><NN hi><NN lo><EN hi><EN lo>
+						// EVULN Format: [<MjPri><MinPri=3><CANID>]<95><NN hi><NN lo><EN hi><EN lo>
 						winston.info({message: 'CBUS Network Sim: received EVULN'});
+						if (this.learningNode != undefined) {
+							// Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
+							var eventName = parseInt(msg.messageOutput().substr(9, 8), 16)				// node number + event number
+							this.deleteEventByName(this.learningNode, eventName);
+							winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' deleted eventName ' + eventName});
+						} else {
+							winston.info({message: 'CBUS Network Sim: EVULN - not in learn mode'});
+						}
 						break;
 					case '96':
 						// NVSET Format: [<MjPri><MinPri=3><CANID>]<96><NN hi><NN lo><NV# ><NV val>
@@ -183,6 +191,8 @@ class mock_CbusNetwork {
 							event.variables[eventVariableIndex] = value;
 							winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' eventName ' + eventName + 
 													' taught EV ' + eventVariableIndex + ' = ' + value});
+						} else {
+							winston.info({message: 'CBUS Network Sim: EVLRN - not in learn mode'});
 						}
 						break;
 					default:
@@ -240,8 +250,29 @@ class mock_CbusNetwork {
 		for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
 			if (events[eventIndex].eventName == eventName) return events[eventIndex];
 		}
+		// if we get here then event doesn't yet exist, so create it
+		events.push({'eventName': eventName, "variables":[ 1, 2, 3 ]});
+		return events[events.length - 1];		// adjust as array is zero based
 	}
 
+	deleteEventByName(nodeId, eventName) {
+		var events = this.getModule(nodeId).getStoredEvents();
+		var eventIndex;
+		for (var index = 0; index < events.length; index++) {
+			if (events[index].eventName == eventName) {
+				eventIndex = index;
+				break;
+			}
+		}
+		if (eventIndex != undefined) {
+			if (eventIndex >= events.length - 1) {
+				events.pop();
+			}
+			else {
+				events.splice(eventIndex, 1)
+			}
+		}
+	}
 
 	// 21
 	 outputKLOC(session) {
