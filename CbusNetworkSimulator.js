@@ -35,7 +35,7 @@ class mock_CbusNetwork {
 		this.learningNode;
 		
 		this.modules = 	[
-//						new CANACC8 (1),
+						new CANACC8 (1),
 						new CANACC5 (2),
 						]
 
@@ -248,10 +248,29 @@ class mock_CbusNetwork {
 		winston.info({message: 'CBUS Network Sim: Server closed'});
 	}
 
+	getCanHeader(nodeNumber) {
+		// format [<MjPri><MinPri><ID>]
+		// MjPri - bits 14 & 15
+		// MinPri - bits 12 & 13
+		// ID - bits 5 to 11 - generate a unique CAN Id from it's position in the Module array (+1 to avoid zero)
+		// bits 0 to 4 
+		var MjPri = 1;
+		var MinPri = 2;
+		var canId = this.getModuleIndex(nodeNumber) + 1;
+		var canHeader = (MjPri << 14) + (MinPri << 12) + (canId << 5) 
+		return decToHex(canHeader, 4);
+	}
+
 
 	getModule(nodeNumber) {
 		for (var i = 0; i < this.modules.length; i++) {
 			if (this.modules[i].getNodeNumber() == nodeNumber) return this.modules[i];
+		}
+	}
+
+	getModuleIndex(nodeNumber) {
+		for (var i = 0; i < this.modules.length; i++) {
+			if (this.modules[i].getNodeNumber() == nodeNumber) return i;
 		}
 	}
 
@@ -290,7 +309,7 @@ class mock_CbusNetwork {
 	// 50
 	 outputRQNN(nodeNumber) {
 		//Format: [<MjPri><MinPri=3><CANID>]<50><NN hi><NN lo>
-		var msgData = ':S' + 'B780' + 'N' + '50' + decToHex(nodeNumber, 4) + ';';
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '50' + decToHex(nodeNumber, 4) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -299,7 +318,7 @@ class mock_CbusNetwork {
 	// 52
 	 outputNNACK(nodeNumber) {
 		//NNACK Format: [<MjPri><MinPri=3><CANID>]<52><NN hi><NN lo>
-		var msgData = ':S' + 'B780' + 'N' + '52' + decToHex(nodeNumber, 4) + ';';
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '52' + decToHex(nodeNumber, 4) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -308,7 +327,7 @@ class mock_CbusNetwork {
 	// 59
 	 outputWRACK(nodeNumber) {
 		//WRACK Format: [<MjPri><MinPri=3><CANID>]<59><NN hi><NN lo>
-		var msgData = ':S' + 'B780' + 'N' + '59' + decToHex(nodeNumber, 4) + ';';
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '59' + decToHex(nodeNumber, 4) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -335,7 +354,7 @@ class mock_CbusNetwork {
 	// 6F
 	 outputCMDERR(nodeNumber, errorNumber) {
 		// Format: [<MjPri><MinPri=3><CANID>]<6F><NN hi><NN lo><Error number>
-		var msgData = ':S' + 'B780' + 'N' + '6F' + decToHex(nodeNumber, 4) + decToHex(errorNumber, 2) + ';';
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '6F' + decToHex(nodeNumber, 4) + decToHex(errorNumber, 2) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -345,7 +364,7 @@ class mock_CbusNetwork {
 	 outputNUMEV(nodeNumber) {
 		// Format: [<MjPri><MinPri=3><CANID>]<74><NN hi><NN lo><No.of events>
 		var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
-		var msgData = ':S' + 'B780' + 'N' + '74' + decToHex(nodeNumber, 4) + decToHex(storedEventsCount, 2) + ';'
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '74' + decToHex(nodeNumber, 4) + decToHex(storedEventsCount, 2) + ';'
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 		this.socket.write(msgData);
 	}
@@ -353,7 +372,7 @@ class mock_CbusNetwork {
 	// 90
 	 outputACON(nodeNumber, eventId) {
 		// Format: [<MjPri><MinPri=3><CANID>]<90><NN hi><NN lo><EN hi><EN lo>
-		var msgData = ':S' + 'B780' + 'N' + '90' + decToHex(nodeNumber, 4) + decToHex(eventId, 4) + this.getModule(nodeNumber) + ';';
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '90' + decToHex(nodeNumber, 4) + decToHex(eventId, 4) + this.getModule(nodeNumber) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -362,7 +381,7 @@ class mock_CbusNetwork {
 	// 91
 	 outputACOF(nodeNumber, eventId) {
 		// Format: [<MjPri><MinPri=3><CANID>]<91><NN hi><NN lo><EN hi><EN lo>
-		var msgData = ':S' + 'B780' + 'N' + '91' + decToHex(nodeNumber, 4) + decToHex(eventId, 4) + ';';
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '91' + decToHex(nodeNumber, 4) + decToHex(eventId, 4) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -374,7 +393,7 @@ class mock_CbusNetwork {
 		var variables = this.getModule(nodeNumber).getVariables();
 		if (variableIndex < variables.length) {
 			var value = variables[variableIndex];
-			var msgData = ':S' + 'B780' + 'N' + '97' + decToHex(nodeNumber, 4) + decToHex(variableIndex, 2) + decToHex(value, 2) + ';'
+			var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '97' + decToHex(nodeNumber, 4) + decToHex(variableIndex, 2) + decToHex(value, 2) + ';'
 			this.socket.write(msgData);
 			winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 		}
@@ -387,7 +406,7 @@ class mock_CbusNetwork {
 		// Format: [<MjPri><MinPri=3><CANID>]<9B><NN hi><NN lo><Para#><Para val>
 		if (paramId <= this.getModule(nodeNumber).getParameter(0)) {
 			var paramValue = this.getModule(nodeNumber).getParameter(paramId);
-			var msgData = ':S' + 'B780' + 'N' + '9B' + decToHex(nodeNumber, 4) + decToHex(paramId, 2) + decToHex(paramValue, 2) + ';'
+			var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '9B' + decToHex(nodeNumber, 4) + decToHex(paramId, 2) + decToHex(paramValue, 2) + ';'
 			winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 			this.socket.write(msgData);
 		}
@@ -398,7 +417,7 @@ class mock_CbusNetwork {
 		// NEVAL Format: [<MjPri><MinPri=3><CANID>]<B5><NN hi><NN lo><EN#><EV#><EVval>
 		var events = this.getModule(nodeNumber).getStoredEvents();
 		var value = events[eventIndex].variables[eventVariableIndex];
-		var msgData = ':S' + 'B780' + 'N' + 'B5' + decToHex(nodeNumber, 4) + decToHex(eventIndex, 2) + decToHex(eventVariableIndex, 2) + decToHex(value, 2) +';'
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + 'B5' + decToHex(nodeNumber, 4) + decToHex(eventIndex, 2) + decToHex(eventVariableIndex, 2) + decToHex(value, 2) +';'
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 		this.socket.write(msgData);
 	}
@@ -410,7 +429,7 @@ class mock_CbusNetwork {
 			+ this.getModule(nodeNumber).getManufacturerIdHex() 
 			+ this.getModule(nodeNumber).getModuleIdHex() 
 			+ this.getModule(nodeNumber).getFlagsHex();
-		var msgData = ':S' + 'B780' + 'N' + 'B6' + nodeData + ';'
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + 'B6' + nodeData + ';'
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 		this.socket.write(msgData);
 	}
@@ -419,7 +438,7 @@ class mock_CbusNetwork {
 	outputENRSP(nodeNumber, eventIndex) {
 		// ENRSP Format: [<MjPri><MinPri=3><CANID>]<F2><NN hi><NN lo><EN3><EN2><EN1><EN0><EN#>
 		var events = this.getModule(nodeNumber).getStoredEvents();
-		var msgData = ':S' + 'B780' + 'N' + 'F2' + decToHex(nodeNumber, 4) + decToHex(events[eventIndex].eventName, 8) + decToHex(eventIndex, 2) + ';'
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + 'F2' + decToHex(nodeNumber, 4) + decToHex(events[eventIndex].eventName, 8) + decToHex(eventIndex, 2) + ';'
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 		this.socket.write(msgData);
 	}
@@ -429,7 +448,7 @@ class mock_CbusNetwork {
 	 outputUNSUPOPCODE(nodeNumber) {
 		// Ficticious opcode - 'FC' currently unused
 		// Format: [<MjPri><MinPri=3><CANID>]<FC><NN hi><NN lo>
-		var msgData = ':S' + 'B780' + 'N' + 'FC' + decToHex(nodeNumber, 4) + ';';
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + 'FC' + decToHex(nodeNumber, 4) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -437,6 +456,8 @@ class mock_CbusNetwork {
 
 class CbusModule {
 	constructor(nodeNumber) {
+		this.events = []
+		this.CanId = 0;
 		this.nodeNumber = nodeNumber;
 		this.parameters = 	[ 	8,		// number of available parameters
 								0,		// param 1 manufacturer Id
@@ -453,10 +474,18 @@ class CbusModule {
 								//	Bit 2	: FLiM Mode
 								//	Bit 3	: The module supports bootloading		
 							]
-		this.variables = [];					
-		this.events = []
+		this.variables = [];
 	}
-
+	
+	// CAN Id
+	getCanId() { return this.CanId; }
+	setCanId(canId) { this.CanId = canId; }
+	
+	// Flags
+	getFlagsHex() {return decToHex(this.parameters[8], 2)}
+	setNodeFlags(flags) {this.parameters[8] = flags}
+	
+	// Events
 	addNewEvent(eventName) {
 		var variables = [];
 		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
@@ -466,22 +495,24 @@ class CbusModule {
 	getStoredEvents() { return this.events}
 	getStoredEventsCount() { return this.events.length}
 	
-	getVariables() { return this.variables}
-	
-	getParameter(i) {return this.parameters[i]}
-	
+	// Node Number
 	getNodeNumber(){return this.nodeNumber}
 	getNodeNumberHex(){return decToHex(this.nodeNumber, 4)}
 	setnodeNumber(newnodeNumber) { this.nodeNumber = newnodeNumber;}
 	
+	// Module Id
 	getModuleIdHex() {return decToHex(this.parameters[3], 2)}
 	setModuleId(Id) {this.parameters[3] = Id}
 
+	// Manufacturer Id
 	getManufacturerIdHex() {return decToHex(this.parameters[1], 2)}
 	setManufacturerId(Id) {this.parameters[1] = Id}
 
-	getFlagsHex() {return decToHex(this.parameters[8], 2)}
-	setNodeFlags(flags) {this.parameters[8] = flags}
+	// Parameters
+	getParameter(i) {return this.parameters[i]}
+	
+	// Variables
+	getVariables() { return this.variables}
 }
 
 class CANACC5 extends CbusModule{
@@ -497,8 +528,6 @@ class CANACC5 extends CbusModule{
 		this.parameters[6] = this.variables.length - 1;			// remove zero index
 		
 		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
-		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
-		this.events.push({'eventName': 0x01020105, "variables":[ 1, 2, 3 ]})
 	}
 }
 
@@ -507,11 +536,16 @@ class CANACC8 extends CbusModule{
 		super(nodeNumber);
 		this.setModuleId(3);
 		this.setManufacturerId(165);
-		this.setNodeFlags(0xD);			// not a producer
-		this.parameters[4] = 32;		// Number of supported events
-		this.parameters[5] = 2;			// Number of event variables
-		this.parameters[6] = 0;			// zero node variables
-		for (var i = 0; i < 32; i++) { this.events.push(i)}
+		this.setNodeFlags(0xD);									// not a producer
+		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8 ); 		// 8 node variables + 1 (zero index)
+
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 2;									// Number of event variables
+		this.parameters[6] = this.variables.length - 1;			// remove zero index
+
+		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x01020105, "variables":[ 1, 2, 3 ]})
 	}
 }
 
