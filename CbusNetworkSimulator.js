@@ -35,8 +35,10 @@ class mock_CbusNetwork {
 		this.learningNode;
 		
 		this.modules = 	[
-						new CANACC8 (1),
 						new CANACC5 (2),
+						new CANACC8 (100),
+						new CANACE8C (101),
+						new CANINP (102),
 						]
 
 		this.server = net.createServer(function (socket) {
@@ -139,7 +141,7 @@ class mock_CbusNetwork {
 						// RQNPN Format: [<MjPri><MinPri=3><CANID>]<73><NN hi><NN lo><Para#>
 						winston.info({message: 'CBUS Network Sim: received RQNPN'});
 						var nodeNumber = parseInt(message.substr(9, 4), 16)
-						var parameterIndex = parseInt(message.substr(11, 2), 16)
+						var parameterIndex = parseInt(message.substr(13, 2), 16)
 						this.outputPARAN(nodeNumber, parameterIndex);
 						break;
 					case '90':
@@ -483,7 +485,6 @@ class CbusModule {
 	
 	// Flags
 	getFlagsHex() {return decToHex(this.parameters[8], 2)}
-	setNodeFlags(flags) {this.parameters[8] = flags}
 	
 	// Events
 	addNewEvent(eventName) {
@@ -502,11 +503,9 @@ class CbusModule {
 	
 	// Module Id
 	getModuleIdHex() {return decToHex(this.parameters[3], 2)}
-	setModuleId(Id) {this.parameters[3] = Id}
 
 	// Manufacturer Id
 	getManufacturerIdHex() {return decToHex(this.parameters[1], 2)}
-	setManufacturerId(Id) {this.parameters[1] = Id}
 
 	// Parameters
 	getParameter(i) {return this.parameters[i]}
@@ -518,14 +517,17 @@ class CbusModule {
 class CANACC5 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.setModuleId(2);
-		this.setManufacturerId(165);							// MERG
-		this.setNodeFlags(0xD);									// not a producer
 		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8 ); 		// 8 node variables + 1 (zero index)
 		
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 2;									// Module Id
 		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 2;									// Number of event variables
 		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 		
 		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
 	}
@@ -534,14 +536,15 @@ class CANACC5 extends CbusModule{
 class CANACC8 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.setModuleId(3);
-		this.setManufacturerId(165);
-		this.setNodeFlags(0xD);									// not a producer
 		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8 ); 		// 8 node variables + 1 (zero index)
 
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[3] = 3;									// Module Id
 		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 2;									// Number of event variables
 		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
 		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
@@ -552,63 +555,110 @@ class CANACC8 extends CbusModule{
 class CANSERVO8C extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.setModuleId(19);
-		this.setManufacturerId(165);
-		this.setNodeFlags(7);
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[3] = 19;								// Module Id
+		this.parameters[8] = 7;									// Flags
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
 	}
 }
 
 class CANMIO extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.setModuleId(32);
-		this.setManufacturerId(165);
-		this.setNodeFlags(7);
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[3] = 32;								// Module Id
+		this.parameters[8] = 7;									// Flags
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 	}
 }
 
 class CANCAB extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.setModuleId(9);
-		this.setManufacturerId(165);
-		this.setNodeFlags(7);
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[3] = 8;									// Module Id
+		this.parameters[8] = 7;									// Flags
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 	}
 }
 
 class CANPAN extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.setModuleId(29);
-		this.setManufacturerId(165);
-		this.setNodeFlags(7);
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[3] = 29;								// Module Id
+		this.parameters[8] = 7;									// Flags
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 	}
 }
 
 class CANCMD extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.setModuleId(10);
-		this.setManufacturerId(165);
-		this.setNodeFlags(7);
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[3] = 10;								// Module Id
+		this.parameters[8] = 7;									// Flags
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 	}
 }
 
 class CANACE8C extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.setModuleId(5);
-		this.setManufacturerId(165);
-		this.setNodeFlags(7);
+		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ); 		// 9 node variables + 1 (zero index)
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "q".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 5;									// Module Id
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 2;									// Number of event variables
+		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = 14;								// Flags
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x01020105, "variables":[ 1, 2, 3 ]})
+	}
+}
+
+class CANINP extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);
+		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ); 		// 9 node variables + 1 (zero index)
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 62;								// Module Id
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 2;									// Number of event variables
+		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = 14;								// Flags
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x01020105, "variables":[ 1, 2, 3 ]})
 	}
 }
 
 class CANMIO_OUT extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.parameters[3] = 52;
-		this.setManufacturerId(165);
-		this.setNodeFlags(7);
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[3] = 52;								// Module Id
+		this.parameters[8] = 7;									// Flags
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
 	}
 }
 
