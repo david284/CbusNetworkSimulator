@@ -147,10 +147,14 @@ class mock_CbusNetwork {
 					case '90':
 						// ACON Format: [<MjPri><MinPri=3><CANID>]<90><NN hi><NN lo><EN hi><EN lo>
 						winston.info({message: 'CBUS Network Sim: received ACON'});
+						var eventName = parseInt(message.substr(9, 8), 16)					// node number + event number
+						this.processAccessoryEvent("ACON", eventName);
 						break;
 					case '91':
 						// ACOF Format: [<MjPri><MinPri=3><CANID>]<91><NN hi><NN lo><EN hi><EN lo>
 						winston.info({message: 'CBUS Network Sim: received ACOF'});
+						var eventName = parseInt(message.substr(9, 8), 16)					// node number + event number
+						this.processAccessoryEvent("ACOF", eventName);
 						break;
 					case '95':
 						// EVULN Format: [<MjPri><MinPri=3><CANID>]<95><NN hi><NN lo><EN hi><EN lo>
@@ -180,6 +184,18 @@ class mock_CbusNetwork {
 							winston.info({message: 'CBUS Network Sim:  ************ NVSET variable index exceeded ************'});
 							this.outputCMDERR(nodeNumber, 10);
 						}
+						break;
+					case '98':
+						// ASON Format: [<MjPri><MinPri=3><CANID>]<98><NN hi><NN lo><DD hi><DD lo>
+						winston.info({message: 'CBUS Network Sim: received ASON'});
+						var deviceNumber = parseInt(message.substr(13, 4), 16)					// only device number
+						this.processAccessoryEvent("ASON", deviceNumber);
+						break;
+					case '99':
+						// ASOF Format: [<MjPri><MinPri=3><CANID>]<99><NN hi><NN lo><DD hi><DD lo>
+						winston.info({message: 'CBUS Network Sim: received ASOF'});
+						var deviceNumber = parseInt(message.substr(13, 4), 16)					// only device number
+						this.processAccessoryEvent("ASOF", deviceNumber);
 						break;
 					case '9C':
 						// REVAL Format: [<MjPri><MinPri=3><CANID>]<9C><NN hi><NN lo><EN#><EV#>
@@ -299,6 +315,29 @@ class mock_CbusNetwork {
 		if (eventIndex != undefined) { events.splice(eventIndex, 1) }
 	}
 
+	processAccessoryEvent(opCode, eventName) {
+		// check each module to see if they have a matching event
+		for (var i = 0; i < this.modules.length; i++) {
+			var events = this.modules[i].getStoredEvents();
+			var nodeNumber = this.modules[i].getNodeNumber();
+			// look for matching eventName in array
+			for (var index = 0; index < events.length; index++) {
+				if (events[index].eventName == eventName) {
+					// now check if we should send a feedback response
+					if (this.modules[i].shouldFeedback(index)) {
+						var eventNumber = eventName % 0x10000;
+						winston.info({message: 'CBUS Network Sim: Feedback ' + nodeNumber + " event " + eventNumber});
+						if (opCode == "ACON") {this.outputACON(nodeNumber, eventNumber)}
+						if (opCode == "ACOF") {this.outputACOF(nodeNumber, eventNumber)}
+						if (opCode == "ASON") {this.outputASON(nodeNumber, eventNumber)}
+						if (opCode == "ASOF") {this.outputASOF(nodeNumber, eventNumber)}
+					}
+				}
+			}
+		}
+	}
+
+
 	// 21
 	 outputKLOC(session) {
 		// Format: [<MjPri><MinPri=2><CANID>]<21><Session>
@@ -373,8 +412,8 @@ class mock_CbusNetwork {
 
 	// 90
 	 outputACON(nodeNumber, eventId) {
-		// Format: [<MjPri><MinPri=3><CANID>]<90><NN hi><NN lo><EN hi><EN lo>
-		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '90' + decToHex(nodeNumber, 4) + decToHex(eventId, 4) + this.getModule(nodeNumber) + ';';
+		// ASON Format: [<MjPri><MinPri=3><CANID>]<90><NN hi><NN lo><EN hi><EN lo>
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '90' + decToHex(nodeNumber, 4) + decToHex(eventId, 4) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -382,8 +421,26 @@ class mock_CbusNetwork {
 
 	// 91
 	 outputACOF(nodeNumber, eventId) {
-		// Format: [<MjPri><MinPri=3><CANID>]<91><NN hi><NN lo><EN hi><EN lo>
+		// ACOF Format: [<MjPri><MinPri=3><CANID>]<91><NN hi><NN lo><EN hi><EN lo>
 		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '91' + decToHex(nodeNumber, 4) + decToHex(eventId, 4) + ';';
+		this.socket.write(msgData);
+		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
+	}
+
+
+	// 98
+	 outputASON(nodeNumber, deviceNumber) {
+		// ASON Format: [<MjPri><MinPri=3><CANID>]<98><NN hi><NN lo><DD hi><DD lo>
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '98' + decToHex(nodeNumber, 4) + decToHex(deviceNumber, 4) + ';';
+		this.socket.write(msgData);
+		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
+	}
+
+
+	// 99
+	 outputASOF(nodeNumber, deviceNumber) {
+		// ASOF Format: [<MjPri><MinPri=3><CANID>]<99><NN hi><NN lo><DD hi><DD lo>
+		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + '99' + decToHex(nodeNumber, 4) + decToHex(deviceNumber, 4) + ';';
 		this.socket.write(msgData);
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
 	}
@@ -489,6 +546,7 @@ class CbusModule {
 	// Events
 	addNewEvent(eventName) {
 		var variables = [];
+		// create variable array of correct length for specific module
 		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
 		this.events.push({'eventName': eventName, "variables": variables});
 		return this.events[this.events.length - 1];		// adjust as array is zero based		
@@ -496,6 +554,9 @@ class CbusModule {
 	getStoredEvents() { return this.events}
 	getStoredEventsCount() { return this.events.length}
 	
+	// Feedback
+	shouldFeedback() { return false;}
+
 	// Node Number
 	getNodeNumber(){return this.nodeNumber}
 	getNodeNumberHex(){return decToHex(this.nodeNumber, 4)}
@@ -517,38 +578,72 @@ class CbusModule {
 class CANACC5 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8 ); 		// 8 node variables + 1 (zero index)
+		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ); 		// node variables + 1 (zero index)
+			//NV1-8 channel variables
+			//NV9 is feedback delay. In 0.5mSec intervals approx.
+			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
+			//NV11 is move on startup. Bit set is move.
+			//NV12 not used yet
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
 		this.parameters[3] = 2;									// Module Id
 		this.parameters[4] = 32;								// Number of supported events
-		this.parameters[5] = 2;									// Number of event variables
-		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[5] = 3;									// Number of event variables
+		this.parameters[6] = this.variables.length - 1;			// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
-		
-		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
+
+		this.events.push({'eventName': 0x01020103, "variables":[ 0, 1, 2, 3 ]})
+			// EV#1 - sets which output is used (one bit per channel)
+			// EV#2 - sets polarity (one bit per channel)
+			// EV#3 - sets feedback
+			//			EV3.  Bit format is  ABCNNNDD
+			//			A must be set for a response event.
+			//			B If set, reverses polarity of end events
+			//			C If set, reverses polarity of mid point event
+			//			NNN is the channel number (000 to 111) for channels 1 to 8)
+			//			DD.  00 is event sent at ON
+			//				 01 is event sent when at OFF
+			//				 10 is event sent at mid travel
+			//				 11 used to flag a SoD, bit 7 must be 0.
 	}
+
+	shouldFeedback(eventIndex) { return true;}
 }
 
 class CANACC8 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8 ); 		// 8 node variables + 1 (zero index)
+		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ); 		// node variables + 1 (zero index)
+			//NV1-8 channel variables
+			//NV9 is feedback delay. In 0.5mSec intervals approx.
+			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
+			//NV11 is move on startup. Bit set is move.
+			//NV12 not used yet
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[3] = 3;									// Module Id
 		this.parameters[4] = 32;								// Number of supported events
-		this.parameters[5] = 2;									// Number of event variables
+		this.parameters[5] = 3;									// Number of event variables
 		this.parameters[6] = this.variables.length - 1;			// remove zero index
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
-		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
-		this.events.push({'eventName': 0x01020105, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x01020103, "variables":[ 0, 1, 2, 3 ]})
+			// EV#1 - sets which output is used (one bit per channel)
+			// EV#2 - sets polarity (one bit per channel)
+			// EV#3 - sets feedback
+			//			EV3.  Bit format is  ABCNNNDD
+			//			A must be set for a response event.
+			//			B If set, reverses polarity of end events
+			//			C If set, reverses polarity of mid point event
+			//			NNN is the channel number (000 to 111) for channels 1 to 8)
+			//			DD.  00 is event sent at ON
+			//				 01 is event sent when at OFF
+			//				 10 is event sent at mid travel
+			//				 11 used to flag a SoD, bit 7 must be 0.
 	}
 }
 
