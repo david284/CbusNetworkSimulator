@@ -35,10 +35,10 @@ class mock_CbusNetwork {
 		this.learningNode;
 		
 		this.modules = 	[
-						new CANACC5 (2),
-						new CANACC8 (100),
-						new CANACE8C (101),
-						new CANINP (102),
+						new CANACC5 (300),
+						new CANACC8 (301),
+						new CANACE8C (302),
+						new CANINP (303),
 						]
 
 		this.server = net.createServer(function (socket) {
@@ -578,7 +578,7 @@ class CbusModule {
 class CANACC5 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ); 		// node variables + 1 (zero index)
+		this.variables.push( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ); 		// node variables + 1 (zero index)
 			//NV1-8 channel variables
 			//NV9 is feedback delay. In 0.5mSec intervals approx.
 			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
@@ -595,7 +595,7 @@ class CANACC5 extends CbusModule{
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x01020103, "variables":[ 0, 1, 2, 3 ]})
+		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
 			// EV#1 - sets which output is used (one bit per channel)
 			// EV#2 - sets polarity (one bit per channel)
 			// EV#3 - sets feedback
@@ -616,7 +616,7 @@ class CANACC5 extends CbusModule{
 class CANACC8 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ); 		// node variables + 1 (zero index)
+		this.variables.push( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ); 		// node variables + 1 (zero index)
 			//NV1-8 channel variables
 			//NV9 is feedback delay. In 0.5mSec intervals approx.
 			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
@@ -624,14 +624,16 @@ class CANACC8 extends CbusModule{
 			//NV12 not used yet
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
 		this.parameters[3] = 3;									// Module Id
 		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 3;									// Number of event variables
 		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[7] = 2;									// Major version number
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x01020103, "variables":[ 0, 1, 2, 3 ]})
+		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
 			// EV#1 - sets which output is used (one bit per channel)
 			// EV#2 - sets polarity (one bit per channel)
 			// EV#3 - sets feedback
@@ -706,7 +708,7 @@ class CANCMD extends CbusModule{
 class CANACE8C extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ); 		// 9 node variables + 1 (zero index)
+		this.variables.push( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ); 	// 9 node variables + 1 (zero index)
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "q".charCodeAt(0);					// Minor version number
@@ -718,16 +720,14 @@ class CANACE8C extends CbusModule{
 		this.parameters[8] = 14;								// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
-		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
-		this.events.push({'eventName': 0x01020105, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
 	}
 }
 
 class CANINP extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ); 		// 9 node variables + 1 (zero index)
+		this.variables.push( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ); 	// 9 node variables + 1 (zero index)
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
@@ -739,9 +739,7 @@ class CANINP extends CbusModule{
 		this.parameters[8] = 14;								// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x01020103, "variables":[ 1, 2, 3 ]})
-		this.events.push({'eventName': 0x01020104, "variables":[ 1, 2, 3 ]})
-		this.events.push({'eventName': 0x01020105, "variables":[ 1, 2, 3 ]})
+		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
 	}
 }
 
