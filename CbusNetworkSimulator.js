@@ -39,7 +39,12 @@ class mock_CbusNetwork {
 						new CANACC8 (301),
 						new CANACE8C (302),
 						new CANINP (303),
+						new CANMIO_UNIVERSAL (304),
 						]
+
+		this.modules.forEach( function (module) {
+			winston.info({message: 'CBUS Network Sim: starting CBUS module: ' + module.constructor.name});
+		})
 
 		this.server = net.createServer(function (socket) {
 			this.socket=socket;
@@ -518,21 +523,13 @@ class CbusModule {
 		this.events = []
 		this.CanId = 0;
 		this.nodeNumber = nodeNumber;
-		this.parameters = 	[ 	8,		// number of available parameters
-								0,		// param 1 manufacturer Id
-								0,		// param 2 Minor code version
-								0,		// param 3 module Id
-								0,		// param 4 number of supported events
-								0,		// param 5 number of event variables
-								0,		// param 6 number of supported node variables
-								0,		// param 7 major version
-								0,		// param 8 node flags
-								// NODE flags
-								// 	Bit 0	: Consumer
-								//	Bit 1	: Producer
-								//	Bit 2	: FLiM Mode
-								//	Bit 3	: The module supports bootloading		
-							]
+		this.parameters = 	[];
+		// prefill parameters array to 21 elements to match dev guide 6c & put length in element 0 (not including 0)
+		for (var i = 0; i < 21 ; i++) {
+			this.parameters.push(0);
+		}
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+			
 		this.variables = [];
 	}
 	
@@ -593,6 +590,11 @@ class CANACC5 extends CbusModule{
 		this.parameters[6] = this.variables.length - 1;			// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
 		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[9] = 1;									// CPU type
+		this.parameters[10] = 1;								// interface type
+																// skip 11 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
@@ -661,14 +663,32 @@ class CANSERVO8C extends CbusModule{
 	}
 }
 
-class CANMIO extends CbusModule{
+class CANMIO_UNIVERSAL extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
 
+		// prefill variables array to 127 (plus zero)
+		for (var i = 0; i < 128 ; i++) {this.variables.push(0);}
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);					// Minor version number
 		this.parameters[3] = 32;								// Module Id
-		this.parameters[8] = 7;									// Flags
+		this.parameters[4] = 254;								// Number of supported events
+		this.parameters[5] = 20;								// Number of event variables
+		this.parameters[6] = this.variables.length - 1;			// Number of Node Variables
+		this.parameters[7] = 3;									// Major version number
+		this.parameters[8] = 0xF;								// Flags - producer/consumer
+		this.parameters[9] = 1;									// CPU type
+		this.parameters[10] = 1;								// interface type
+																// skip 11 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
 	}
 }
 
@@ -753,6 +773,7 @@ class CANMIO_OUT extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 	}
+
 }
 
 
