@@ -676,16 +676,16 @@ class CANMIO_UNIVERSAL extends CbusModule{
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "a".charCodeAt(0);					// Minor version number
 		this.parameters[3] = 32;								// Module Id
-		this.parameters[4] = 254;								// Number of supported events
+		this.parameters[4] = 255;								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
 		this.parameters[6] = this.variables.length - 1;			// Number of Node Variables
 		this.parameters[7] = 3;									// Major version number
-		this.parameters[8] = 0xF;								// Flags - producer/consumer
-		this.parameters[9] = 1;									// CPU type
+		this.parameters[8] = 31;								// Flags - producer/consumer
+		this.parameters[9] = 13;								// CPU type - P18F25K80
 		this.parameters[10] = 1;								// interface type
 																// skip 11 to 18
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
-		this.parameters[20] = 0;								// Beta version number - 0 if production
+		this.parameters[20] = 3;								// Beta version number - 0 if production
 		
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
