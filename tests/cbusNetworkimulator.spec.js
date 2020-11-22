@@ -16,12 +16,12 @@ function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().pad
 describe('cbusNetworkSimulator tests', function(){
 
 	let testClient = undefined;
-
+    let incomingMessages = []
 
 	before(function() {
 		winston.info({message: ' '});
 		winston.info({message: '======================================================================'});
-		winston.info({message: '----------------------------- cbusNetworkSimulator tests -------------------------'});
+		winston.info({message: '----------------------- cbusNetworkSimulator tests -------------------'});
 		winston.info({message: '======================================================================'});
 		winston.info({message: ' '});
 
@@ -30,32 +30,56 @@ describe('cbusNetworkSimulator tests', function(){
 			winston.debug({message: 'Client Connected'});
         })
 
-	
-	});
+        testClient.on('data', function (data) {
+            const msgArray = data.toString().split(";");
+  			for (var msgIndex = 0; msgIndex < msgArray.length - 1; msgIndex++) {
+                incomingMessages.push(msgArray[msgIndex])
+                winston.info({message: 'Test client: data received ' + msgArray[msgIndex]});
+            }
+        })
+	})
 
 	after(function() {
 		
 	});
 	
 
-
+    // 0D QNN
+    //
 	it("QNN test", function (done) {
         network.clearSendArray();
-        msgData_0D = ":SB780N0D" + ";";
-    	testClient.write(msgData_0D);
+        incomingMessages = [];
+        msgData = ":SB780N0D" + ";";
+    	testClient.write(msgData);
 		setTimeout(function(){
-     		expect(network.getSendArray()[0]).to.equal(msgData_0D);
+     		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+            expect(incomingMessages.length).to.equal(network.modules.length), 'returned message count'; 
 			done();
 		}, 100);
 	})
 
 
+    // 10 RQNP
+    //
 	it("RQNP test", function (done) {
         network.clearSendArray();
-        msgData_10 = ":SB780N10" + ";";
-    	testClient.write(msgData_10);
+        msgData = ":SB780N10" + ";";
+    	testClient.write(msgData);
 		setTimeout(function(){
-     		expect(network.getSendArray()[0]).to.equal(msgData_10);
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+
+    // 11 RQMN
+    //
+	it("RQMN test", function (done) {
+        network.clearSendArray();
+        msgData = ":SB780N11" + ";";
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
 		}, 100);
 	})
