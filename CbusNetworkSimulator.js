@@ -3,6 +3,7 @@
 var winston = require('winston');		// use config from root instance
 const net = require('net');
 var translator = require('./translateCbusMessage.js')
+var cbusLib = require('./cbusLibrary.js')
 
 //
 //		Grid connect CAN over serial message syntax
@@ -24,7 +25,7 @@ function decToHex(num, len) {
 }
 
 
-class mock_CbusNetwork {
+class cbusNetworkSimulator {
 
     constructor(NET_PORT) {
 		winston.info({message: 'CBUS Network Sim: Starting'});
@@ -776,12 +777,9 @@ class CANMIO_OUT extends CbusModule{
 
 }
 
-
-
 module.exports = {
-    mock_CbusNetwork: mock_CbusNetwork
+    cbusNetworkSimulator: cbusNetworkSimulator
 }
-
 
 
 
