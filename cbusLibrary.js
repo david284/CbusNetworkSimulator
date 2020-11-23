@@ -398,6 +398,7 @@ class cbusLibrary {
         return {'mnemonic': 'RQEVN',
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16),
+                'text': 'RQEVN Node ' + parseInt(message.substr(9, 4), 16),
         }
     }
     encodeRQEVN = function(nodeNumber) {
@@ -415,6 +416,9 @@ class cbusLibrary {
                 'session': parseInt(message.substr(9, 2), 16),
                 'Fn1': parseInt(message.substr(11, 2), 16),
                 'Fn2': parseInt(message.substr(13, 2), 16),
+                'text': "DFUN Session " + parseInt(message.substr(9, 2), 16) +
+								" Fn1 " + parseInt(message.substr(11, 2), 16) +
+								" Fn2 " + parseInt(message.substr(13, 2), 16),
         }
     }
     encodeDFUN = function(session, Fn1, Fn2) {
@@ -433,6 +437,9 @@ class cbusLibrary {
                 'data1': parseInt(message.substr(9, 2), 16),
                 'data2': parseInt(message.substr(11, 2), 16),
                 'errorNumber': parseInt(message.substr(13, 2), 16),
+                'text': "ERR Data1 " + parseInt(message.substr(9, 2), 16) +
+								" Data2 " + parseInt(message.substr(11, 2), 16) +
+								" errorNumber " + parseInt(message.substr(13, 2), 16),
         }
     }
     encodeERR = function(data1, data2, errorNumber) {
@@ -449,6 +456,8 @@ class cbusLibrary {
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'errorNumber': parseInt(message.substr(13, 2), 16),
+                'text': "CMDERR Node " + parseInt(message.substr(9, 4), 16) + 
+								" errorNumber " + parseInt(message.substr(13, 2), 16)
         }
     }
     encodeCMDERR = function(nodeNumber, errorNumber) {
@@ -465,6 +474,8 @@ class cbusLibrary {
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'nodeVariableIndex': parseInt(message.substr(13, 2), 16),
+                'text': "NVRD Node " + parseInt(message.substr(9, 4), 16) + 
+								" Node Variable Index " + parseInt(message.substr(13, 2), 16)
         }
     }
     encodeNVRD = function(nodeNumber, nodeVariableIndex) {
@@ -481,6 +492,8 @@ class cbusLibrary {
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'eventIndex': parseInt(message.substr(13, 2), 16),
+                'text': "NENRD Node " + parseInt(message.substr(9, 4), 16) + 
+								" Event Index " + parseInt(message.substr(13, 2), 16)
         }
     }
     encodeNENRD = function(nodeNumber, eventIndex) {
@@ -497,6 +510,8 @@ class cbusLibrary {
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'ParameterIndex': parseInt(message.substr(13, 2), 16),
+                'text': "RQNPN Node " + parseInt(message.substr(9, 4), 16) + 
+								" Node Parameter Index " + parseInt(message.substr(13, 2), 16)
         }
     }
     encodeRQNPN = function(nodeNumber, ParameterIndex) {
@@ -513,6 +528,8 @@ class cbusLibrary {
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16),
                 'eventCount': parseInt(message.substr(13, 2), 16),
+                'text': "NUMEV Node " + parseInt(message.substr(9, 4), 16) + 
+								" Event Count " + parseInt(message.substr(13, 2), 16)
         }
     }
     encodeNUMEV = function(nodeNumber, eventCount) {
@@ -529,6 +546,8 @@ class cbusLibrary {
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'eventNumber': parseInt(message.substr(13, 4), 16),
+                'text': "ACON Node " + parseInt(message.substr(9, 4), 16) + 
+								" eventNumber " + parseInt(message.substr(13, 4), 16)
         }
     }
     encodeACON = function(nodeNumber, eventNumber) {
@@ -545,6 +564,8 @@ class cbusLibrary {
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'eventNumber': parseInt(message.substr(13, 4), 16),
+                'text': "ACOF Node " + parseInt(message.substr(9, 4), 16) + 
+								" eventNumber " + parseInt(message.substr(13, 4), 16)
         }
     }
     encodeACOF = function(nodeNumber, eventNumber) {
@@ -560,6 +581,7 @@ class cbusLibrary {
         return {'mnemonic': 'EVULN',
                 'opCode': message.substr(7, 2),
                 'eventName': message.substr(9, 8),
+                'text': "EVULN eventName " + message.substr(9, 8),
         }
     }
     encodeEVULN = function(eventName) {
@@ -577,6 +599,9 @@ class cbusLibrary {
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'nodeVariableIndex': parseInt(message.substr(13, 2), 16), 
                 'nodeVariableValue': parseInt(message.substr(15, 2), 16), 
+                'text':  "NVSET Node " + parseInt(message.substr(9, 4), 16) + 
+								" Node Variable Index " + parseInt(message.substr(13, 2), 16) +
+								" Node Variable Value " + parseInt(message.substr(15, 2), 16)
         }
     }
     encodeNVSET = function(nodeNumber, nodeVariableIndex, nodeVariableValue) {
@@ -594,6 +619,9 @@ class cbusLibrary {
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'nodeVariableIndex': parseInt(message.substr(13, 2), 16),
                 'nodeVariableValue': parseInt(message.substr(15, 2), 16),
+                'text':  "NVANS Node " + parseInt(message.substr(9, 4), 16) + 
+								" Node Variable Index " + parseInt(message.substr(13, 2), 16) +
+								" Node Variable Value " + parseInt(message.substr(15, 2), 16)
         }
     }
     encodeNVANS = function(nodeNumber, nodeVariableIndex, nodeVariableValue) {
@@ -609,7 +637,9 @@ class cbusLibrary {
 		return {'mnemonic': 'ASON',
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
-                'eventNumber': parseInt(message.substr(13, 4), 16),
+                'deviceNumber': parseInt(message.substr(13, 4), 16),
+                'text': "ASON Node " + parseInt(message.substr(9, 4), 16) + 
+								" Device Number " + parseInt(message.substr(13, 4), 16)
         }
     }
     encodeASON = function(nodeNumber, deviceNumber) {
@@ -625,7 +655,9 @@ class cbusLibrary {
 		return {'mnemonic': 'ASOF',
                 'opCode': message.substr(7, 2),
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
-                'eventNumber': parseInt(message.substr(13, 4), 16),
+                'deviceNumber': parseInt(message.substr(13, 4), 16),
+                'text': "ASOF Node " + parseInt(message.substr(9, 4), 16) + 
+					" Device Number " + parseInt(message.substr(13, 4), 16)
         }
     }
     encodeASOF = function(nodeNumber, deviceNumber) {
@@ -643,6 +675,9 @@ class cbusLibrary {
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'parameterIndex': parseInt(message.substr(13, 2), 16),
                 'parameterValue': parseInt(message.substr(15, 2), 16),
+                'text': "PARAN Node " + parseInt(message.substr(9, 4), 16) + 
+					" Parameter Index " + parseInt(message.substr(13, 2), 16) + 
+					" Parameter Value " + parseInt(message.substr(15, 2), 16)
         }
     }
     encodePARAN = function(nodeNumber, parameterIndex, parameterValue) {
@@ -660,6 +695,9 @@ class cbusLibrary {
                 'nodeNumber': parseInt(message.substr(9, 4), 16), 
                 'eventIndex': parseInt(message.substr(13, 2), 16), 
                 'eventVariableIndex': parseInt(message.substr(15, 2), 16), 
+                'text': "REVAL Node " + parseInt(message.substr(9, 4), 16) + 
+					" Event Index " + parseInt(message.substr(13, 2), 16) + 
+					" Event VariableIndex " + parseInt(message.substr(15, 2), 16)
         }
     }
     encodeREVAL = function(nodeNumber, eventIndex, eventVariableIndex) {
@@ -713,6 +751,9 @@ class cbusLibrary {
                 'eventName': message.substr(9, 8),
                 'eventVariableIndex': parseInt(message.substr(17, 2), 16),
                 'eventVariableValue': parseInt(message.substr(19, 2), 16),
+                'text': "REVAL eventName " + message.substr(9, 8) + 
+					" Event Variable Index " + parseInt(message.substr(17, 2), 16) + 
+					" Event Variable Value " + parseInt(message.substr(19, 2), 16)
         }
     }
     encodeEVLRN = function(eventName, eventVariableIndex, eventVariableValue) {

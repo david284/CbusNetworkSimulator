@@ -83,6 +83,7 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': 0x012D0104, "variables":[ 0, 0, 0, 0 ]})
 			// EV#1 - sets which output is used (one bit per channel)
 			// EV#2 - sets polarity (one bit per channel)
 			// EV#3 - sets feedback
@@ -121,6 +122,7 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': 0x012D0104, "variables":[ 0, 0, 0, 0 ]})
 			// EV#1 - sets which output is used (one bit per channel)
 			// EV#2 - sets polarity (one bit per channel)
 			// EV#3 - sets feedback

@@ -223,6 +223,302 @@ describe('cbusNetworkSimulator tests', function(){
 	})
 
 
+    // 58 RQEVN
+    //
+	function GetTestCase_RQEVN () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+			testCases.push({'nodeNumber':nodeNumber});
+		}
+		return testCases;
+	}
+
+	itParam("RQEVN test nodeNumber ${value.nodeNumber}", GetTestCase_RQEVN(), function (done, value) {
+		winston.info({message: 'cbusMessage test: BEGIN NERD test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeRQEVN(value.nodeNumber);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+            if (messagesIn.length > 0) {
+                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
+            }
+			done();
+		}, 100);
+	})
+
+
+    // 71 NVRD
+    //
+	function GetTestCase_NVRD () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeId = 0;
+			if (NN == 2) nodeId = 1;
+			if (NN == 3) nodeId = 65535;
+			for (NVindex = 1; NVindex < 4; NVindex++) {
+				if (NVindex == 1) nvIndex = 0;
+				if (NVindex == 2) nvIndex = 1;
+				if (NVindex == 3) nvIndex = 255;
+				testCases.push({'nodeId':nodeId, 'nvIndex':nvIndex});
+			}
+		}
+		return testCases;
+	}
+
+
+	itParam("NVRD test nodeId ${value.nodeId} nvIndex ${value.nvIndex}", GetTestCase_NVRD(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN NVRD test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeNVRD(value.nodeNumber, value.nvIndex);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+            if (messagesIn.length > 0) {
+                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NVANS');
+            }
+			done();
+		}, 100);
+	})
+
+
+    // 73 RQNPN
+    //
+	function GetTestCase_RQNPN () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeId = 0;
+			if (NN == 2) nodeId = 1;
+			if (NN == 3) nodeId = 65535;
+			for (Pindex = 1; Pindex < 4; Pindex++) {
+				if (Pindex == 1) paramIndex = 0;
+				if (Pindex == 2) paramIndex = 1;
+				if (Pindex == 3) paramIndex = 255;
+				testCases.push({'nodeId':nodeId, 'paramIndex':paramIndex});
+			}
+		}
+		return testCases;
+	}
+
+	itParam("RQNPN test nodeId ${value.nodeId} paramIndex ${value.paramIndex}", GetTestCase_RQNPN(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN RQNPN test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeRQNPN(value.nodeNumber, value.paramIndex);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+            if (messagesIn.length > 0) {
+                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('PARAN');
+            }
+			done();
+		}, 100);
+	})
+
+
+    // 90 & 91 ACON & ACOF
+    //
+	function GetTestCase_ACONF () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+			for (EVindex = 1; EVindex < 4; EVindex++) {
+				if (EVindex == 1) eventNumber = 0;
+				if (EVindex == 2) eventNumber = 1;
+				if (EVindex == 3) eventNumber = 255;
+				testCases.push({'nodeNumber':nodeNumber, 'eventNumber':eventNumber});
+			}
+		}
+		return testCases;
+	}
+
+	itParam("ACON test nodeNumber ${value.nodeNumber} eventNumber ${value.eventNumber}", GetTestCase_ACONF(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN ACON test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeACON(value.nodeNumber, value.eventNumber);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+	itParam("ACOF test nodeNumber ${value.nodeNumber} eventNumber ${value.eventNumber}", GetTestCase_ACONF(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN ACOF test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeACOF(value.nodeNumber, value.eventNumber);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+
+    // 95 EVULN
+    //
+	function GetTestCase_EVULN () {
+		var testCases = [];
+		for (EV = 1; EV < 4; EV++) {
+			if (EV == 1) eventName = '00000000';
+			if (EV == 2) eventName = '00000001';
+			if (EV == 3) eventName = 'FFFFFFFF';
+			testCases.push({'eventName':eventName});
+		}
+		return testCases;
+	}
+
+	itParam("EVULN test eventName ${value.eventName}", GetTestCase_EVULN(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN EVULN test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeEVULN(value.eventName);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+    // 96 NVSET
+    //
+	function GetTestCase_NVSET () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeId = 0;
+			if (NN == 2) nodeId = 1;
+			if (NN == 3) nodeId = 65535;
+			for (NVindex = 1; NVindex < 4; NVindex++) {
+				if (NVindex == 1) nvIndex = 0;
+				if (NVindex == 2) nvIndex = 1;
+				if (NVindex == 3) nvIndex = 255;
+				for (NVvalue = 1; NVvalue < 4; NVvalue++) {
+					if (NVvalue == 1) nvValue = 0;
+					if (NVvalue == 2) nvValue = 1;
+					if (NVvalue == 3) nvValue = 255;
+					testCases.push({'nodeId':nodeId, 'nvIndex':nvIndex, 'nvValue':nvValue});
+				}
+			}
+		}
+		return testCases;
+	}
+
+	itParam("NVSET test nodeId ${value.nodeId} nvIndex ${value.nvIndex} nvValue ${value.nvValue}", GetTestCase_NVSET(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN NVSET test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeNVSET(value.nodeId, value.nvIndex, value.nvValue);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+
+    // 98 & 99 ACON & ACOF
+    //
+	function GetTestCase_ASONF () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+			for (DN = 1; DN < 4; DN++) {
+				if (DN == 1) deviceNumber = 0;
+				if (DN == 2) deviceNumber = 1;
+				if (DN == 3) deviceNumber = 255;
+				testCases.push({'nodeNumber':nodeNumber, 'deviceNumber':deviceNumber});
+			}
+		}
+		return testCases;
+	}
+
+	itParam("ASON test nodeNumber ${value.nodeNumber} deviceNumber ${value.deviceNumber}", GetTestCase_ASONF(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN ACON test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeASON(value.nodeNumber, value.deviceNumber);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+	itParam("ASOF test nodeNumber ${value.nodeNumber} deviceNumber ${value.deviceNumber}", GetTestCase_ASONF(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN ACOF test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeACOF(value.nodeNumber, value.deviceNumber);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+
+	function GetTestCase_REVAL () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeId = 0;
+			if (NN == 2) nodeId = 1;
+			if (NN == 3) nodeId = 65535;
+			for (EVindex = 1; EVindex < 4; EVindex++) {
+				if (EVindex == 1) eventIndex = 0;
+				if (EVindex == 2) eventIndex = 1;
+				if (EVindex == 3) eventIndex = 255;
+				for (EVvalue = 1; EVvalue < 4; EVvalue++) {
+					if (EVvalue == 1) eventValue = 0;
+					if (EVvalue == 2) eventValue = 1;
+					if (EVvalue == 3) eventValue = 255;
+					testCases.push({'nodeNumber':nodeId, 'eventIndex':eventIndex, 'eventValue':eventValue});
+				}
+			}
+		}
+		return testCases;
+	}
+
+
+	itParam("REVAL test nodeNumber ${value.nodeNumber} eventIndex ${value.eventIndex} eventValue ${value.eventValue}", GetTestCase_REVAL(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN REVAL test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeREVAL(value.nodeNumber, value.eventIndex, value.eventValue);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+    // D2 - EVLRN
+    //
+	function GetTestCase_EVLRN () {
+		var testCases = [];
+		for (EV = 1; EV < 4; EV++) {
+			if (EV == 1) eventName = '00000000';
+			if (EV == 2) eventName = '00000001';
+			if (EV == 3) eventName = 'FFFFFFFF';
+			for (EVindex = 1; EVindex < 4; EVindex++) {
+				if (EVindex == 1) eventIndex = 0;
+				if (EVindex == 2) eventIndex = 1;
+				if (EVindex == 3) eventIndex = 255;
+				for (EVvalue = 1; EVvalue < 4; EVvalue++) {
+					if (EVvalue == 1) eventValue = 0;
+					if (EVvalue == 2) eventValue = 1;
+					if (EVvalue == 3) eventValue = 255;
+					testCases.push({'eventName':eventName, 'eventIndex':eventIndex, 'eventValue':eventValue});
+				}
+			}
+		}
+		return testCases;
+	}
+
+
+	itParam("EVLRN test eventName ${value.eventName} eventIndex ${value.eventIndex} eventValue ${value.eventValue}", GetTestCase_EVLRN(), function (done, value) {
+		winston.info({message: 'mergAdminNode test: BEGIN EVLRN test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeEVLRN(value.eventName, value.eventIndex, value.eventValue);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+			done();
+		}, 100);
+	})
+
+
+
+
 
 
 })

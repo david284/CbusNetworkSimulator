@@ -51,19 +51,19 @@ class cbusNetworkSimulator {
 					winston.info({message: 'CBUS Network Sim: <<IN [' + msgIndex + '] ' +  message + " " + cbusMsg.text});
 					switch (cbusMsg.opCode) {
 					case '0D': //QNN
-						winston.info({message: 'CBUS Network Sim: received QNN'});
+						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
 							this.outputPNN(this.modules[moduleIndex].getNodeNumber());
 						}
 						break;
 					case '10': // RQNP
-						winston.info({message: 'CBUS Network Sim: received RQNP *************************************'});
+						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						break;
 					case '11': // RQMN
-						winston.info({message: 'CBUS Network Sim: received RQMN *************************************'});
+						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						break;
 					case '42': // SNN
-						winston.info({message: 'CBUS Network Sim: received SNN : new Node Number ' + cbusMsg.nodeNumber});
+						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						// could renumber or create a new module, but not necessary at this time
 						this.outputNNACK(cbusMsg.nodeNumber);
 						break;
@@ -74,17 +74,17 @@ class cbusNetworkSimulator {
 					case '52': // NNACK sent by node
 						break;
 					case '53': // NNLRN
-						winston.info({message: 'CBUS Network Sim: received NNLRN'});
+						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						this.learningNode = cbusMsg.nodeNumber
 						winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' put into learn mode' });
 						break;
 					case '54': // NNULN
-						winston.info({message: 'CBUS Network Sim: received NNULN'});
+						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						this.learningNode = undefined;
 						winston.info({message: 'CBUS Network Sim: learn mode cancelled' });
 						break;
 					case '55': // NNCLR
-						winston.info({message: 'CBUS Network Sim: received NNCLR'});
+						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						var nodeNumber = cbusMsg.nodeNumber
 						if ( nodeNumber == this.learningNode) {
 							this.getModule(nodeNumber).getStoredEvents() = [];
@@ -101,15 +101,11 @@ class cbusNetworkSimulator {
 						break;
 					case '58':
 						// RQEVN Format: [<MjPri><MinPri=3><CANID>]<58><NN hi><NN lo>
-						winston.info({message: 'CBUS Network Sim: received RQEVN'});
-						var nodeNumber = parseInt(message.substr(9, 4), 16)
+						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+						var nodeNumber = cbusMsg.nodeNumber
 						this.outputNUMEV(nodeNumber);
 						break;
 					case '59':		// WRACK - sent by node
-						break;
-					case '5C':
-						// BOOTM Format: [<MjPri><MinPri=3><CANID>]<5C><NN hi><NN lo>>
-						winston.info({message: 'CBUS Network Sim: received BOOTM *************************************'});
 						break;
 					case '6F':		// CMDERR - sent by node
 						break;
@@ -458,10 +454,20 @@ class cbusNetworkSimulator {
 	outputNEVAL(nodeNumber, eventIndex, eventVariableIndex) {
 		// NEVAL Format: [<MjPri><MinPri=3><CANID>]<B5><NN hi><NN lo><EN#><EV#><EVval>
 		var events = this.getModule(nodeNumber).getStoredEvents();
-		var value = events[eventIndex].variables[eventVariableIndex];
-		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + 'B5' + decToHex(nodeNumber, 4) + decToHex(eventIndex, 2) + decToHex(eventVariableIndex, 2) + decToHex(value, 2) +';'
-		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
-		this.socket.write(msgData);
+        if (eventIndex < events.length) {
+            if (eventVariableIndex < events[eventIndex].variables.length) {
+                var value = events[eventIndex].variables[eventVariableIndex];
+                var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + 'B5' + decToHex(nodeNumber, 4) + decToHex(eventIndex, 2) + decToHex(eventVariableIndex, 2) + decToHex(value, 2) +';'
+                winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
+                this.socket.write(msgData);
+            }
+            else {
+                winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+            }
+        }
+        else {
+            winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
+        }
 	}
 	
 	// B6
