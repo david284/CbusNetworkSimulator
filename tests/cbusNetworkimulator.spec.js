@@ -6,12 +6,23 @@ const io = require('socket.io-client');
 var cbusLib = require('./../cbusLibrary.js')
 
 const simuator = require('./../CbusNetworkSimulator.js')
+const cbusModules = require('./../modules.js')
+
+var testModules = 	[
+                new cbusModules.CANACC5(0),
+                new cbusModules.CANACC8(1),
+				new cbusModules.CANMIO_UNIVERSAL (65535),
+                ]
+
+
+
+
 
 const NET_PORT = 5550;
 const NET_ADDRESS = "127.0.0.1"
 
 
-let network = new simuator.cbusNetworkSimulator(NET_PORT);
+let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules);
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
 
