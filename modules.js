@@ -179,6 +179,8 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 		
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': 0x012D0104, "variables":[ 0, 0, 0, 0 ]})
 	}
 }
 
