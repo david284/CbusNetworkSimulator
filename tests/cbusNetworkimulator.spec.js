@@ -326,7 +326,7 @@ describe('cbusNetworkSimulator tests', function(){
 			for (EVindex = 1; EVindex < 4; EVindex++) {
 				if (EVindex == 1) eventNumber = 0;
 				if (EVindex == 2) eventNumber = 1;
-				if (EVindex == 3) eventNumber = 255;
+				if (EVindex == 3) eventNumber = 65535;
 				testCases.push({'nodeNumber':nodeNumber, 'eventNumber':eventNumber});
 			}
 		}
@@ -422,7 +422,7 @@ describe('cbusNetworkSimulator tests', function(){
 			for (DN = 1; DN < 4; DN++) {
 				if (DN == 1) deviceNumber = 0;
 				if (DN == 2) deviceNumber = 1;
-				if (DN == 3) deviceNumber = 255;
+				if (DN == 3) deviceNumber = 65535;
 				testCases.push({'nodeNumber':nodeNumber, 'deviceNumber':deviceNumber});
 			}
 		}
