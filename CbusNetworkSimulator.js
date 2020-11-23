@@ -48,22 +48,18 @@ class cbusNetworkSimulator {
 					var message = msgArray[msgIndex].concat(";");				// add back the ';' terminator that was lost in the split
 					this.sendArray.push(message);					// store the incoming messages so the test can inspect them
                     var cbusMsg = cbusLib.decode(message)      // decode into cbus message
-					winston.info({message: 'CBUS Network Sim: <<IN [' + msgIndex + '] ' +  message + " " + cbusMsg.text});
+					winston.info({message: 'CBUS Network Sim: <<< IN [' + msgIndex + '] ' +  message + " <<< " + cbusMsg.text});
 					switch (cbusMsg.opCode) {
 					case '0D': //QNN
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
 							this.outputPNN(this.modules[moduleIndex].getNodeNumber());
 						}
 						break;
 					case '10': // RQNP
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						break;
 					case '11': // RQMN
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						break;
 					case '42': // SNN
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						// could renumber or create a new module, but not necessary at this time
 						this.outputNNACK(cbusMsg.nodeNumber);
 						break;
@@ -74,17 +70,14 @@ class cbusNetworkSimulator {
 					case '52': // NNACK sent by node
 						break;
 					case '53': // NNLRN
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						this.learningNode = cbusMsg.nodeNumber
 						winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' put into learn mode' });
 						break;
 					case '54': // NNULN
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						this.learningNode = undefined;
 						winston.info({message: 'CBUS Network Sim: learn mode cancelled' });
 						break;
 					case '55': // NNCLR
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						var nodeNumber = cbusMsg.nodeNumber
 						if ( nodeNumber == this.learningNode) {
 							this.getModule(nodeNumber).getStoredEvents() = [];
@@ -92,46 +85,33 @@ class cbusNetworkSimulator {
 						}
 						break;
 					case '57': // NERD
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
 						var nodeNumber = cbusMsg.nodeNumber
 						var events = this.getModule(nodeNumber).getStoredEvents();
 						for (var i = 0; i < events.length; i++) {
 							this.outputENRSP(nodeNumber, i);
 						}
 						break;
-					case '58':
-						// RQEVN Format: [<MjPri><MinPri=3><CANID>]<58><NN hi><NN lo>
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+					case '58': // RQEVN
 						var nodeNumber = cbusMsg.nodeNumber
 						this.outputNUMEV(nodeNumber);
 						break;
-					case '59':		// WRACK - sent by node
+					case '59': // WRACK - sent by node
 						break;
-					case '6F':		// CMDERR - sent by node
+					case '6F': // CMDERR - sent by node
 						break;
-					case '71':
-						// NVRD Format: [<MjPri><MinPri=3><CANID>]<71><NN hi><NN lo><NV#>
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+					case '71': // NVRD
 						this.outputNVANS(cbusMsg.nodeNumber, cbusMsg.nodeVariableIndex);
 						break;
-					case '73':
-						// RQNPN Format: [<MjPri><MinPri=3><CANID>]<73><NN hi><NN lo><Para#>
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+					case '73': // RQNPN
 						this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.ParameterIndex);
 						break;
-					case '90':
-						// ACON Format: [<MjPri><MinPri=3><CANID>]<90><NN hi><NN lo><EN hi><EN lo>
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+					case '90': // ACON
 						this.processAccessoryEvent("ACON", cbusMsg.nodeNumber, cbusMsg.eventNumber);
 						break;
-					case '91':
-						// ACOF Format: [<MjPri><MinPri=3><CANID>]<91><NN hi><NN lo><EN hi><EN lo>
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+					case '91': // ACOF
 						this.processAccessoryEvent("ACOF", cbusMsg.nodeNumber, cbusMsg.eventNumber);
 						break;
-					case '95':
-						// EVULN Format: [<MjPri><MinPri=3><CANID>]<95><NN hi><NN lo><EN hi><EN lo>
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+					case '95': // EVULN
 						if (this.learningNode != undefined) {
 							// Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
 							this.deleteEventByName(this.learningNode, cbusMsg.eventName);
@@ -140,8 +120,7 @@ class cbusNetworkSimulator {
 							winston.info({message: 'CBUS Network Sim: EVULN - not in learn mode'});
 						}
 						break;
-					case '96':
-						// NVSET Format: [<MjPri><MinPri=3><CANID>]<96><NN hi><NN lo><NV# ><NV val>
+					case '96': // NVSET
 						var variables = this.getModule(cbusMsg.nodeNumber).getVariables();
 						if (cbusMsg.nodeVariableIndex < variables.length) {
 							variables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
@@ -153,22 +132,16 @@ class cbusNetworkSimulator {
 							this.outputCMDERR(nodeNumber, 10);
 						}
 						break;
-					case '98':
-						// ASON Format: [<MjPri><MinPri=3><CANID>]<98><NN hi><NN lo><DD hi><DD lo>
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+					case '98': // ASON
 						this.processAccessoryEvent("ASON", 0, cbusMsg.deviceNumber);
 						break;
-					case '99':
-						// ASOF Format: [<MjPri><MinPri=3><CANID>]<99><NN hi><NN lo><DD hi><DD lo>
-						winston.info({message: 'CBUS Network Sim: received ' + cbusMsg.text});
+					case '99': // ASOF
 						this.processAccessoryEvent("ASOF", 0, cbusMsg.deviceNumber);
 						break;
-					case '9C':
-						// REVAL Format: [<MjPri><MinPri=3><CANID>]<9C><NN hi><NN lo><EN#><EV#>
+					case '9C': // REVAL
 						this.outputNEVAL(cbusMsg.nodeNumber, cbusMsg.eventIndex, cbusMsg.eventVariableIndex)
 						break;
-					case 'D2':
-						// EVLRN Format: [<MjPri><MinPri=3><CANID>]<D2><NN hi><NN lo><EN hi><EN lo><EV#><EV val>
+					case 'D2': // EVLRN
 						if (this.learningNode != undefined) {
 							// Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
 							var event = this.getEventByName(this.learningNode, cbusMsg.eventName);
@@ -302,9 +275,9 @@ class cbusNetworkSimulator {
 	// 21
 	 outputKLOC(session) {
 		// Format: [<MjPri><MinPri=2><CANID>]<21><Session>
-		var msgData = ':S' + 'B780' + 'N' + '21' + decToHex(session, 2) + ';';
+		var msgData = cbusLib.encodeKLOC(session);
 		this.socket.write(msgData);
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + translator.translateCbusMessage(msgData)});
+		winston.info({message: 'CBUS Network Sim:  OUT >>>  ' + msgData + " >>> " + cbusLib.decode(msgData).text});
 	}
 
 
@@ -455,12 +428,17 @@ class cbusNetworkSimulator {
 	// B6
 	 outputPNN(nodeNumber) {
 		// PNN Format: <0xB6><<NN Hi><NN Lo><Manuf Id><Module Id><Flags>
-		var nodeData = this.getModule(nodeNumber).getNodeNumberHex()
-			+ this.getModule(nodeNumber).getManufacturerIdHex() 
-			+ this.getModule(nodeNumber).getModuleIdHex() 
-			+ this.getModule(nodeNumber).getFlagsHex();
-		var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + 'B6' + nodeData + ';'
-		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + translator.translateCbusMessage(msgData)});
+		// var nodeData = this.getModule(nodeNumber).getNodeNumberHex()
+			// + this.getModule(nodeNumber).getManufacturerIdHex() 
+			// + this.getModule(nodeNumber).getModuleIdHex() 
+			// + this.getModule(nodeNumber).getFlagsHex();
+		// var msgData = ':S' + this.getCanHeader(nodeNumber) + 'N' + 'B6' + nodeData + ';'
+         
+        var msgData = cbusLib.encodePNN(nodeNumber, 
+            this.getModule(nodeNumber).getManufacturerId(),
+            this.getModule(nodeNumber).getModuleId(),
+            this.getModule(nodeNumber).getFlags())
+		winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
 		this.socket.write(msgData);
 	}
 	

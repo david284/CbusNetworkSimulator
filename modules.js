@@ -23,6 +23,7 @@ class CbusModule {
 	setCanId(canId) { this.CanId = canId; }
 	
 	// Flags
+	getFlags() {return this.parameters[8]}
 	getFlagsHex() {return decToHex(this.parameters[8], 2)}
 	
 	// Events
@@ -45,9 +46,11 @@ class CbusModule {
 	setnodeNumber(newnodeNumber) { this.nodeNumber = newnodeNumber;}
 	
 	// Module Id
+	getModuleId() {return this.parameters[3]}
 	getModuleIdHex() {return decToHex(this.parameters[3], 2)}
 
 	// Manufacturer Id
+	getManufacturerId() {return this.parameters[1]}
 	getManufacturerIdHex() {return decToHex(this.parameters[1], 2)}
 
 	// Parameters
