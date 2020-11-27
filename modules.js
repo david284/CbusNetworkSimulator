@@ -28,11 +28,14 @@ class CbusModule {
 	
 	// Events
 	addNewEvent(eventName) {
+		winston.info({message: 'CBUS Network Sim: add new event: node ' + this.getNodeNumber() + ' eventName ' + eventName});
 		var variables = [];
 		// create variable array of correct length for specific module
 		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
 		this.events.push({'eventName': eventName, "variables": variables});
-		return this.events[this.events.length - 1];		// adjust as array is zero based		
+		winston.info({message: 'CBUS Network Sim: events: ' + JSON.stringify(this.events)});
+		return this.events[this.events.length - 1];		// adjust as array is zero based	
+        
 	}
 	getStoredEvents() { return this.events}
 	getStoredEventsCount() { return this.events.length}
@@ -85,8 +88,8 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		this.parameters[20] = 0;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': 0x012D0104, "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
 			// EV#1 - sets which output is used (one bit per channel)
 			// EV#2 - sets polarity (one bit per channel)
 			// EV#3 - sets feedback
@@ -124,8 +127,8 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': 0x012D0104, "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
 			// EV#1 - sets which output is used (one bit per channel)
 			// EV#2 - sets polarity (one bit per channel)
 			// EV#3 - sets feedback
@@ -179,8 +182,8 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 		
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': 0x012D0104, "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
 	}
 }
 
@@ -232,7 +235,8 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 		this.parameters[8] = 14;								// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
 	}
 }
 
@@ -251,7 +255,8 @@ module.exports.CANINP = class CANINP extends CbusModule{
 		this.parameters[8] = 14;								// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': 0x012D0103, "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
 	}
 }
 
