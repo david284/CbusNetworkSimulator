@@ -155,7 +155,7 @@ class cbusNetworkSimulator {
 						}
 						break;
 					default:
-						winston.info({message: 'CBUS Network Sim: *************************** received unknown opcode '});
+						winston.info({message: 'CBUS Network Sim: *************************** received unknown opcode ' + cbusMsg.opCode});
 						break;
 					}
 				}
