@@ -22,31 +22,18 @@ class cbusNetworkSimulator {
 		this.socket;
 		this.learningNode;
 		
-/* 		this.modules = 	[
-						new CANACC5 (0),
-						new CANACC8 (1),
-						new CANACE8C (302),
-						new CANINP (303),
-						new CANMIO_UNIVERSAL (65535),
-						]
- */
- 
-		this.modules.forEach( function (module) {
-			winston.info({message: 'CBUS Network Sim: starting CBUS module: ' + module.constructor.name});
-		})
-
 		this.server = net.createServer(function (socket) {
 			this.socket=socket;
 	
 			socket.setKeepAlive(true,60000);
 			socket.on('data', function (data) {
-				winston.info({message: 'CBUS Network Sim: data received'});
+				winston.info({message: 'CBUS Network Sim: <<< Data in ' + data});
 				const msgArray = data.toString().split(";");
 				for (var msgIndex = 0; msgIndex < msgArray.length - 1; msgIndex++) {
 					var message = msgArray[msgIndex].concat(";");				// add back the ';' terminator that was lost in the split
 					this.sendArray.push(message);					// store the incoming messages so the test can inspect them
                     var cbusMsg = cbusLib.decode(message)      // decode into cbus message
-					winston.info({message: 'CBUS Network Sim: <<< IN [' + msgIndex + '] ' +  message + " <<< " + cbusMsg.text});
+					winston.info({message: 'CBUS Network Sim: <<< Decoded [' + msgIndex + '] ' +  message + " <<< " + cbusMsg.text});
 					switch (cbusMsg.opCode) {
 					case '0D': //QNN
 						for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
@@ -101,7 +88,7 @@ class cbusNetworkSimulator {
 						this.outputNVANS(cbusMsg.nodeNumber, cbusMsg.nodeVariableIndex);
 						break;
 					case '73': // RQNPN
-						this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.ParameterIndex);
+						this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
 						break;
 					case '90': // ACON
 						this.processAccessoryEvent("ACON", cbusMsg.nodeNumber, cbusMsg.eventNumber);

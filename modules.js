@@ -16,6 +16,8 @@ class CbusModule {
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 			
 		this.variables = [];
+		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
+
 	}
 	
 	// CAN Id
