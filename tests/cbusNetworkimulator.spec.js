@@ -3,7 +3,7 @@ var winston = require('./config/winston_test.js');
 var itParam = require('mocha-param');
 const net = require('net')
 const io = require('socket.io-client');
-var cbusLib = require('./../cbusLibrary.js')
+var cbusLib = require('cbusLibrary')
 
 const simuator = require('./../CbusNetworkSimulator.js')
 const cbusModules = require('./../modules.js')
@@ -56,6 +56,9 @@ describe('cbusNetworkSimulator tests', function(){
     beforeEach (function() {
         network.clearSendArray();
         messagesIn = [];
+        // ensure expected CAN header is reset before each test run
+        cbusLib.setCanHeader(2, 60)
+   		winston.info({message: ' '});   // blank line to separate tests
     })
 
 	after(function() {
@@ -115,7 +118,7 @@ describe('cbusNetworkSimulator tests', function(){
 	itParam("KLOC test session ${value.session}", GetTestCase_KLOC(), function (done, value) {
     	// Format: [<MjPri><MinPri=2><CANID>]<21><Session>
 		winston.info({message: 'mergAdminNode test: BEGIN KLOC test ' + JSON.stringify(value)});
-		expected = ":SB780N21" + decToHex(value.session, 2) + ";";
+		expected = ":SA780N21" + decToHex(value.session, 2) + ";";
         network.outputKLOC(value.session)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
@@ -372,7 +375,7 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("DFUN test session ${value.session} Fn1 ${value.Fn1} Fn2 ${value.Fn2}", GetTestCase_DFUN(), function (done, value) {
 		winston.info({message: 'cbusMessage test: BEGIN DFUN test ' + JSON.stringify(value)});
-		expected = ":SB780N60" + decToHex(value.session, 2) + decToHex(value.Fn1, 2) + decToHex(value.Fn2, 2) + ";";
+		expected = ":SA780N60" + decToHex(value.session, 2) + decToHex(value.Fn1, 2) + decToHex(value.Fn2, 2) + ";";
         network.outputDFUN(value.session, value.Fn1, value.Fn2)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
@@ -406,7 +409,7 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("ERR test data1 ${value.data1} data2 ${value.data2} errorNumber ${value.errorNumber}", GetTestCase_ERR(), function (done, value) {
 		winston.info({message: 'cbusMessage test: BEGIN ERR test ' + JSON.stringify(value)});
-		expected = ":SB780N63" + decToHex(value.data1, 2) + decToHex(value.data2, 2) + decToHex(value.errorNumber, 2) + ";";
+		expected = ":SA780N63" + decToHex(value.data1, 2) + decToHex(value.data2, 2) + decToHex(value.errorNumber, 2) + ";";
         network.outputERR(value.data1, value.data2, value.errorNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);

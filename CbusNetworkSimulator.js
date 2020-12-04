@@ -1,9 +1,7 @@
 'use strict';
-
 var winston = require('winston');		// use config from root instance
 const net = require('net');
-var translator = require('./translateCbusMessage.js')
-var cbusLib = require('./cbusLibrary.js')
+var cbusLib = require('cbuslibrary')
 
 //
 //		Grid connect CAN over serial message syntax
