@@ -65,8 +65,8 @@ class cbusNetworkSimulator {
 
     processExtendedMessage(message) {
         var extMsg = this.decodeExtendedMessage(message)
-        winston.info({message: 'CBUS Network Sim: <<< Received message EXTENDED ID ' +  message + " <<< "});
-        if (extMsg.Type == 'CONTROL') {
+        winston.info({message: 'CBUS Network Sim: <<< Received message EXTENDED ID ' +  message + " <<< " + extMsg.type});
+        if (extMsg.type == 'CONTROL') {
             switch (extMsg.SPCMD) {
                 case 0:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_NOP ' +  message + " <<< "});
@@ -79,11 +79,11 @@ class cbusNetworkSimulator {
                     break;
                 case 3:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_CHK_RUN ' +  message + " <<< "});
-                    this.outputExtResponse(1)
+                    this.outputExtResponse(1)   // 1 = ok ( 0 = not ok)
                     break;
                 case 4:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_BOOT_TEST ' +  message + " <<< "});
-                    this.outputExtResponse(2)
+                    this.outputExtResponse(2)   // 2 = confirm boot load
                     break;
                 default:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message UNKNOWN COMMAND ' +  message + " <<< "});
@@ -95,11 +95,15 @@ class cbusNetworkSimulator {
     decodeExtendedMessage(message) {
         var output = {}
 		output['encoded'] = message
-        if(message.substr(9,1) == '4') {
-   			output['Type'] = 'CONTROL'
-   			output['SPCMD'] = parseInt(message.substr(21, 2), 16)
+        if ((message.length >= 27) & (message.substr(0,9) == ':X0008000')){
+            if(parseInt(message.substr(9,1), 16) & 0b0001) {
+                output['type'] = 'DATA'            
+            } else {
+                output['type'] = 'CONTROL'
+                output['SPCMD'] = parseInt(message.substr(21, 2), 8)
+            }
         } else {
-   			output['Type'] = 'DATA'            
+                output['Type'] = 'UNKNOWN MESSAGE'
         }
         return output
     }
