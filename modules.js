@@ -22,7 +22,10 @@ class CbusModule {
 	
 	// CAN Id
 	getCanId() { return this.CanId; }
-	setCanId(canId) { this.CanId = canId; }
+	setCanId(canId) { 
+        this.CanId = canId; 
+		winston.info({message: 'CBUS Network Sim: CBUS module: CAN_ID ' +  this.CanId + ' node: ' + this.nodeNumber + " " + this.constructor.name});
+    }
 	
 	// Flags
 	getFlags() {return this.parameters[8]}

@@ -11,6 +11,10 @@ var testModules = 	[
 				new cbusModules.CANINP (303),
 				new cbusModules.CANMIO_UNIVERSAL (304),
                 ]
+                
+for (var i = 0; i < testModules.length; i++) {
+    testModules[i].setCanId(i+80);
+}
 
 const NET_PORT = 5550;
 
