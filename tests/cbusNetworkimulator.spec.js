@@ -891,5 +891,65 @@ describe('cbusNetworkSimulator tests', function(){
     })
 
 
+//
+// Extended ID messages
+//
+
+    // PUT CONTROL
+    //
+	function GetTestCase_PUT_CONTROL () {
+		var testCases = [];
+		for (a1 = 1; a1 < 4; a1++) {
+			if (a1 == 1) arg1 = '000000';
+			if (a1 == 2) arg1 = '000001';
+			if (a1 == 3) arg1 = 'FFFFFF';
+            for (a2 = 1; a2 < 4; a2++) {
+                if (a2 == 1) arg2 = 0;
+                if (a2 == 2) arg2 = 1;
+                if (a2 == 2) arg2 = 255;
+                for (a3 = 1; a3 < 4; a3++) {
+                    if (a3 == 1) arg3 = 0;
+                    if (a3 == 2) arg3 = 1;
+                    if (a3 == 2) arg3 = 255;
+                    for (a4 = 1; a4 < 4; a4++) {
+                        if (a4 == 1) arg4 = 0;
+                        if (a4 == 2) arg4 = 1;
+                        if (a4 == 2) arg4 = 255;
+                        for (a5 = 1; a5 < 4; a5++) {
+                            if (a5 == 1) arg5 = 0;
+                            if (a5 == 2) arg5 = 1;
+                            if (a5 == 2) arg5 = 255;
+                            for (a6 = 1; a6 < 4; a6++) {
+                                if (a6 == 1) arg6 = 0;
+                                if (a6 == 2) arg6 = 1;
+                                if (a6 == 2) arg6 = 255;
+                                testCases.push({'address':arg1, 
+                                    'RESVD':arg2, 
+                                    'CTLBT':arg3, 
+                                    'SPCMD':arg4, 
+                                    'CPDTL':arg5, 
+                                    'CPDTH':arg6});
+                            }
+                        }
+                    }
+                }
+            }
+		}
+		return testCases;
+	}
+
+
+    // EXT_PUT_CONTROL test
+    //
+	itParam("EXT_PUT_CONTROL test address ${value.address} RESVD ${value.RESVD} CTLBT ${value.CTLBT} SPCMD ${value.SPCMD} CPDTL ${value.CPDTL} CPDTH ${value.CPDTH}", 
+        GetTestCase_PUT_CONTROL(), function (done, value) {
+		winston.info({message: 'cbusMessage test: BEGIN EXT_PUT_CONTROL test ' + JSON.stringify(value)});
+		msgData = ":X00080000N" + value.address + decToHex(value.RESVD, 2) + decToHex(value.CTLBT, 2) + decToHex(value.SPCMD, 2) + decToHex(value.CPDTL, 2) + decToHex(value.CPDTH, 2) + ";";
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+			done();
+		}, 10);
+    })
 
 })
