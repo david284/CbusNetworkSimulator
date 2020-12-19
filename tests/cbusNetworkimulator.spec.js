@@ -906,23 +906,23 @@ describe('cbusNetworkSimulator tests', function(){
             for (a2 = 1; a2 < 4; a2++) {
                 if (a2 == 1) arg2 = 0;
                 if (a2 == 2) arg2 = 1;
-                if (a2 == 2) arg2 = 255;
+                if (a2 == 3) arg2 = 255;
                 for (a3 = 1; a3 < 4; a3++) {
                     if (a3 == 1) arg3 = 0;
                     if (a3 == 2) arg3 = 1;
-                    if (a3 == 2) arg3 = 255;
+                    if (a3 == 3) arg3 = 255;
                     for (a4 = 1; a4 < 4; a4++) {
                         if (a4 == 1) arg4 = 0;
                         if (a4 == 2) arg4 = 1;
-                        if (a4 == 2) arg4 = 255;
+                        if (a4 == 3) arg4 = 255;
                         for (a5 = 1; a5 < 4; a5++) {
                             if (a5 == 1) arg5 = 0;
                             if (a5 == 2) arg5 = 1;
-                            if (a5 == 2) arg5 = 255;
+                            if (a5 == 3) arg5 = 255;
                             for (a6 = 1; a6 < 4; a6++) {
                                 if (a6 == 1) arg6 = 0;
                                 if (a6 == 2) arg6 = 1;
-                                if (a6 == 2) arg6 = 255;
+                                if (a6 == 3) arg6 = 255;
                                 testCases.push({'address':arg1, 
                                     'RESVD':arg2, 
                                     'CTLBT':arg3, 
