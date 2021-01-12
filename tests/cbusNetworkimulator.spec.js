@@ -952,4 +952,31 @@ describe('cbusNetworkSimulator tests', function(){
 		}, 10);
     })
 
+
+
+    // EXT_RESPONSE test cases
+    //
+	function GetTestCase_EXT_RESPONSE () {
+		var testCases = [];
+		for (a1 = 1; a1 < 3; a1++) {
+			if (a1 == 1) { arg1 = 3; arg2 = 1;}
+			if (a1 == 2) { arg1 = 4; arg2 = 2;}
+            testCases.push({'SPCMD': arg1, 'response': arg2});
+        }
+		return testCases;
+	}
+
+
+    // EXT_RESPONSE test
+    //
+	itParam("EXT_RESPONSE test SPCMD ${value.SPCMD} response ${value.response}", GetTestCase_EXT_RESPONSE(), function (done, value) {
+		winston.info({message: 'cbusMessage test: BEGIN EXT_PUT_CONTROL test ' + JSON.stringify(value)});
+		msgData = ":X00080000N" + '0000000101' + decToHex(value.SPCMD, 2) + '0000' + ";";
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+     		expect(cbusLib.decode(messagesIn[0]).response).to.equal(value.response, 'response');
+			done();
+		}, 10);
+    })
 })
