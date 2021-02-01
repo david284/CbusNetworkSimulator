@@ -41,17 +41,27 @@ describe('cbusNetworkSimulator tests', function(){
 
         testClient = new net.Socket()
         testClient.connect(NET_PORT, NET_ADDRESS, function () {
-			winston.debug({message: 'Client Connected'});
+			winston.debug({message: 'TEST: Client Connected at port ' + testClient.remotePort});
         })
 
         testClient.on('data', function (data) {
             const msgArray = data.toString().split(";");
   			for (var msgIndex = 0; msgIndex < msgArray.length - 1; msgIndex++) {
                 msgArray[msgIndex] += ';'           // replace terminator removed by split function
-                winston.info({message: 'Test client: data received ' + msgArray[msgIndex] + " " + cbusLib.decode(msgArray[msgIndex]).text});
+                winston.info({message: 'TEST: Test client: data received ' + msgArray[msgIndex] + " " + cbusLib.decode(msgArray[msgIndex]).text});
                 messagesIn.push(msgArray[msgIndex])
             }
         })
+        
+        testClient.on('end', function () {
+            winston.info({message: 'TEST: Client Disconnected at port ' + testClient.remotePort});
+        });
+			
+
+        testClient.on('error', function(err) {
+            winston.info({message: 'TEST: Socket error ' + err});
+        });
+
 	})
     
     beforeEach (function() {
@@ -62,44 +72,84 @@ describe('cbusNetworkSimulator tests', function(){
    		winston.info({message: ' '});   // blank line to separate tests
     })
 
-	after(function() {
-	});
+	after(function(done) {
+        testClient.end()
+   		winston.info({message: ' '});                       // blank line to separate tests
+   		winston.info({message: 'TEST: tests finished '});
+        // bit of timing to ensure all winston messages get sent before closing tests completely
+		setTimeout(function(){
+            network.stopServer()
+            setTimeout(function(){
+                done();
+            }, 100);
+		}, 100);
+    });
 	
+
+    // multiple clients
+    //
+	it("multiple client test", function (done) {
+		winston.info({message: 'TEST: BEGIN multiple client test'});
+        testClient2 = new net.Socket()
+        testClient2.connect(NET_PORT, NET_ADDRESS)
+        var secondClientData = ''
+        testClient2.on('data', function (data) {
+            secondClientData = data
+            winston.info({message: 'TEST: Test client2: data received ' + data});
+        })
+        msgData = cbusLib.encodeQNN();
+        setTimeout(function(){
+            testClient.write(msgData);
+        }, 10);
+        setTimeout(function(){
+            expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+            expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
+            expect(secondClientData.length).to.be.above(0, '2nd client data');
+            setTimeout(function(){
+                testClient2.end()
+                done();
+            }, 100);
+        }, 100);
+	})
+
 
     // 0D QNN
     //
 	it("QNN test", function (done) {
+		winston.info({message: 'TEST: BEGIN QNN test'});
         msgData = cbusLib.encodeQNN();
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
             expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
     // 10 RQNP
     //
 	it("RQNP test", function (done) {
+		winston.info({message: 'TEST: BEGIN RQNP test'});
         msgData = cbusLib.encodeRQNP();
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
     // 11 RQMN
     //
 	it("RQMN test", function (done) {
+		winston.info({message: 'TEST: BEGIN RQMN test'});
         msgData = cbusLib.encodeRQMN();
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -118,13 +168,13 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("KLOC test session ${value.session}", GetTestCase_KLOC(), function (done, value) {
     	// Format: [<MjPri><MinPri=2><CANID>]<21><Session>
-		winston.info({message: 'mergAdminNode test: BEGIN KLOC test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN KLOC test ' + JSON.stringify(value)});
 		expected = ":SA780N21" + decToHex(value.session, 2) + ";";
         network.outputKLOC(value.session)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -142,14 +192,14 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("SNN test nodeNumber ${value.nodeNumber}", GetTestCase_SNN(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN SNN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN SNN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeSNN(value.nodeNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
      		expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NNACK');
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -167,13 +217,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("RQNN test nodeNumber ${value.nodeNumber}", GetTestCase_RQNN(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN RQNN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN RQNN test ' + JSON.stringify(value)});
 		expected = ":SB780N50" + decToHex(value.nodeNumber, 4) + ";";
         network.outputRQNN(value.nodeNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -191,13 +241,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("NNACK test nodeNumber ${value.nodeNumber}", GetTestCase_NNACK(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN NNACK test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NNACK test ' + JSON.stringify(value)});
 		expected = ":SB780N52" + decToHex(value.nodeNumber, 4) + ";";
         network.outputNNACK(value.nodeNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -215,13 +265,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("NNLRN test nodeNumber ${value.nodeNumber}", GetTestCase_NNLRN(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN NNLRN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NNLRN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeNNLRN(value.nodeNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -239,13 +289,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("NNULN test nodeNumber ${value.nodeNumber}", GetTestCase_NNULN(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN NNULN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NNULN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeNNULN(value.nodeNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -263,13 +313,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("NNCLR test nodeNumber ${value.nodeNumber}", GetTestCase_NNCLR(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN NNCLR test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NNCLR test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeNNCLR(value.nodeNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -287,7 +337,7 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("NERD test nodeNumber ${value.nodeNumber}", GetTestCase_NERD(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN NERD test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NERD test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeNERD(value.nodeNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
@@ -296,7 +346,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('ENRSP');
             }
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -314,7 +364,7 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("RQEVN test nodeNumber ${value.nodeNumber}", GetTestCase_RQEVN(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN NERD test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NERD test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeRQEVN(value.nodeNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
@@ -323,7 +373,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
             }
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -341,13 +391,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("WRACK test nodeNumber ${value.nodeNumber}", GetTestCase_WRACK(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN WRACK test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN WRACK test ' + JSON.stringify(value)});
 		expected = ":SB780N59" + decToHex(value.nodeNumber, 4) + ";";
         network.outputWRACK(value.nodeNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -375,13 +425,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("DFUN test session ${value.session} Fn1 ${value.Fn1} Fn2 ${value.Fn2}", GetTestCase_DFUN(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN DFUN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN DFUN test ' + JSON.stringify(value)});
 		expected = ":SA780N60" + decToHex(value.session, 2) + decToHex(value.Fn1, 2) + decToHex(value.Fn2, 2) + ";";
         network.outputDFUN(value.session, value.Fn1, value.Fn2)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -409,13 +459,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("ERR test data1 ${value.data1} data2 ${value.data2} errorNumber ${value.errorNumber}", GetTestCase_ERR(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN ERR test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN ERR test ' + JSON.stringify(value)});
 		expected = ":SA780N63" + decToHex(value.data1, 2) + decToHex(value.data2, 2) + decToHex(value.errorNumber, 2) + ";";
         network.outputERR(value.data1, value.data2, value.errorNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -438,13 +488,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("CMDERR test nodeNumber ${value.nodeNumber} errorNumber ${value.errorNumber}", GetTestCase_CMDERR(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN CMDERR test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN CMDERR test ' + JSON.stringify(value)});
 		expected = ":SB780N6F" + decToHex(value.nodeNumber, 4) + decToHex(value.errorNumber, 2) + ";";
         network.outputCMDERR(value.nodeNumber, value.errorNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -468,7 +518,7 @@ describe('cbusNetworkSimulator tests', function(){
 
 
 	itParam("NVRD test nodeId ${value.nodeId} nvIndex ${value.nvIndex}", GetTestCase_NVRD(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN NVRD test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NVRD test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeNVRD(value.nodeNumber, value.nvIndex);
     	testClient.write(msgData);
 		setTimeout(function(){
@@ -477,7 +527,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NVANS');
             }
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -500,7 +550,7 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("RQNPN test nodeId ${value.nodeId} paramIndex ${value.paramIndex}", GetTestCase_RQNPN(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN RQNPN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN RQNPN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeRQNPN(value.nodeNumber, value.paramIndex);
     	testClient.write(msgData);
 		setTimeout(function(){
@@ -509,7 +559,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('PARAN');
             }
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -533,14 +583,14 @@ describe('cbusNetworkSimulator tests', function(){
 
 
 	itParam("NUMEV test nodeNumber ${value.nodeNumber} eventCount ${value.eventCount}", GetTestCase_NUMEV(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN NUMEV test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NUMEV test ' + JSON.stringify(value)});
 		expected = ":SB780N74" + decToHex(value.nodeNumber, 4) + decToHex(value.eventCount, 2) + ";";
         network.outputNUMEV(value.nodeNumber, value.eventCount)
 		setTimeout(function(){
      		expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
      		expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -563,45 +613,45 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("ACON test nodeNumber ${value.nodeNumber} eventNumber ${value.eventNumber}", GetTestCase_ACONF(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN ACON test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN ACON test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeACON(value.nodeNumber, value.eventNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 	itParam("ACON output test nodeNumber ${value.nodeNumber} eventNumber ${value.eventNumber}", GetTestCase_ACONF(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN ACON test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN ACON test ' + JSON.stringify(value)});
 		expected = ":SB780N90" + decToHex(value.nodeNumber, 4) + decToHex(value.eventNumber, 4) + ";";
         network.outputACON(value.nodeNumber, value.eventNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
 	itParam("ACOF test nodeNumber ${value.nodeNumber} eventNumber ${value.eventNumber}", GetTestCase_ACONF(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN ACOF test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN ACOF test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeACOF(value.nodeNumber, value.eventNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
 	itParam("ACOF output test nodeNumber ${value.nodeNumber} eventNumber ${value.eventNumber}", GetTestCase_ACONF(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN ACOF test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN ACOF test ' + JSON.stringify(value)});
 		expected = ":SB780N91" + decToHex(value.nodeNumber, 4) + decToHex(value.eventNumber, 4) + ";";
         network.outputACOF(value.nodeNumber, value.eventNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -619,13 +669,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("EVULN test eventName ${value.eventName}", GetTestCase_EVULN(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN EVULN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN EVULN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeEVULN(value.eventName);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
     // 96 NVSET
@@ -652,13 +702,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("NVSET test nodeId ${value.nodeId} nvIndex ${value.nvIndex} nvValue ${value.nvValue}", GetTestCase_NVSET(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN NVSET test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NVSET test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeNVSET(value.nodeId, value.nvIndex, value.nvValue);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -681,13 +731,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("NVANS test nodeNumber ${value.nodeNumber} nvIndex ${value.nvIndex}", GetTestCase_NVANS(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN NVANS test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NVANS test ' + JSON.stringify(value)});
         network.outputNVANS(value.nodeNumber, value.nvIndex)
 		setTimeout(function(){
      		expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('97');
      		expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -710,23 +760,23 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("ASON test nodeNumber ${value.nodeNumber} deviceNumber ${value.deviceNumber}", GetTestCase_ASONF(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN ACON test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN ACON test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeASON(value.nodeNumber, value.deviceNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 	itParam("ASOF test nodeNumber ${value.nodeNumber} deviceNumber ${value.deviceNumber}", GetTestCase_ASONF(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN ACOF test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN ACOF test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeACOF(value.nodeNumber, value.deviceNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -749,13 +799,13 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("PARAN test nodeNumber ${value.nodeNumber} parameterIndex ${value.parameterIndex}", GetTestCase_PARAN(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN PARAN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN PARAN test ' + JSON.stringify(value)});
         network.outputPARAN(value.nodeNumber, value.parameterIndex)
 		setTimeout(function(){
      		expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('9B');
      		expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -784,13 +834,13 @@ describe('cbusNetworkSimulator tests', function(){
 
 
 	itParam("REVAL test nodeNumber ${value.nodeNumber} eventIndex ${value.eventIndex} eventValue ${value.eventValue}", GetTestCase_REVAL(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN REVAL test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN REVAL test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeREVAL(value.nodeNumber, value.eventIndex, value.eventValue);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
     // B5 NEVAL
@@ -817,13 +867,13 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("NEVAL test nodeNumber ${value.nodeNumber} eventIndex ${value.eventIndex} eventVariableIndex ${value.eventVariableIndex}", 
         GetTestCase_NEVAL(), function (done, value) {
-            winston.info({message: 'cbusMessage test: BEGIN NEVAL test ' + JSON.stringify(value)});
+            winston.info({message: 'TEST: BEGIN NEVAL test ' + JSON.stringify(value)});
             network.outputNEVAL(value.nodeNumber, value.eventIndex, value.eventVariableIndex)
             setTimeout(function(){
                 expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('B5');
                 expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
                 done();
-            }, 100);
+            }, 10);
 	})
     
 
@@ -852,13 +902,13 @@ describe('cbusNetworkSimulator tests', function(){
 
 
 	itParam("EVLRN test eventName ${value.eventName} eventIndex ${value.eventIndex} eventValue ${value.eventValue}", GetTestCase_EVLRN(), function (done, value) {
-		winston.info({message: 'mergAdminNode test: BEGIN EVLRN test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN EVLRN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeEVLRN(value.eventName, value.eventIndex, value.eventValue);
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 100);
+		}, 10);
 	})
 
 
@@ -880,14 +930,14 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("ENRSP test nodeNumber ${value.nodeNumber} eventName ${value.eventName} eventIndex ${value.eventIndex}", GetTestCase_ENRSP(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN ENRSP test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN ENRSP test ' + JSON.stringify(value)});
         // ENRSP Format: [<MjPri><MinPri=3><CANID>]<F2><NN hi><NN lo><EN3><EN2><EN1><EN0><EN#>
             network.outputENRSP(value.nodeNumber, value.eventIndex)
             setTimeout(function(){
                 expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('F2');
                 expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
                 done();
-            }, 100);
+            }, 10);
     })
 
 
@@ -943,7 +993,7 @@ describe('cbusNetworkSimulator tests', function(){
     //
 	itParam("EXT_PUT_CONTROL test address ${value.address} RESVD ${value.RESVD} CTLBT ${value.CTLBT} SPCMD ${value.SPCMD} CPDTL ${value.CPDTL} CPDTH ${value.CPDTH}", 
         GetTestCase_PUT_CONTROL(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN EXT_PUT_CONTROL test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN EXT_PUT_CONTROL test ' + JSON.stringify(value)});
 		msgData = ":X00080000N" + value.address + decToHex(value.RESVD, 2) + decToHex(value.CTLBT, 2) + decToHex(value.SPCMD, 2) + decToHex(value.CPDTL, 2) + decToHex(value.CPDTH, 2) + ";";
     	testClient.write(msgData);
 		setTimeout(function(){
@@ -970,7 +1020,7 @@ describe('cbusNetworkSimulator tests', function(){
     // EXT_RESPONSE test
     //
 	itParam("EXT_RESPONSE test SPCMD ${value.SPCMD} response ${value.response}", GetTestCase_EXT_RESPONSE(), function (done, value) {
-		winston.info({message: 'cbusMessage test: BEGIN EXT_PUT_CONTROL test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN EXT_PUT_CONTROL test ' + JSON.stringify(value)});
 		msgData = ":X00080000N" + '0000000101' + decToHex(value.SPCMD, 2) + '0000' + ";";
     	testClient.write(msgData);
 		setTimeout(function(){

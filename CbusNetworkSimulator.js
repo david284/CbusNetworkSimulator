@@ -14,13 +14,16 @@ class cbusNetworkSimulator {
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
+        
+        this.clients = [];
 		
 		this.server = net.createServer(function (socket) {
 			this.socket=socket;
+            this.clients.push(socket);
 	
 			socket.setKeepAlive(true,60000);
 			socket.on('data', function (data) {
-				winston.info({message: 'CBUS Network Sim: <<< Data in ' + data});
+				winston.info({message: 'CBUS Network Sim: Receive  <<<< Port ' + socket.remotePort + ' Data: ' + data});
 				const msgArray = data.toString().split(";");
 				for (var msgIndex = 0; msgIndex < msgArray.length - 1; msgIndex++) {
 					var message = msgArray[msgIndex].concat(";");				// add back the ';' terminator that was lost in the split
@@ -38,7 +41,8 @@ class cbusNetworkSimulator {
 			}.bind(this));
 
 			socket.on('end', function () {
-				winston.info({message: 'CBUS Network Sim: Client Disconnected'});
+                this.clients.splice(this.clients.indexOf(socket), 1);
+				winston.info({message: 'CBUS Network Sim: Client Disconnected at port : ' + socket.remotePort});
 			}.bind(this));
 			
 			socket.on('error', function(err) {
@@ -51,11 +55,21 @@ class cbusNetworkSimulator {
 		
 		// emitted when new client connects
 		this.server.on('connection',function(socket){
-			var rport = socket.remotePort;
-			winston.info({message: 'CBUS Network Sim: remote client at port : ' + rport});
+			winston.info({message: 'CBUS Network Sim: remote client at port : ' + socket.remotePort});
 		});
         
 	} // end constructor
+
+
+	stopServer() {
+		winston.info({message: 'CBUS Network Sim: ' + this.clients.length + ' Clients connected'});
+        this.clients.forEach(function (client) {
+            client.end();
+            winston.debug({message: 'CBUS Network Sim: client ending >>>> Port: ' + client.remotePort});
+        });
+		this.server.close();
+		winston.info({message: 'CBUS Network Sim: Server closing'});
+	}
 
 
     processExtendedMessage(cbusMsg) {
@@ -85,11 +99,18 @@ class cbusNetworkSimulator {
             }
         }
     }
+    
+    broadcast(msgData) {
+        this.clients.forEach(function (client) {
+            client.write(msgData);
+            winston.debug({message: 'CBUS Network Sim: Transmit >>>> Port: ' + client.remotePort + ' Data: ' + msgData});
+        });
+    }
 
     
     outputExtResponse(value) {
 		var msgData = cbusLib.encode_EXT_RESPONSE(value)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT >>>  ' + msgData + " >>> "});
     }
 
@@ -221,13 +242,6 @@ class cbusNetworkSimulator {
 	}
 
 
-	stopServer() {
-		this.server.close();
-		this.socket.end();
-		winston.info({message: 'CBUS Network Sim: Server closed'});
-	}
-
-
 	getModule(nodeNumber) {
 		for (var i = 0; i < this.modules.length; i++) {
 			if (this.modules[i].getNodeNumber() == nodeNumber) return this.modules[i];
@@ -292,7 +306,7 @@ class cbusNetworkSimulator {
 	// 21
 	 outputKLOC(session) {
 		var msgData = cbusLib.encodeKLOC(session);
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT >>>  ' + msgData + " >>> " + cbusLib.decode(msgData).text});
 	}
 
@@ -300,7 +314,7 @@ class cbusNetworkSimulator {
 	// 50
 	 outputRQNN(nodeNumber) {
 		var msgData = cbusLib.encodeRQNN(nodeNumber);
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT >>>  ' + msgData + " >>> " + cbusLib.decode(msgData).text});
 	}
 	
@@ -308,7 +322,7 @@ class cbusNetworkSimulator {
 	// 52
 	 outputNNACK(nodeNumber) {
         var msgData = cbusLib.encodeNNACK(nodeNumber)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 	
@@ -316,7 +330,7 @@ class cbusNetworkSimulator {
 	// 59
 	 outputWRACK(nodeNumber) {
         var msgData = cbusLib.encodeWRACK(nodeNumber)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 	
@@ -324,7 +338,7 @@ class cbusNetworkSimulator {
 	// 60
 	 outputDFUN(session, fn1, fn2) {
         var msgData = cbusLib.encodeDFUN(session, fn1, fn2)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
@@ -332,7 +346,7 @@ class cbusNetworkSimulator {
 	// 63
 	 outputERR(data1, data2, errorNumber) {
         var msgData = cbusLib.encodeERR(data1, data2, errorNumber)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
@@ -340,7 +354,7 @@ class cbusNetworkSimulator {
 	// 6F
 	 outputCMDERR(nodeNumber, errorNumber) {
         var msgData = cbusLib.encodeCMDERR(nodeNumber, errorNumber)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
@@ -349,14 +363,14 @@ class cbusNetworkSimulator {
 	 outputNUMEV(nodeNumber) {
 		var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
         var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
 	// 90
 	 outputACON(nodeNumber, eventNumber) {
         var msgData = cbusLib.encodeACON(nodeNumber, eventNumber)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
@@ -364,7 +378,7 @@ class cbusNetworkSimulator {
 	// 91
 	 outputACOF(nodeNumber, eventNumber) {
         var msgData = cbusLib.encodeACOF(nodeNumber, eventNumber)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
@@ -375,7 +389,7 @@ class cbusNetworkSimulator {
 		if (nodeVariableIndex < variables.length) {
 			var value = variables[nodeVariableIndex];
             var msgData = cbusLib.encodeNVANS(nodeNumber, nodeVariableIndex, value)
-            this.socket.write(msgData);
+            this.broadcast(msgData)
             winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
         }
 		else
@@ -386,7 +400,7 @@ class cbusNetworkSimulator {
 	// 98
 	 outputASON(nodeNumber, deviceNumber) {
         var msgData = cbusLib.encodeASON(nodeNumber, deviceNumber)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
@@ -394,7 +408,7 @@ class cbusNetworkSimulator {
 	// 99
 	 outputASOF(nodeNumber, deviceNumber) {
         var msgData = cbusLib.encodeASOF(nodeNumber, deviceNumber)
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
@@ -404,7 +418,7 @@ class cbusNetworkSimulator {
 		if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
 			var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
             var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
-            this.socket.write(msgData);
+            this.broadcast(msgData)
             winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 		}
 	}
@@ -416,7 +430,7 @@ class cbusNetworkSimulator {
             if (eventVariableIndex < events[eventIndex].variables.length) {
                 var eventVariableValue = events[eventIndex].variables[eventVariableIndex];
                 var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
-                this.socket.write(msgData);
+                this.broadcast(msgData)
                 winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
             }
             else {
@@ -434,8 +448,8 @@ class cbusNetworkSimulator {
             this.getModule(nodeNumber).getManufacturerId(),
             this.getModule(nodeNumber).getModuleId(),
             this.getModule(nodeNumber).getFlags())
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
-		this.socket.write(msgData);
 	}
 	
 	//F2
@@ -443,7 +457,7 @@ class cbusNetworkSimulator {
 		var events = this.getModule(nodeNumber).getStoredEvents();
         var eventName = events[eventIndex].eventName
         var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
-        this.socket.write(msgData);
+        this.broadcast(msgData)
         winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 
@@ -453,7 +467,7 @@ class cbusNetworkSimulator {
 		// Ficticious opcode - 'FC' currently unused 
 		// Format: [<MjPri><MinPri=3><CANID>]<FC><NN hi><NN lo>
 		var msgData = ':SB780N' + 'FC' + decToHex(nodeNumber, 4) + ';';     // don't have an encode for ficticious opcode
-		this.socket.write(msgData);
+        this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 }
