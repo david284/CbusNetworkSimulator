@@ -46,7 +46,10 @@ class cbusNetworkSimulator {
 			}.bind(this));
 			
 			socket.on('error', function(err) {
-				winston.info({message: 'CBUS Network Sim: Socket error ' + err});
+				winston.info({message: 'CBUS Network Sim: Port ' + socket.remotePort + ' Socket error ' + err});
+                this.clients.splice(this.clients.indexOf(socket), 1);
+                socket.end();
+				winston.info({message: 'CBUS Network Sim: Port ' + socket.remotePort + ' Socket ended '});
 			}.bind(this));
 			
 		}.bind(this));
