@@ -88,7 +88,11 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[9] = 1;									// CPU type
 		this.parameters[10] = 1;								// interface type
-																// skip 11 to 18
+		this.parameters[11] = 0;                                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
 		this.parameters[20] = 0;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
@@ -181,7 +185,11 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 		this.parameters[8] = 31;								// Flags - producer/consumer
 		this.parameters[9] = 13;								// CPU type - P18F25K80
 		this.parameters[10] = 1;								// interface type
-																// skip 11 to 18
+		this.parameters[11] = 0;                                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
 		this.parameters[20] = 3;								// Beta version number - 0 if production
 		
@@ -237,11 +245,23 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 		this.parameters[5] = 2;									// Number of event variables
 		this.parameters[6] = this.variables.length - 1;			// remove zero index
 		this.parameters[7] = 2;									// Major version number
-		this.parameters[8] = 14;								// Flags
+		this.parameters[8] = 15;								// Flags
+		this.parameters[9] = 1;								    // CPU type
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+		this.parameters[15] = 228;                               // 15-18 manufacturers chip ID
+		this.parameters[16] = 26;
+		this.parameters[17] = 0;
+		this.parameters[18] = 0;
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 3;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
 	}
 }
 
