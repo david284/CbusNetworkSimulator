@@ -127,6 +127,9 @@ class cbusNetworkSimulator {
             }
             break;
         case '10': // RQNP
+            for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
+                this.outputPARAMS(this.modules[moduleIndex].getNodeNumber());
+            }
             break;
         case '11': // RQMN
             break;
@@ -469,6 +472,23 @@ class cbusNetworkSimulator {
             this.getModule(nodeNumber).getFlags())
         this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+	}
+	
+	// EF
+	 outputPARAMS(nodeNumber) {
+        if (this.getModule(nodeNumber) != undefined) {
+            var msgData = cbusLib.encodePARAMS(
+                this.getModule(nodeNumber).getParameter(1), 
+                this.getModule(nodeNumber).getParameter(2), 
+                this.getModule(nodeNumber).getParameter(3), 
+                this.getModule(nodeNumber).getParameter(4), 
+                this.getModule(nodeNumber).getParameter(5), 
+                this.getModule(nodeNumber).getParameter(6), 
+                this.getModule(nodeNumber).getParameter(7), 
+                )
+            this.broadcast(msgData)
+            winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+        }
 	}
 	
 	//F2
