@@ -135,6 +135,7 @@ describe('cbusNetworkSimulator tests', function(){
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
+            expect(messagesIn.length).to.equal(network.modules.length), 'returned message count';
 			done();
 		}, 10);
 	})
