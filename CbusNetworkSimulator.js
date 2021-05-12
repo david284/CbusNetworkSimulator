@@ -216,7 +216,7 @@ class cbusNetworkSimulator {
                 }
                 else {
                     winston.info({message: 'CBUS Network Sim:  ************ NVSET variable index exceeded ************'});
-                    this.outputCMDERR(nodeNumber, 10);
+                    this.outputCMDERR(cbusMsg.nodeNumber, 10);
                 }
             }
             break;
@@ -414,9 +414,11 @@ class cbusNetworkSimulator {
                 this.broadcast(msgData)
                 winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
             }
-            else
+            else {
                 winston.info({message: 'CBUS Network Sim:  ************ NVANS variable index exceeded ************'});
-        }
+                this.outputCMDERR(nodeNumber, 10);
+            }
+       }
 	 }
 
 
