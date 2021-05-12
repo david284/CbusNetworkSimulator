@@ -183,6 +183,11 @@ class cbusNetworkSimulator {
         case '71': // NVRD
             this.outputNVANS(cbusMsg.nodeNumber, cbusMsg.nodeVariableIndex);
             break;
+        case '72': // NENRD
+            if (this.getModule(cbusMsg.nodeNumber) != undefined) {
+                this.outputENRSP(cbusMsg.nodeNumber, cbusMsg.eventIndex);
+            }
+            break;
         case '73': // RQNPN
             this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
             break;
@@ -494,11 +499,17 @@ class cbusNetworkSimulator {
 	//F2
 	outputENRSP(nodeNumber, eventIndex) {
         if (this.getModule(nodeNumber) != undefined) {
-            var events = this.getModule(nodeNumber).getStoredEvents();
-            var eventName = events[eventIndex].eventName
-            var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
-            this.broadcast(msgData)
-            winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+            if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
+                var events = this.getModule(nodeNumber).getStoredEvents();
+                var eventName = events[eventIndex].eventName
+                var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
+                this.broadcast(msgData)
+                winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+            }
+            else {
+                winston.info({message: 'CBUS Network Sim:  ************ EVENT index exceeded ************'});
+                this.outputCMDERR(nodeNumber, 7);
+            }
         }
 	}
 
