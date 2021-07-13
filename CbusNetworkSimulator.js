@@ -463,6 +463,7 @@ class cbusNetworkSimulator {
                 }
                 else {
                     winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+                    this.outputCMDERR(nodeNumber, 6)                    
                 }
             }
             else {
