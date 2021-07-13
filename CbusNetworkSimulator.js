@@ -447,6 +447,10 @@ class cbusNetworkSimulator {
                 this.broadcast(msgData)
                 winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
             }
+            else {
+                winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
+                this.outputCMDERR(nodeNumber, 9)                    
+            }
         }
 	}
 	
