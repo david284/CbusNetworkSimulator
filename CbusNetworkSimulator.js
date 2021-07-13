@@ -119,7 +119,7 @@ class cbusNetworkSimulator {
 
 
     processStandardMessage(cbusMsg) {
-        winston.info({message: 'CBUS Network Sim: <<< Received Standard ID message' + cbusMsg.text});
+        winston.info({message: 'CBUS Network Sim: <<< Received Standard ID message ' + cbusMsg.text});
         switch (cbusMsg.opCode) {
         case '0D': //QNN
             for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
@@ -160,6 +160,9 @@ class cbusNetworkSimulator {
                 }
             }
             break;
+        case '56': // NNEVN
+            this.outputEVNLF(cbusMsg.nodeNumber);                
+            break;
         case '57': // NERD
             var nodeNumber = cbusMsg.nodeNumber
             if (this.getModule(nodeNumber) != undefined) {
@@ -170,8 +173,7 @@ class cbusNetworkSimulator {
             }
             break;
         case '58': // RQEVN
-            var nodeNumber = cbusMsg.nodeNumber
-            this.outputNUMEV(nodeNumber);
+            this.outputNUMEV(cbusMsg.nodeNumber);
             break;
         case '59': // WRACK - sent by node
             break;
@@ -375,6 +377,16 @@ class cbusNetworkSimulator {
         var msgData = cbusLib.encodeCMDERR(nodeNumber, errorNumber)
         this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+	}
+
+
+	// 70
+	 outputEVNLF(nodeNumber) {
+        if (this.getModule(nodeNumber) != undefined) {
+            var msgData = cbusLib.encodeEVNLF(nodeNumber, this.getModule(nodeNumber).getFreeSpace())
+            this.broadcast(msgData)
+            winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+        }
 	}
 
 

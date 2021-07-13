@@ -44,6 +44,7 @@ class CbusModule {
 	}
 	getStoredEvents() { return this.events}
 	getStoredEventsCount() { return this.events.length}
+    getFreeSpace() { return 100; }
 	
 	// Feedback
 	shouldFeedback() { return false;}
