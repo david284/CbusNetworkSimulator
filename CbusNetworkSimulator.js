@@ -179,6 +179,11 @@ class cbusNetworkSimulator {
             break;
         case '5C': // BOOTM
             winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + " BOOT MODE command" });
+            this.outputNNACK(cbusMsg.nodeNumber);
+            break;
+        case '5D': // ENUM
+            winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + " ENUM command" });
+            this.outputNNACK(cbusMsg.nodeNumber);
             break;
         case '6F': // CMDERR - sent by node
             break;
