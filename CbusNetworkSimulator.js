@@ -236,6 +236,10 @@ class cbusNetworkSimulator {
         case '9C': // REVAL
             this.outputNEVAL(cbusMsg.nodeNumber, cbusMsg.eventIndex, cbusMsg.eventVariableIndex)
             break;
+        case 'B2': // REQEV
+                winston.info({message: 'CBUS Network Sim: received REQEV'});
+            this.outputEVANS(cbusMsg.nodeNumber, cbusMsg.eventNumber, cbusMsg.eventName, cbusMsg.eventVariableIndex)
+            break;
         case 'D2': // EVLRN
             if (this.learningNode != undefined) {
                 // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
@@ -279,6 +283,7 @@ class cbusNetworkSimulator {
 	}
 
 	getEventByName(nodeNumber, eventName) {
+        winston.info({message: 'CBUS Network Sim: getEventByName : nodeNumber ' + nodeNumber + ' eventName ' + eventName});
         if (this.getModule(nodeNumber) != undefined) {
             var events = this.getModule(nodeNumber).getStoredEvents();
             for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
@@ -501,6 +506,33 @@ class cbusNetworkSimulator {
             this.getModule(nodeNumber).getFlags())
         this.broadcast(msgData)
 		winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+	}
+	
+	// D3
+	outputEVANS(nodeNumber, eventNumber, eventName, eventVariableIndex) {
+        winston.info({message: 'CBUS Network Sim: EVANS : Node ' + nodeNumber + " eventNumber " + eventNumber + " eventName "+ eventName + " evIndex " + eventVariableIndex});
+        if (this.getModule(this.learningNode) != undefined) {
+            var event = this.getEventByName(this.learningNode, eventName);
+            if (event != undefined) {
+                if (eventVariableIndex < event.variables.length) {
+                    var eventVariableValue = event.variables[eventVariableIndex];
+                    var msgData = cbusLib.encodeEVANS(nodeNumber, eventNumber, eventVariableIndex, eventVariableValue)
+                    this.broadcast(msgData)
+                    winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+                }
+                else {
+                    winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+                    this.outputCMDERR(nodeNumber, 6)    // Invalid event variable index                    
+                }
+            }
+            else {
+                winston.info({message: 'CBUS Network Sim:  ************ event number not valid ' + eventNumber + ' ************'});
+                this.outputCMDERR(nodeNumber, 7)        // invalid event                    
+            }
+        }
+        else {
+                winston.info({message: 'CBUS Network Sim:  ************ node number not valid ' + nodeNumber + ' ************'});
+        }
 	}
 	
 	// EF
