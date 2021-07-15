@@ -210,6 +210,7 @@ class cbusNetworkSimulator {
                 // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
                 this.deleteEventByName(this.learningNode, cbusMsg.eventName);
                 winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' deleted eventName ' + cbusMsg.eventName});
+                this.outputWRACK(this.learningNode);
             } else {
                 winston.info({message: 'CBUS Network Sim: EVULN - not in learn mode'});
             }
