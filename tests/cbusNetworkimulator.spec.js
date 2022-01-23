@@ -510,7 +510,7 @@ describe('cbusNetworkSimulator tests', function(){
 			for (NVindex = 1; NVindex < 4; NVindex++) {
 				if (NVindex == 1) nvIndex = 0;
 				if (NVindex == 2) nvIndex = 1;
-				if (NVindex == 3) nvIndex = 255;
+				if (NVindex == 3) nvIndex = 7;  // will get an error if it's too high for a module
 				testCases.push({'nodeId':nodeId, 'nvIndex':nvIndex});
 			}
 		}
