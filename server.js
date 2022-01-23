@@ -8,7 +8,7 @@ var testModules = 	[
                 new cbusModules.CANACC5(300),
 //                new cbusModules.CANACC8(301),
 //				new cbusModules.CANACE8C (302),
-//				new cbusModules.CANINP (303)
+//				new cbusModules.CANINP (303),
 //				new cbusModules.CANMIO_UNIVERSAL (304),
                 ]
                 
