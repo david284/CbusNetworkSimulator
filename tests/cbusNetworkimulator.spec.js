@@ -543,7 +543,7 @@ describe('cbusNetworkSimulator tests', function(){
 			for (Pindex = 1; Pindex < 4; Pindex++) {
 				if (Pindex == 1) paramIndex = 0;
 				if (Pindex == 2) paramIndex = 1;
-				if (Pindex == 3) paramIndex = 255;
+				if (Pindex == 3) paramIndex = 7;
 				testCases.push({'nodeId':nodeId, 'paramIndex':paramIndex});
 			}
 		}
