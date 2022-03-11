@@ -68,24 +68,23 @@ class CbusModule {
 	
 	// Variables
 	getVariables() { return this.variables}
+	fillVariables(variableCount) {
+		for (var i = 0; i <= variableCount ; i++) {
+			this.variables.push(i);
+		}
+	}
 }
 
 module.exports.CANACC5 = class CANACC5 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ); 		// node variables + 1 (zero index)
-			//NV1-8 channel variables
-			//NV9 is feedback delay. In 0.5mSec intervals approx.
-			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
-			//NV11 is move on startup. Bit set is move.
-			//NV12 not used yet
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
 		this.parameters[3] = 2;									// Module Id
 		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 3;									// Number of event variables
-		this.parameters[6] = this.variables.length - 1;			// Number of Node Variables
+		this.parameters[6] = 12;								// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[9] = 1;									// CPU type
@@ -98,6 +97,13 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
 		this.parameters[20] = 0;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+		
+		super.fillVariables(this.parameters[6])
+			//NV1-8 channel variables
+			//NV9 is feedback delay. In 0.5mSec intervals approx.
+			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
+			//NV11 is move on startup. Bit set is move.
+			//NV12 not used yet
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
@@ -121,22 +127,23 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 module.exports.CANACC8 = class CANACC8 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ); 		// node variables + 1 (zero index)
-			//NV1-8 channel variables
-			//NV9 is feedback delay. In 0.5mSec intervals approx.
-			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
-			//NV11 is move on startup. Bit set is move.
-			//NV12 not used yet
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
 		this.parameters[3] = 3;									// Module Id
 		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 3;									// Number of event variables
-		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[6] = 12;								// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillVariables(this.parameters[6])
+			//NV1-8 channel variables
+			//NV9 is feedback delay. In 0.5mSec intervals approx.
+			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
+			//NV11 is move on startup. Bit set is move.
+			//NV12 not used yet
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
@@ -171,9 +178,6 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
 
-		// prefill variables array to 127 (plus zero)
-		for (var i = 0; i < 128 ; i++) {this.variables.push(0);}
-
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
 
@@ -182,7 +186,7 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 		this.parameters[3] = 32;								// Module Id
 		this.parameters[4] = 255;								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
-		this.parameters[6] = this.variables.length - 1;			// Number of Node Variables
+		this.parameters[6] = 127;								// Number of Node Variables
 		this.parameters[7] = 3;									// Major version number
 		this.parameters[8] = 31;								// Flags - producer/consumer
 		this.parameters[9] = 13;								// CPU type - P18F25K80
@@ -196,6 +200,8 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 		this.parameters[20] = 3;								// Beta version number - 0 if production
 		
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillVariables(this.parameters[6])
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
@@ -238,14 +244,13 @@ module.exports.CANCMD = class CANCMD extends CbusModule{
 module.exports.CANACE8C = class CANACE8C extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ); 	// 9 node variables + 1 (zero index)
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "q".charCodeAt(0);					// Minor version number
 		this.parameters[3] = 5;									// Module Id
 		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 2;									// Number of event variables
-		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[6] = 9;									// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
 		this.parameters[8] = 15;								// Flags
 		this.parameters[9] = 1;								    // CPU type
@@ -262,6 +267,8 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 		this.parameters[20] = 3;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+		super.fillVariables(this.parameters[6])
+
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
 	}
@@ -270,17 +277,18 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 module.exports.CANINP = class CANINP extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
-		this.variables.push( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ); 	// 9 node variables + 1 (zero index)
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
 		this.parameters[3] = 62;								// Module Id
 		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 2;									// Number of event variables
-		this.parameters[6] = this.variables.length - 1;			// remove zero index
+		this.parameters[6] = 9;									// Number of node variables
 		this.parameters[7] = 2;									// Major version number
 		this.parameters[8] = 14;								// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillVariables(this.parameters[6])
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
