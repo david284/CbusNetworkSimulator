@@ -7,7 +7,7 @@ function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().pad
 
 class cbusNetworkSimulator {
     constructor(NET_PORT, suppliedModules) {
-		winston.info({message: 'CBUS Network Sim: Starting'});
+		winston.info({message: '\nCBUS Network Sim: Starting on Port Number : ' + NET_PORT + '\n'});
         
         this.modules = suppliedModules;
 
