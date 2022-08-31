@@ -132,6 +132,7 @@ class cbusNetworkSimulator {
             }
             break;
         case '11': // RQMN
+            this.outputNAME("CANTEST");			
             break;
         case '42': // SNN
             // could renumber or create a new module, but not necessary at this time
@@ -535,6 +536,14 @@ class cbusNetworkSimulator {
         else {
                 winston.info({message: 'CBUS Network Sim:  ************ node number not valid ' + nodeNumber + ' ************'});
         }
+	}
+	
+	//E2
+	//[<MjPri><MinPri=3><CANID>]<E2><char1><char2><char3><char4><char5><char6><char7>
+	outputNAME(name) {
+            var msgData = cbusLib.encodeNAME(name);
+            this.broadcast(msgData);
+            winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
 	}
 	
 	// EF

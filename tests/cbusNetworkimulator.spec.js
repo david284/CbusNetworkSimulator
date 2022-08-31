@@ -149,8 +149,9 @@ describe('cbusNetworkSimulator tests', function(){
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
+     		expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NAME');
 			done();
-		}, 10);
+		}, 20);
 	})
 
 
