@@ -262,6 +262,9 @@ class cbusNetworkSimulator {
         }        
     }
 
+	startSetup(nodeNumber){
+		this.outputRQNN(nodeNumber)
+	}
 
 	getSendArray() {
 		return this.sendArray;

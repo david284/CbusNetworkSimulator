@@ -48,7 +48,6 @@ rl.on('line', function (cmd) {
 					if (msgArray.length > 1) {
 						if (parseInt(msgArray[1])) {
 							var nodeNumber = parseInt(msgArray[1]);
-							console.log("setup " + nodeNumber);
 							var module = undefined;
 							// now try to find a matching modules
 							for (var i = 0; i < testModules.length; i++) {
@@ -58,6 +57,7 @@ rl.on('line', function (cmd) {
 							}
 							if (module) {
 								console.log("setup: matching module found");
+								network.startSetup(nodeNumber);
 							}
 							else {
 								console.log("setup: no matching module");
