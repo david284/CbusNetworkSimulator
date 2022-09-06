@@ -7,6 +7,7 @@ class CbusModule {
 	constructor(nodeNumber) {
 		this.events = []
 		this.CanId = 0;
+		this.setupMode = false;
 		this.nodeNumber = nodeNumber;
 		this.parameters = 	[];
 		// prefill parameters array to 21 elements to match dev guide 6c & put length in element 0 (not including 0)
@@ -49,6 +50,17 @@ class CbusModule {
 	
 	// Feedback
 	shouldFeedback() { return false;}
+	
+	//setup mode
+	inSetupMode(){
+		return this.setupMode;
+		winston.info({message: 'CBUS Network Sim: Module setup mode ' + this.setupMode});
+	}
+	startSetupMode(){ 
+		this.setupMode=true;
+		winston.info({message: 'CBUS Network Sim: Module in setup mode'});
+	}
+	endSetupMode(){ this.setupMode=false;}
 
 	// Node Number
 	getNodeNumber(){return this.nodeNumber}

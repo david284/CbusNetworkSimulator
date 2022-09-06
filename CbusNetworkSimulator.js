@@ -128,7 +128,10 @@ class cbusNetworkSimulator {
             break;
         case '10': // RQNP
             for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
-                this.outputPARAMS(this.modules[moduleIndex].getNodeNumber());
+				// should only respond if in setup mode
+				if (this.modules[moduleIndex].inSetupMode()){
+					this.outputPARAMS(this.modules[moduleIndex].getNodeNumber());
+				}
             }
             break;
         case '11': // RQMN
@@ -262,8 +265,9 @@ class cbusNetworkSimulator {
         }        
     }
 
-	startSetup(nodeNumber){
-		this.outputRQNN(nodeNumber)
+	startSetup(module){
+		module.startSetupMode();
+		this.outputRQNN(module.getNodeNumber())
 	}
 
 	getSendArray() {

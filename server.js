@@ -57,7 +57,7 @@ rl.on('line', function (cmd) {
 							}
 							if (module) {
 								console.log("setup: matching module found");
-								network.startSetup(nodeNumber);
+								network.startSetup(module);
 							}
 							else {
 								console.log("setup: no matching module");
