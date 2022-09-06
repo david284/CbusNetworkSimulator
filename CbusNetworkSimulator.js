@@ -138,8 +138,14 @@ class cbusNetworkSimulator {
             this.outputNAME("CANTEST");			
             break;
         case '42': // SNN
-            // could renumber or create a new module, but not necessary at this time
-            this.outputNNACK(cbusMsg.nodeNumber);
+            // give a module a node number, but only if in setup mode
+            for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
+				// should only accept node number if in setup mode
+				if (this.modules[moduleIndex].inSetupMode()){
+					this.modules[moduleIndex].setNodeNumber(cbusMsg.nodeNumber);
+					this.outputNNACK(cbusMsg.nodeNumber);
+				}
+            }
             break;
         case '50': // RQNN sent by node
             break;

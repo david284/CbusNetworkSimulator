@@ -60,12 +60,22 @@ class CbusModule {
 		this.setupMode=true;
 		winston.info({message: 'CBUS Network Sim: Module in setup mode'});
 	}
-	endSetupMode(){ this.setupMode=false;}
+	endSetupMode(){ 
+		this.setupMode=false;
+		winston.info({message: 'CBUS Network Sim: Module exiting setup mode'});
+	}
 
 	// Node Number
 	getNodeNumber(){return this.nodeNumber}
 	getNodeNumberHex(){return decToHex(this.nodeNumber, 4)}
-	setnodeNumber(newnodeNumber) { this.nodeNumber = newnodeNumber;}
+	setNodeNumber(newNodeNumber) { 
+		// can only accept new node number if in setup mode
+		if (this.inSetupMode()){
+			this.nodeNumber = newNodeNumber;
+			this.endSetupMode();
+			winston.info({message: 'CBUS Network Sim: Module has new node number ' + newNodeNumber});
+		}
+	}
 	
 	// Module Id
 	getModuleId() {return this.parameters[3]}
