@@ -132,10 +132,13 @@ describe('cbusNetworkSimulator tests', function(){
 	it("RQNP test", function (done) {
 		winston.info({message: 'TEST: BEGIN RQNP test'});
         msgData = cbusLib.encodeRQNP();
+		network.startSetup(testModules[0]);
+		// Putting a module into setup will trigger an RQNN message to begin with - so expect two messages to be received
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
-            expect(messagesIn.length).to.equal(network.modules.length), 'returned message count';
+            expect(messagesIn.length).to.equal(2), 'returned message count';
+            network.endSetup(testModules[0]);
 			done();
 		}, 10);
 	})
@@ -185,9 +188,10 @@ describe('cbusNetworkSimulator tests', function(){
 	function GetTestCase_SNN () {
 		var testCases = [];
 		for (NN = 1; NN < 4; NN++) {
-			if (NN == 1) nodeNumber = 0;
+			// note the reverse order of arguments, to ensure the test leaves the module as node 0
+			if (NN == 1) nodeNumber = 65535;
 			if (NN == 2) nodeNumber = 1;
-			if (NN == 3) nodeNumber = 65535;
+			if (NN == 3) nodeNumber = 0;
 			testCases.push({'nodeNumber':nodeNumber});
 		}
 		return testCases;
@@ -196,10 +200,14 @@ describe('cbusNetworkSimulator tests', function(){
 	itParam("SNN test nodeNumber ${value.nodeNumber}", GetTestCase_SNN(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN SNN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeSNN(value.nodeNumber);
+		network.startSetup(testModules[0]);
+		// Putting a module into setup will trigger an RQNN message to begin with - so expect two messages to be received
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
-     		expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NNACK');
+			// message[0] will be RQNN, so test message [1]
+     		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('NNACK');
+            network.endSetup(testModules[0]);
 			done();
 		}, 10);
 	})

@@ -276,6 +276,10 @@ class cbusNetworkSimulator {
 		this.outputRQNN(module.getNodeNumber())
 	}
 
+	endSetup(module){
+		module.endSetupMode();
+	}
+
 	getSendArray() {
 		return this.sendArray;
 	}
@@ -424,6 +428,9 @@ class cbusNetworkSimulator {
             this.broadcast(msgData)
             winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
         }
+		else{
+            winston.info({message: 'CBUS Network Sim:  module undefined for nodeNumber : ' + nodeNumber});
+		}
 	}
 
 	// 90
