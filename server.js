@@ -14,7 +14,7 @@ var rl = readline.createInterface({
 
 
 var testModules = 	[
-    new cbusModules.CANTESR (300),
+    new cbusModules.CANTEST (300),
     new cbusModules.CANACC5 (301),
     new cbusModules.CANACC8 (302),
 	new cbusModules.CANACE8C (303),
