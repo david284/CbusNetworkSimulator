@@ -355,7 +355,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[3] = 251;								// Module Id
 		this.parameters[4] = 252;								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
-		this.parameters[6] = 127;								// Number of Node Variables
+		this.parameters[6] = 20;								// Number of Node Variables
 		this.parameters[7] = 253;								// Major version number
 		this.parameters[8] = 31;								// Flags - producer/consumer
 		this.parameters[9] = 13;								// CPU type - P18F25K80
@@ -368,7 +368,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
 		this.parameters[20] = 3;								// Beta version number - 0 if production
 		
-		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+		this.parameters[0] = 20;								// Number of parameters (not including 0)
 
 		super.fillVariables(this.parameters[6])
 
