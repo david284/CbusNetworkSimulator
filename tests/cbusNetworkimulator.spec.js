@@ -9,7 +9,7 @@ const simuator = require('./../CbusNetworkSimulator.js')
 const cbusModules = require('./../modules.js')
 
 var testModules = 	[
-                new cbusModules.CANACC5(0),
+                new cbusModules.CANTEST(0),
                 new cbusModules.CANACC8(1),
 				new cbusModules.CANMIO_UNIVERSAL (65535),
                 ]
@@ -149,10 +149,13 @@ describe('cbusNetworkSimulator tests', function(){
 	it("RQMN test", function (done) {
 		winston.info({message: 'TEST: BEGIN RQMN test'});
         msgData = cbusLib.encodeRQMN();
+		network.startSetup(testModules[0]);
+		// Putting a module into setup will trigger an RQNN message to begin with - so expect two messages to be received
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
-     		expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NAME');
+     		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('NAME');
+            network.endSetup(testModules[0]);
 			done();
 		}, 20);
 	})

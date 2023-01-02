@@ -9,6 +9,7 @@ class CbusModule {
 		this.CanId = 0;
 		this.setupMode = false;
 		this.nodeNumber = nodeNumber;
+		this.NAME = "UNINIT";
 		this.parameters = 	[];
 		// prefill parameters array to 21 elements to match dev guide 6c & put length in element 0 (not including 0)
 		for (var i = 0; i < 21 ; i++) {
@@ -20,6 +21,9 @@ class CbusModule {
 		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
 
 	}
+	
+	// Module name
+	getNAME() { return this.NAME; };
 	
 	// CAN Id
 	getCanId() { return this.CanId; }
@@ -100,6 +104,7 @@ class CbusModule {
 module.exports.CANACC5 = class CANACC5 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
+		this.NAME = "CANACC5";
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
@@ -149,6 +154,7 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 module.exports.CANACC8 = class CANACC8 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
+		this.NAME = "CANACC8";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
@@ -233,6 +239,7 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 module.exports.CANCAB = class CANCAB extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
+		this.NAME = "CANCAB";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[3] = 8;									// Module Id
@@ -244,6 +251,7 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 module.exports.CANPAN = class CANPAN extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
+		this.NAME = "CANPAN";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[3] = 29;								// Module Id
@@ -255,6 +263,7 @@ module.exports.CANPAN = class CANPAN extends CbusModule{
 module.exports.CANCMD = class CANCMD extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
+		this.NAME = "CANCMD";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[3] = 10;								// Module Id
@@ -266,6 +275,7 @@ module.exports.CANCMD = class CANCMD extends CbusModule{
 module.exports.CANACE8C = class CANACE8C extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
+		this.NAME = "CANACE8C";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "q".charCodeAt(0);					// Minor version number
@@ -299,6 +309,7 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 module.exports.CANINP = class CANINP extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);
+		this.NAME = "CANINP";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
@@ -330,3 +341,38 @@ module.exports.CANMIO_OUT = class CANMIO_OUT extends CbusModule{
 
 }
 
+module.exports.CANTEST = class CANTEST extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);
+		
+		this.NAME = "CANTEST";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = 250;								// Minor version number
+		this.parameters[3] = 251;								// Module Id
+		this.parameters[4] = 252;								// Number of supported events
+		this.parameters[5] = 20;								// Number of event variables
+		this.parameters[6] = 127;								// Number of Node Variables
+		this.parameters[7] = 253;								// Major version number
+		this.parameters[8] = 31;								// Flags - producer/consumer
+		this.parameters[9] = 13;								// CPU type - P18F25K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 3;								// Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillVariables(this.parameters[6])
+
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+	}
+}

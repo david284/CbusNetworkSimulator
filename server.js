@@ -14,11 +14,12 @@ var rl = readline.createInterface({
 
 
 var testModules = 	[
-    new cbusModules.CANACC5(300),
-    new cbusModules.CANACC8(301),
-	new cbusModules.CANACE8C (302),
-	new cbusModules.CANINP (303),
-	new cbusModules.CANMIO_UNIVERSAL (304),
+    new cbusModules.CANTESR (300),
+    new cbusModules.CANACC5 (301),
+    new cbusModules.CANACC8 (302),
+	new cbusModules.CANACE8C (303),
+	new cbusModules.CANINP (304),
+	new cbusModules.CANMIO_UNIVERSAL (305),
 ]
                 
 for (var i = 0; i < testModules.length; i++) {
@@ -28,6 +29,9 @@ for (var i = 0; i < testModules.length; i++) {
 const NET_PORT = 5550;
 
 let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules);
+
+console.log("setup <node number> - forces specific node into setp mode");
+
 
 // Process console input on a line by line basis
 rl.on('line', function (cmd) {

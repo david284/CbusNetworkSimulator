@@ -135,7 +135,13 @@ class cbusNetworkSimulator {
             }
             break;
         case '11': // RQMN
-            this.outputNAME("CANTEST");			
+		    // return the module name, but only if in setup mode
+            for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
+				// should only accept node number if in setup mode
+				if (this.modules[moduleIndex].inSetupMode()){
+					this.outputNAME(this.modules[moduleIndex].getNAME());
+				}
+            }
             break;
         case '42': // SNN
             // give a module a node number, but only if in setup mode
