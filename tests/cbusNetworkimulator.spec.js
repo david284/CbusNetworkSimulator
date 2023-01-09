@@ -607,6 +607,34 @@ describe('cbusNetworkSimulator tests', function(){
 	})
 
 
+    // 78 RQSD
+    //
+		function GetTestCase_RQSD () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+			testCases.push({'nodeNumber':nodeNumber});
+		}
+		return testCases;
+	}
+
+    // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
+	itParam("RQSD test nodeNumber ${value.nodeNumber}", GetTestCase_RQSD(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN RQSD test'});
+        msgData = cbusLib.encodeRQSD(value.nodeNumber, 0);	// use "request all services" option
+    	testClient.write(msgData);
+		setTimeout(function(){
+			// check data is written as expected
+     		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+			//check test client receives correct number of 'SD' messages
+            expect(messagesIn.length).to.equal(3), 'returned message count'; 
+			done();
+		}, 10);
+	})
+
+
     // 90 & 91 ACON & ACOF
     //
 	function GetTestCase_ACONF () {

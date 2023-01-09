@@ -215,6 +215,9 @@ class cbusNetworkSimulator {
         case '73': // RQNPN
             this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
             break;
+		case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
+			this.outputSD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
+			break;
         case '90': // ACON
             this.processAccessoryEvent("ACON", cbusMsg.nodeNumber, cbusMsg.eventNumber);
             break;
@@ -438,6 +441,22 @@ class cbusNetworkSimulator {
             winston.info({message: 'CBUS Network Sim:  module undefined for nodeNumber : ' + nodeNumber});
 		}
 	}
+
+	// 8C - SD
+    // SD Format: [<MjPri><MinPri=3><CANID>]<8C><NN hi><NN lo><ServiceIndex><ServiceType><ServiceVersion>
+	//
+	 outputSD(nodeNumber, ServiceIndex) {
+        if (this.getModule(nodeNumber) != undefined) {
+			var services = this.getModule(nodeNumber).getServices();
+			winston.info({message: 'CBUS Network Sim:  services  ' + JSON.stringify(services)});
+			for (var key in this.getModule(nodeNumber).getServices()) {
+				var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
+				this.broadcast(msgData);
+				winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+			}
+		}
+	}
+
 
 	// 90
 	 outputACON(nodeNumber, eventNumber) {

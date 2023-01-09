@@ -18,6 +18,24 @@ class CbusModule {
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 			
 		this.variables = [];
+		this.services = {
+			"0":{
+				"ServiceIndex": 1,
+				"ServiceType" : 1,
+				"ServiceVersion" : 255
+			},
+			"1":{
+				"ServiceIndex": 2,
+				"ServiceType" : 2,
+				"ServiceVersion" : 254
+			},
+			"2":{
+				"ServiceIndex": 3,
+				"ServiceType" : 5,
+				"ServiceVersion" : 253
+			}
+		}
+
 		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
 
 	}
@@ -99,6 +117,12 @@ class CbusModule {
 			this.variables.push(i);
 		}
 	}
+	
+	// Services
+	getServices() { 
+//		winston.debug({message: 'CBUS Network Sim: services ' + JSON.stringify(this.services)});
+		return this.services; 
+	};
 }
 
 module.exports.CANACC5 = class CANACC5 extends CbusModule{
