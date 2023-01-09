@@ -27,12 +27,12 @@ class CbusModule {
 			"1":{
 				"ServiceIndex": 2,
 				"ServiceType" : 2,
-				"ServiceVersion" : 254
+				"ServiceVersion" : 2
 			},
 			"2":{
-				"ServiceIndex": 3,
-				"ServiceType" : 5,
-				"ServiceVersion" : 253
+				"ServiceIndex": 255,
+				"ServiceType" : 3,
+				"ServiceVersion" : 1
 			}
 		}
 

@@ -628,12 +628,44 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
 			// check data is written as expected
      		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
-			//check test client receives correct number of 'SD' messages
+			//just check test client receives correct number of 'SD' messages
             expect(messagesIn.length).to.equal(3), 'returned message count'; 
+     		expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('SD');
+     		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('SD');
+     		expect(cbusLib.decode(messagesIn[2]).mnemonic).to.equal('SD');
 			done();
 		}, 10);
 	})
 
+    // 8C SD
+    //
+	function GetTestCase_SD () {
+		var testCases = [];
+		for (a1 = 1; a1 < 4; a1++) {
+			if (a1 == 1) arg1 = 0;
+			if (a1 == 2) arg1 = 1;
+			if (a1 == 3) arg1 = 65535;
+			for (a2 = 1; a2 < 3; a2++) {
+				if (a2 == 1) arg2 = 1;		// don't do 0 as special case - covered by RQSD (78) test
+				if (a2 == 2) arg2 = 255;
+				testCases.push({'nodeNumber':arg1, 'ServiceIndex':arg2});
+			}
+		}
+		return testCases;
+	}
+
+	itParam("SD test nodeNumber ${value.nodeNumber} ServiceIndex ${value.ServiceIndex}", 
+        GetTestCase_SD(), function (done, value) {
+            winston.info({message: 'TEST: BEGIN SD test ' + JSON.stringify(value)});
+            network.outputSD(value.nodeNumber, value.ServiceIndex)
+            setTimeout(function(){
+                expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('8C');
+                expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
+                expect(cbusLib.decode(messagesIn[0]).ServiceIndex).to.equal(value.ServiceIndex);
+                done();
+            }, 10);
+	})
+    
 
     // 90 & 91 ACON & ACOF
     //

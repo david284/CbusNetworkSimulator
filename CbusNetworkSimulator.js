@@ -448,11 +448,17 @@ class cbusNetworkSimulator {
 	 outputSD(nodeNumber, ServiceIndex) {
         if (this.getModule(nodeNumber) != undefined) {
 			var services = this.getModule(nodeNumber).getServices();
-			winston.info({message: 'CBUS Network Sim:  services  ' + JSON.stringify(services)});
 			for (var key in this.getModule(nodeNumber).getServices()) {
+				winston.info({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
 				var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
-				this.broadcast(msgData);
-				winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+				if ((ServiceIndex == 0) || (ServiceIndex == services[key]["ServiceIndex"])) {
+					// either do all services if '0' or only matching ServiceIndex
+					this.broadcast(msgData);
+					winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+				}
+				else {
+					winston.info({message: 'CBUS Network Sim:  No service found for ServiceIndex ' + ServiceIndex});
+				}
 			}
 		}
 	}
