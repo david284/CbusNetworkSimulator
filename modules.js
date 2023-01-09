@@ -23,16 +23,6 @@ class CbusModule {
 				"ServiceIndex": 1,
 				"ServiceType" : 1,
 				"ServiceVersion" : 255
-			},
-			"1":{
-				"ServiceIndex": 2,
-				"ServiceType" : 2,
-				"ServiceVersion" : 2
-			},
-			"2":{
-				"ServiceIndex": 255,
-				"ServiceType" : 3,
-				"ServiceVersion" : 1
 			}
 		}
 
@@ -127,7 +117,7 @@ class CbusModule {
 
 module.exports.CANACC5 = class CANACC5 extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 		this.NAME = "CANACC5";
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -177,7 +167,7 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 
 module.exports.CANACC8 = class CANACC8 extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 		this.NAME = "CANACC8";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -196,6 +186,9 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
 			//NV11 is move on startup. Bit set is move.
 			//NV12 not used yet
+			
+		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2 };
+		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1 }			
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
@@ -216,7 +209,7 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 
 module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[3] = 19;								// Module Id
@@ -228,7 +221,7 @@ module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
 
 module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
@@ -255,6 +248,9 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 
 		super.fillVariables(this.parameters[6])
 
+		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2 };
+		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1 }
+
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
 	}
@@ -262,7 +258,7 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 
 module.exports.CANCAB = class CANCAB extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 		this.NAME = "CANCAB";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -274,7 +270,7 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 
 module.exports.CANPAN = class CANPAN extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 		this.NAME = "CANPAN";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -286,7 +282,7 @@ module.exports.CANPAN = class CANPAN extends CbusModule{
 
 module.exports.CANCMD = class CANCMD extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 		this.NAME = "CANCMD";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -298,7 +294,7 @@ module.exports.CANCMD = class CANCMD extends CbusModule{
 
 module.exports.CANACE8C = class CANACE8C extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 		this.NAME = "CANACE8C";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -332,7 +328,7 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 
 module.exports.CANINP = class CANINP extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 		this.NAME = "CANINP";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -354,7 +350,7 @@ module.exports.CANINP = class CANINP extends CbusModule{
 
 module.exports.CANMIO_OUT = class CANMIO_OUT extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[3] = 52;								// Module Id
@@ -367,7 +363,7 @@ module.exports.CANMIO_OUT = class CANMIO_OUT extends CbusModule{
 
 module.exports.CANTEST = class CANTEST extends CbusModule{
 	constructor(nodeNumber) {
-		super(nodeNumber);
+		super(nodeNumber);			// Call parent class constructor
 		
 		this.NAME = "CANTEST";
 
@@ -395,6 +391,9 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[0] = 20;								// Number of parameters (not including 0)
 
 		super.fillVariables(this.parameters[6])
+		
+		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2 };
+		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1 }
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
