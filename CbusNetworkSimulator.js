@@ -554,6 +554,9 @@ class cbusNetworkSimulator {
 	
 	// B6
 	 outputPNN(nodeNumber) {
+		 // *** quick hack to ensure that PNN is sent with CANID specific to each module (needs fixing for all opcodes!)
+		var CANID = this.getModule(nodeNumber).getCanId();
+		cbusLib.setCanHeader(3, CANID);
         var msgData = cbusLib.encodePNN(nodeNumber, 
             this.getModule(nodeNumber).getManufacturerId(),
             this.getModule(nodeNumber).getModuleId(),
