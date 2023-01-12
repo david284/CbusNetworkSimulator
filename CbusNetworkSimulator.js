@@ -218,6 +218,9 @@ class cbusNetworkSimulator {
 		case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
 			this.outputSD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
 			break;
+		case '87': // RDGN Format: [<MjPri><MinPri=3><CANID>]<87><NN hi><NN lo><ServiceIndex><DiagnosticeCode>
+			this.outputDGN(cbusMsg.nodeNumber, cbusMsg.ServiceIndex, cbusMsg.DiagnosticCode);
+			break;
         case '90': // ACON
             this.processAccessoryEvent("ACON", cbusMsg.nodeNumber, cbusMsg.eventNumber);
             break;
@@ -566,6 +569,31 @@ class cbusNetworkSimulator {
 		cbusLib.setCanHeader(2, CANID);
 	}
 	
+	// C7 - DGN
+    // DGN Format: [<MjPri><MinPri=3><CANID>]<C7><NN hi><NN lo><ServiceIndex><DiagnosticCode><DiagnosticValue>
+	//
+	 outputDGN(nodeNumber, ServiceIndex, DiagnosticCode) {
+        if (this.getModule(nodeNumber) != undefined) {
+			var services = this.getModule(nodeNumber).getServices();
+			for (var key in services) {
+				winston.info({message: 'CBUS Network Sim:  serviceIndex ' + services[key]["ServiceIndex"]});
+				var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], 1, 127);
+				if ((ServiceIndex == 0) || (ServiceIndex == services[key]["ServiceIndex"])) {
+					// either do all services if '0' or only matching ServiceIndex
+					for (var code in services[key]["Diagnostics"]){
+						if ((DiagnosticCode == 0) || (DiagnosticCode == code)) {
+							winston.info({message: 'CBUS Network Sim:  diagnostic ' + code});
+							var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], code, services[key]["Diagnostics"][code]);
+							this.broadcast(msgData);
+							winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+						}
+					}
+				}
+			}
+		}
+	}
+
+
 	// D3
 	outputEVANS(nodeNumber, eventNumber, eventName, eventVariableIndex) {
         winston.info({message: 'CBUS Network Sim: EVANS : Node ' + nodeNumber + " eventNumber " + eventNumber + " eventName "+ eventName + " evIndex " + eventVariableIndex});

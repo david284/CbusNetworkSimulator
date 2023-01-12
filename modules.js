@@ -22,9 +22,11 @@ class CbusModule {
 			"0":{
 				"ServiceIndex": 1,
 				"ServiceType" : 1,
-				"ServiceVersion" : 255
+				"ServiceVersion" : 255,
+				"Diagnostics": { "1": 255, "2": 127 }
 			}
 		}
+
 
 		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
 
@@ -392,8 +394,12 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 
 		super.fillVariables(this.parameters[6])
 		
-		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2 };
-		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1 }
+		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
+				"Diagnostics": { "1": 254, "2": 126 }
+		};
+		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
+				"Diagnostics": { "1": 253, "2": 125 }
+		}
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
