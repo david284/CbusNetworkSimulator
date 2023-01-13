@@ -621,7 +621,7 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
     // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
-	itParam("RQSD test nodeNumber ${value.nodeNumber}", GetTestCase_RQSD(), function (done, value) {
+	itParam("RQSD test nodeNumber ${value.nodeNumber} ServiceIndex 0", GetTestCase_RQSD(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN RQSD test'});
         msgData = cbusLib.encodeRQSD(value.nodeNumber, 0);	// use "request all services" option
     	testClient.write(msgData);
@@ -636,6 +636,38 @@ describe('cbusNetworkSimulator tests', function(){
 			done();
 		}, 10);
 	})
+
+
+    // 78 RDGN
+    //
+		function GetTestCase_RDGN () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+			testCases.push({'nodeNumber':nodeNumber});
+		}
+		return testCases;
+	}
+
+    // RDGN Format: [<MjPri><MinPri=3><CANID>]<87><NN hi><NN lo><ServiceIndex><DiagnosticCode>
+	itParam("RDGN test nodeNumber ${value.nodeNumber}", GetTestCase_RDGN(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN RDGN test'});
+        msgData = cbusLib.encodeRDGN(value.nodeNumber, 0, 0);	// use "request all Diagnostics" option
+    	testClient.write(msgData);
+		setTimeout(function(){
+			// check data is written as expected
+     		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+			//just check test client receives correct number of 'DGN' messages
+//            expect(messagesIn.length).to.equal(3), 'returned message count'; 
+     		expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('DGN');
+     		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('DGN');
+     		expect(cbusLib.decode(messagesIn[2]).mnemonic).to.equal('DGN');
+			done();
+		}, 10);
+	})
+
 
     // 8C SD
     //
@@ -948,6 +980,41 @@ describe('cbusNetworkSimulator tests', function(){
                 done();
             }, 10);
 	})
+	
+	
+    // C7 DGN
+    //
+	function GetTestCase_DGN () {
+		var testCases = [];
+		for (a1 = 1; a1 < 4; a1++) {
+			if (a1 == 1) arg1 = 0;
+			if (a1 == 2) arg1 = 1;
+			if (a1 == 3) arg1 = 65535;
+			testCases.push({'nodeNumber':arg1});
+		}
+		return testCases;
+	}
+
+	itParam("DGN test nodeNumber ${value.nodeNumber}", 
+        GetTestCase_DGN(), function (done, value) {
+            winston.info({message: 'TEST: BEGIN DGN test ' + JSON.stringify(value)});
+			//only do special case of request 'all' diagnostics from all services from node
+            network.outputDGN(value.nodeNumber, 0, 0)
+            setTimeout(function(){
+				var msgCount = 0;
+	            messagesIn.forEach(element => {
+					var msg = cbusLib.decode(element);
+					expect(msg.mnemonic).to.equal('DGN');
+					expect(msg.nodeNumber).to.equal(value.nodeNumber);
+					msgCount++;
+				})
+				winston.info({message: 'TEST: DGN test ' + msgCount + ' messages received'});
+				winston.info({message: 'TEST: DGN test end'});
+                done();
+            }, 10);
+	})
+    
+
     
 
     // D2 - EVLRN

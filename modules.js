@@ -189,8 +189,12 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 			//NV11 is move on startup. Bit set is move.
 			//NV12 not used yet
 			
-		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2 };
-		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1 }			
+		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
+				"Diagnostics": { "1": 255, "2": 127 }
+		};
+		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
+				"Diagnostics": { "1": 255, "2": 127, "3":255 }
+		}			
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
@@ -250,8 +254,12 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 
 		super.fillVariables(this.parameters[6])
 
-		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2 };
-		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1 }
+		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
+				"Diagnostics": { "1": 255, "2": 127 }
+		};
+		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
+				"Diagnostics": { "3": 255, "4": 127 }
+		}
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})

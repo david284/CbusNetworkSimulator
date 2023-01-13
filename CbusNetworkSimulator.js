@@ -577,7 +577,6 @@ class cbusNetworkSimulator {
 			var services = this.getModule(nodeNumber).getServices();
 			for (var key in services) {
 				winston.info({message: 'CBUS Network Sim:  serviceIndex ' + services[key]["ServiceIndex"]});
-				var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], 1, 127);
 				if ((ServiceIndex == 0) || (ServiceIndex == services[key]["ServiceIndex"])) {
 					// either do all services if '0' or only matching ServiceIndex
 					for (var code in services[key]["Diagnostics"]){
