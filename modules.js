@@ -22,8 +22,8 @@ class CbusModule {
 			"0":{
 				"ServiceIndex": 1,
 				"ServiceType" : 1,
-				"ServiceVersion" : 255,
-				"Diagnostics": { "1": 255, "2": 127 }
+				"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
 			}
 		}
 
