@@ -215,6 +215,28 @@ class cbusNetworkSimulator {
         case '73': // RQNPN
             this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
             break;
+		case '76': // MODE Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ModeNumber>
+			var module = this.getModule(cbusMsg.nodeNumber);
+            if (module != undefined) {
+				switch (cbusMsg.ModeNumber){
+					case 0:		// setup mode
+						this.startSetup(module);
+						this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
+						break;
+					case 1:
+						this.endSetup(module);
+						this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
+						break;
+					case 2:
+						this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
+						break;
+					default:
+						winston.info({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
+				}
+			} else {
+				winston.info({message: 'CBUS Network Sim: No module found for Node Number ' + cbusMsg.nodeNumber});
+			}
+			break;
 		case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
 			this.outputSD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
 			break;
@@ -532,6 +554,15 @@ class cbusNetworkSimulator {
             }
         }
 	}
+	
+
+	// AF
+	outputGRSP(nodeNumber, requestOpCode, serviceType, result) {
+		var msgData = cbusLib.encodeGRSP(nodeNumber, requestOpCode, serviceType, result);
+		this.broadcast(msgData)
+		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+	}
+	
 	
 	// B5
 	outputNEVAL(nodeNumber, eventIndex, eventVariableIndex) {
