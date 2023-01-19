@@ -153,6 +153,10 @@ class cbusNetworkSimulator {
 				}
             }
             break;
+        case '4F': // NNRSM
+            winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + " NNRSM command" });
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
+            break;
         case '50': // RQNN sent by node
             break;
         case '51': // NNREL sent by node

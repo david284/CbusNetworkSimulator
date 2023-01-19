@@ -216,6 +216,33 @@ describe('cbusNetworkSimulator tests', function(){
 	})
 
 
+    // 4F NNRSM
+    //
+	function GetTestCase_NNRSM () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+			testCases.push({'nodeNumber':nodeNumber});
+		}
+		return testCases;
+	}
+
+	itParam("NNRSM test ${JSON.stringify(value)}", GetTestCase_NNRSM(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN NNRSM test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeNNRSM(value.nodeNumber);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+            if (messagesIn.length > 0) {
+                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('GRSP');
+            }
+			done();
+		}, 10);
+	})
+
+
     // 50 RQNN
     //
 	function GetTestCase_RQNN () {
@@ -409,6 +436,33 @@ describe('cbusNetworkSimulator tests', function(){
         network.outputWRACK(value.nodeNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
+			done();
+		}, 10);
+	})
+
+
+    // 5E NNRST
+    //
+	function GetTestCase_NNRST () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+			testCases.push({'nodeNumber':nodeNumber});
+		}
+		return testCases;
+	}
+
+	itParam("NNRST test ${JSON.stringify(value)}", GetTestCase_NNRST(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN NNRST test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeNNRST(value.nodeNumber);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+            if (messagesIn.length > 0) {
+                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('GRSP');
+            }
 			done();
 		}, 10);
 	})
