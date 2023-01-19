@@ -246,7 +246,11 @@ class cbusNetworkSimulator {
 			}
 			break;
 		case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
-			this.outputSD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
+			if (cbusMsg.ServiceIndex == 0){
+				this.outputSD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
+			} else {
+				this.outputESD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
+			}
 			break;
 		case '87': // RDGN Format: [<MjPri><MinPri=3><CANID>]<87><NN hi><NN lo><ServiceIndex><DiagnosticeCode>
 			this.outputDGN(cbusMsg.nodeNumber, cbusMsg.ServiceIndex, cbusMsg.DiagnosticCode);
@@ -481,17 +485,12 @@ class cbusNetworkSimulator {
 	 outputSD(nodeNumber, ServiceIndex) {
         if (this.getModule(nodeNumber) != undefined) {
 			var services = this.getModule(nodeNumber).getServices();
+			// SD messages are generated for all services
 			for (var key in this.getModule(nodeNumber).getServices()) {
 				winston.info({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
 				var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
-				if ((ServiceIndex == 0) || (ServiceIndex == services[key]["ServiceIndex"])) {
-					// either do all services if '0' or only matching ServiceIndex
-					this.broadcast(msgData);
-					winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-				}
-				else {
-					winston.info({message: 'CBUS Network Sim:  No service found for ServiceIndex ' + ServiceIndex});
-				}
+				this.broadcast(msgData);
+				winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 			}
 		}
 	}
@@ -667,6 +666,19 @@ class cbusNetworkSimulator {
             winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
 	}
 	
+
+	// E7 - ESD
+    // ESD Format: [<MjPri><MinPri=3><CANID>]<E7><NN hi><NN lo><ServiceIndex><Data1><Data2><Data3><Data4>
+	//
+	 outputESD(nodeNumber, ServiceIndex) {
+        if (this.getModule(nodeNumber) != undefined) {
+			var msgData = cbusLib.encodeESD(nodeNumber, ServiceIndex, 1, 2, 3, 4);
+			this.broadcast(msgData);
+			winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+		}
+	}
+
+
 	// EF
 	 outputPARAMS(nodeNumber) {
         if (this.getModule(nodeNumber) != undefined) {
