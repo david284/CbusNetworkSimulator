@@ -202,6 +202,10 @@ class cbusNetworkSimulator {
             winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + " ENUM command" });
             this.outputNNACK(cbusMsg.nodeNumber);
             break;
+        case '5E': // NNRST
+            winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + " NNRST command" });
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
+            break;
         case '6F': // CMDERR - sent by node
             break;
         case '71': // NVRD
