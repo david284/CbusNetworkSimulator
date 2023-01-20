@@ -17,6 +17,13 @@ class cbusNetworkSimulator {
         
         this.clients = [];
 		
+		// we want heartbeat to be sent out every 5 seconds for each module
+		// we use a counter to send one module out each pass of the interval
+		// so set interval time as 5 seconds divided by number of modules
+		var interval_time = 5000/this.modules.length;
+		this.interval_counter = 0;
+		setInterval(this.intervalFunc.bind(this), interval_time);
+		
 		this.server = net.createServer(function (socket) {
 			this.socket=socket;
             this.clients.push(socket);
@@ -73,6 +80,12 @@ class cbusNetworkSimulator {
 		this.server.close();
 		winston.info({message: 'CBUS Network Sim: Server closing'});
 	}
+	
+	
+	intervalFunc() {
+		this.outputHEARTB(this.modules[this.interval_counter].getNodeNumber());
+		if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
+	};
 
 
     processExtendedMessage(cbusMsg) {
@@ -563,6 +576,14 @@ class cbusNetworkSimulator {
 	}
 	
 
+	// AB
+	outputHEARTB(nodeNumber) {
+		var msgData = cbusLib.encodeHEARTB(nodeNumber, 2, 3, 4);
+		this.broadcast(msgData)
+		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+	}
+	
+	
 	// AF
 	outputGRSP(nodeNumber, requestOpCode, serviceType, result) {
 		var msgData = cbusLib.encodeGRSP(nodeNumber, requestOpCode, serviceType, result);
