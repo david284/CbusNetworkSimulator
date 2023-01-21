@@ -119,7 +119,8 @@ class cbusNetworkSimulator {
     broadcast(msgData) {
         this.clients.forEach(function (client) {
             client.write(msgData);
-			winston.debug({message: 'CBUS Network Sim: Transmit >>>> Port: ' + client.remotePort + ' Data: ' + msgData});
+			winston.debug({message: 'CBUS Network Sim: Transmit >>>> Port: ' + client.remotePort 
+							+ ' Data: ' + msgData + " " + cbusLib.decode(msgData).text});
         });
     }
 

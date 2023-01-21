@@ -31,7 +31,16 @@ var messageOnly = winston.format.combine(
 var options = {
   file: {
     level: 'info',
-    filename: `./logs/winston.log`,
+    filename: `./logs/info.log`,
+	options: { flags: 'w' },
+    handleExceptions: true,
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+	format: timeStampFirst
+  },
+  debug: {
+    level: 'debug',
+    filename: `./logs/debug.log`,
 	options: { flags: 'w' },
     handleExceptions: true,
     maxsize: 5242880, // 5MB
@@ -39,7 +48,7 @@ var options = {
 	format: timeStampFirst
   },
   console: {
-    level: 'debug',
+    level: 'info',
     handleExceptions: true,
 	format: messageOnly
   },
@@ -54,6 +63,7 @@ var options = {
 //
 
 winston.add(new winston.transports.File(options.file));
+winston.add(new winston.transports.File(options.debug));
 winston.add(new winston.transports.Console(options.console));
 
 
