@@ -19,12 +19,6 @@ class CbusModule {
 			
 		this.variables = [];
 		this.services = {
-			"0":{
-				"ServiceIndex": 1,
-				"ServiceType" : 1,
-				"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-			}
 		}
 
 
@@ -162,7 +156,14 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 			//				 01 is event sent when at OFF
 			//				 10 is event sent at mid travel
 			//				 11 used to flag a SoD, bit 7 must be 0.
+
+
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
+
 	}
+
 
 	shouldFeedback(eventIndex) { return true;}
 }
@@ -189,6 +190,9 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 			//NV11 is move on startup. Bit set is move.
 			//NV12 not used yet
 			
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
 				"Diagnostics": { "1": 255, "2": 127 }
 		};
@@ -222,6 +226,9 @@ module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
 		this.parameters[8] = 7;									// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 	}
 }
 
@@ -254,6 +261,9 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 
 		super.fillVariables(this.parameters[6])
 
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
 				"Diagnostics": { "1": 255, "2": 127 }
 		};
@@ -275,6 +285,10 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 		this.parameters[3] = 8;									// Module Id
 		this.parameters[8] = 7;									// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 	}
 }
 
@@ -287,6 +301,10 @@ module.exports.CANPAN = class CANPAN extends CbusModule{
 		this.parameters[3] = 29;								// Module Id
 		this.parameters[8] = 7;									// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 	}
 }
 
@@ -299,6 +317,10 @@ module.exports.CANCMD = class CANCMD extends CbusModule{
 		this.parameters[3] = 10;								// Module Id
 		this.parameters[8] = 7;									// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 	}
 }
 
@@ -333,6 +355,10 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
+
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 	}
 }
 
@@ -355,6 +381,10 @@ module.exports.CANINP = class CANINP extends CbusModule{
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 	}
 }
 
@@ -367,6 +397,9 @@ module.exports.CANMIO_OUT = class CANMIO_OUT extends CbusModule{
 		this.parameters[8] = 7;									// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
 	}
 
 }
@@ -412,6 +445,9 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.services["3"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
+		}
+		this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
 		}
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
