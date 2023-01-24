@@ -573,7 +573,14 @@ class cbusNetworkSimulator {
 	 outputSD(nodeNumber) {
         if (this.getModule(nodeNumber) != undefined) {
 			var services = this.getModule(nodeNumber).getServices();
-			// SD messages are generated for all services
+			// A special SD message is generated with the count of all the supported services
+			var count = 0;
+			for (var key in services) { count++;};
+			winston.debug({message: 'CBUS Network Sim:  service count ' + count});
+			var msgData = cbusLib.encodeSD(nodeNumber, 0, 0, count);
+			this.broadcast(msgData);
+			winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+			// Now generate SD messages for all the supported services
 			for (var key in services) {
 				winston.info({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
 				var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
