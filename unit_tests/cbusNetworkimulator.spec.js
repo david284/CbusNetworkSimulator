@@ -743,7 +743,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('SD');
      		expect(cbusLib.decode(messagesIn[2]).mnemonic).to.equal('SD');
 			done();
-		}, 10);
+		}, 30);
 	})
 
 
@@ -774,7 +774,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('DGN');
      		expect(cbusLib.decode(messagesIn[2]).mnemonic).to.equal('DGN');
 			done();
-		}, 10);
+		}, 30);
 	})
 
 

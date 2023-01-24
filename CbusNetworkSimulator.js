@@ -261,7 +261,7 @@ class cbusNetworkSimulator {
 			break;
 		case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
 			if (cbusMsg.ServiceIndex == 0){
-				this.outputSD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
+				this.outputSD(cbusMsg.nodeNumber);
 			} else {
 				this.outputESD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
 			}
@@ -570,7 +570,7 @@ class cbusNetworkSimulator {
 	// AC - SD
     // SD Format: [<MjPri><MinPri=3><CANID>]<AC><NN hi><NN lo><ServiceIndex><ServiceType><ServiceVersion>
 	//
-	 outputSD(nodeNumber, ServiceIndex) {
+	 outputSD(nodeNumber) {
         if (this.getModule(nodeNumber) != undefined) {
 			var services = this.getModule(nodeNumber).getServices();
 			// SD messages are generated for all services
