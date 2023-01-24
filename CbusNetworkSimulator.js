@@ -493,23 +493,6 @@ class cbusNetworkSimulator {
 		}
 	}
 
-	// 8C - SD
-    // SD Format: [<MjPri><MinPri=3><CANID>]<8C><NN hi><NN lo><ServiceIndex><ServiceType><ServiceVersion>
-	//
-	 outputSD(nodeNumber, ServiceIndex) {
-        if (this.getModule(nodeNumber) != undefined) {
-			var services = this.getModule(nodeNumber).getServices();
-			// SD messages are generated for all services
-			for (var key in this.getModule(nodeNumber).getServices()) {
-				winston.info({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
-				var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
-				this.broadcast(msgData);
-				winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-			}
-		}
-	}
-
-
 	// 90
 	 outputACON(nodeNumber, eventNumber) {
         var msgData = cbusLib.encodeACON(nodeNumber, eventNumber)
@@ -584,6 +567,23 @@ class cbusNetworkSimulator {
 	}
 	
 	
+	// AC - SD
+    // SD Format: [<MjPri><MinPri=3><CANID>]<AC><NN hi><NN lo><ServiceIndex><ServiceType><ServiceVersion>
+	//
+	 outputSD(nodeNumber, ServiceIndex) {
+        if (this.getModule(nodeNumber) != undefined) {
+			var services = this.getModule(nodeNumber).getServices();
+			// SD messages are generated for all services
+			for (var key in services) {
+				winston.info({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
+				var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
+				this.broadcast(msgData);
+				winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+			}
+		}
+	}
+
+
 	// AF
 	outputGRSP(nodeNumber, requestOpCode, serviceType, result) {
 		var msgData = cbusLib.encodeGRSP(nodeNumber, requestOpCode, serviceType, result);
