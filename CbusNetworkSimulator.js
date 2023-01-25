@@ -513,18 +513,17 @@ class cbusNetworkSimulator {
 	 outputNVANS(nodeNumber, nodeVariableIndex) {
         if (this.getModule(nodeNumber) != undefined) {
             var variables = this.getModule(nodeNumber).getVariables();
-            if (nodeVariableIndex < variables.length) {
-                var value = variables[nodeVariableIndex];
-                var msgData = cbusLib.encodeNVANS(nodeNumber, nodeVariableIndex, value)
-                this.broadcast(msgData)
-                winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-            }
-            else {
-                winston.info({message: 'CBUS Network Sim:  ************ NVANS variable index exceeded ************'});
-                this.outputCMDERR(nodeNumber, 10);
-            }
-       }
-	 }
+			// do either matching index, or all indexes if 0
+			for (var i = 0; i < variables.length; i++) {
+				if ((nodeVariableIndex == 0) || (nodeVariableIndex == i)) {
+					var value = variables[i];
+					var msgData = cbusLib.encodeNVANS(nodeNumber, i, value)
+					this.broadcast(msgData)
+					winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+				}
+			}
+		}
+	}
 
 
 	// 98
