@@ -287,7 +287,7 @@ class cbusNetworkSimulator {
             break;
         case '96': // NVSET
             if (this.getModule(cbusMsg.nodeNumber) != undefined) {
-                var nodeVariables = this.getModule(cbusMsg.nodeNumber).getnodeVariables();
+                var nodeVariables = this.getModule(cbusMsg.nodeNumber).getNodeVariables();
                 if (cbusMsg.nodeVariableIndex < nodeVariables.length) {
                     nodeVariables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
                     winston.info({message: 'CBUS Network Sim: NVSET Nove variable ' + cbusMsg.nodeVariableIndex + ' set to ' + cbusMsg.nodeVariableValue});
