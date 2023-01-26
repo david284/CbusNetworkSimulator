@@ -227,7 +227,17 @@ class cbusNetworkSimulator {
         case '6F': // CMDERR - sent by node
             break;
         case '71': // NVRD
-            this.outputNVANS(cbusMsg.nodeNumber, cbusMsg.nodeVariableIndex);
+			var nodeVariables = this.getModule(cbusMsg.nodeNumber).getNodeVariables();
+			// do either matching index, or all indexes if 0
+			for (var i = 1; i < nodeVariables.length; i++) {
+				if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
+					this.outputNVANS(cbusMsg.nodeNumber, i, nodeVariables[i]);
+				}
+			}
+			if (cbusMsg.nodeVariableIndex + 1 > nodeVariables.length) {
+				this.outputCMDERR(cbusMsg.nodeNumber, 10);
+				this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 10);
+			}
             break;
         case '72': // NENRD
             if (this.getModule(cbusMsg.nodeNumber) != undefined) {
@@ -510,18 +520,11 @@ class cbusNetworkSimulator {
 
 
 	// 97
-	 outputNVANS(nodeNumber, nodeVariableIndex) {
+	 outputNVANS(nodeNumber, nodeVariableIndex, nodeVariableValue) {
         if (this.getModule(nodeNumber) != undefined) {
-            var nodeVariables = this.getModule(nodeNumber).getNodeVariables();
-			// do either matching index, or all indexes if 0
-			for (var i = 1; i < nodeVariables.length; i++) {
-				if ((nodeVariableIndex == 0) || (nodeVariableIndex == i)) {
-					var value = nodeVariables[i];
-					var msgData = cbusLib.encodeNVANS(nodeNumber, i, value)
-					this.broadcast(msgData)
-					winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-				}
-			}
+			var msgData = cbusLib.encodeNVANS(nodeNumber, nodeVariableIndex, nodeVariableValue)
+			this.broadcast(msgData)
+			winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 		}
 	}
 
