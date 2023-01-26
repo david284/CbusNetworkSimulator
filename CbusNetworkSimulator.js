@@ -287,9 +287,9 @@ class cbusNetworkSimulator {
             break;
         case '96': // NVSET
             if (this.getModule(cbusMsg.nodeNumber) != undefined) {
-                var variables = this.getModule(cbusMsg.nodeNumber).getVariables();
-                if (cbusMsg.nodeVariableIndex < variables.length) {
-                    variables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
+                var nodeVariables = this.getModule(cbusMsg.nodeNumber).getnodeVariables();
+                if (cbusMsg.nodeVariableIndex < nodeVariables.length) {
+                    nodeVariables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
                     winston.info({message: 'CBUS Network Sim: NVSET Nove variable ' + cbusMsg.nodeVariableIndex + ' set to ' + cbusMsg.nodeVariableValue});
                     this.outputWRACK(cbusMsg.nodeNumber);
                 }
@@ -512,11 +512,11 @@ class cbusNetworkSimulator {
 	// 97
 	 outputNVANS(nodeNumber, nodeVariableIndex) {
         if (this.getModule(nodeNumber) != undefined) {
-            var variables = this.getModule(nodeNumber).getVariables();
+            var nodeVariables = this.getModule(nodeNumber).getNodeVariables();
 			// do either matching index, or all indexes if 0
-			for (var i = 0; i < variables.length; i++) {
+			for (var i = 1; i < nodeVariables.length; i++) {
 				if ((nodeVariableIndex == 0) || (nodeVariableIndex == i)) {
-					var value = variables[i];
+					var value = nodeVariables[i];
 					var msgData = cbusLib.encodeNVANS(nodeNumber, i, value)
 					this.broadcast(msgData)
 					winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});

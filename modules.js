@@ -17,7 +17,7 @@ class CbusModule {
 		}
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 			
-		this.variables = [];
+		this.nodeVariables = [];
 		this.services = {
 		}
 
@@ -96,11 +96,11 @@ class CbusModule {
 	// Parameters
 	getParameter(i) {return this.parameters[i]}
 	
-	// Variables
-	getVariables() { return this.variables}
-	fillVariables(variableCount) {
+	// nodeVariables
+	getNodeVariables() { return this.nodeVariables}
+	fillNodeVariables(variableCount) {
 		for (var i = 0; i <= variableCount ; i++) {
-			this.variables.push(i);
+			this.nodeVariables.push(i);
 		}
 	}
 	
@@ -135,8 +135,8 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		this.parameters[20] = 0;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 		
-		super.fillVariables(this.parameters[6])
-			//NV1-8 channel variables
+		super.fillNodeVariables(this.parameters[6])
+			//NV1-8 channel nodeVariables
 			//NV9 is feedback delay. In 0.5mSec intervals approx.
 			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
 			//NV11 is move on startup. Bit set is move.
@@ -183,8 +183,8 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 		this.parameters[8] = 0xD;								// Flags - not a producer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		super.fillVariables(this.parameters[6])
-			//NV1-8 channel variables
+		super.fillNodeVariables(this.parameters[6])
+			//NV1-8 channel nodeVariables
 			//NV9 is feedback delay. In 0.5mSec intervals approx.
 			//NV10 startup position. Bit set is OFF end, bit  clear is now go to last saved position
 			//NV11 is move on startup. Bit set is move.
@@ -259,7 +259,7 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 		
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		super.fillVariables(this.parameters[6])
+		super.fillNodeVariables(this.parameters[6])
 
 		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
 				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
@@ -351,7 +351,7 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 		this.parameters[20] = 3;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		super.fillVariables(this.parameters[6])
+		super.fillNodeVariables(this.parameters[6])
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
@@ -377,7 +377,7 @@ module.exports.CANINP = class CANINP extends CbusModule{
 		this.parameters[8] = 14;								// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		super.fillVariables(this.parameters[6])
+		super.fillNodeVariables(this.parameters[6])
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
@@ -418,7 +418,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[3] = 251;								// Module Id
 		this.parameters[4] = 252;								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
-		this.parameters[6] = 20;								// Number of Node Variables
+		this.parameters[6] = 25;								// Number of Node Variables
 		this.parameters[7] = 253;								// Major version number
 		this.parameters[8] = 31;								// Flags - producer/consumer
 		this.parameters[9] = 13;								// CPU type - P18F25K80
@@ -433,7 +433,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		
 		this.parameters[0] = 20;								// Number of parameters (not including 0)
 
-		super.fillVariables(this.parameters[6])
+		super.fillNodeVariables(this.parameters[6])
 		
 		this.services["1"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
