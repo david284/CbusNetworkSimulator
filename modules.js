@@ -18,8 +18,7 @@ class CbusModule {
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 			
 		this.nodeVariables = [];
-		this.services = {
-		}
+		this.services = {};
 
 
 		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
@@ -435,20 +434,46 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 		
-		this.services["1"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 0,
-				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
-								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
+		this.services["1"] = { "ServiceIndex": 3, "ServiceType" : 1, "ServiceVersion" : 0,
+				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7 }
 		}
 		this.services["2"] = { "ServiceIndex": 4, "ServiceType" : 2, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 254, "2": 126 }
 		};
-		this.services["3"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 0,
+		this.services["3"] = { "ServiceIndex": 5, "ServiceType" : 3, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}
-		this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		this.services["4"] = {"ServiceIndex": 6, "ServiceType" : 4,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1 }
 		}
+		this.services["5"] = {"ServiceIndex": 7, "ServiceType" : 5,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1 }
+		}
+		this.services["6"] = {"ServiceIndex": 8, "ServiceType" : 6,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1 }
+		}
+		this.services["7"] = {"ServiceIndex": 9, "ServiceType" : 9,	"ServiceVersion" : 1 }
+
+		this.services["8"] = {"ServiceIndex": 10, "ServiceType" : 10,	"ServiceVersion" : 1 }
+
+		this.services["9"] = {"ServiceIndex": 11, "ServiceType" : 11,	"ServiceVersion" : 1 }
+
+		this.services["10"] = {"ServiceIndex": 12, "ServiceType" : 12,	"ServiceVersion" : 1 }
+
+		this.services["11"] = {"ServiceIndex": 13, "ServiceType" : 13,	"ServiceVersion" : 1 }
+
+		this.services["12"] = {"ServiceIndex": 14, "ServiceType" : 14,	"ServiceVersion" : 1 }
+
+		this.services["13"] = {"ServiceIndex": 15, "ServiceType" : 15,	"ServiceVersion" : 1 }
+
+		this.services["14"] = {"ServiceIndex": 16, "ServiceType" : 16,	"ServiceVersion" : 1 }
+
+		this.services["15"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 0,
+				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
+								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
+		}
+
 
 		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
