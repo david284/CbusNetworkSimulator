@@ -469,7 +469,9 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 
 		this.services["14"] = {"ServiceIndex": 16, "ServiceType" : 16,	"ServiceVersion" : 1 }
 
-		this.services["15"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 0,
+		this.services["15"] = {"ServiceIndex": 17, "ServiceType" : 17,	"ServiceVersion" : 1 }
+
+		this.services["16"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}

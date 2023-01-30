@@ -14,6 +14,7 @@ class cbusNetworkSimulator {
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
+		this.HEARTBenabled = true;
         
         this.clients = [];
 		
@@ -565,7 +566,9 @@ class cbusNetworkSimulator {
 	// AB
 	outputHEARTB(nodeNumber) {
 		var msgData = cbusLib.encodeHEARTB(nodeNumber, 2, 3, 4);
-		this.broadcast(msgData)
+		if (this.HEARTBenabled) {
+			this.broadcast(msgData)
+		}
 	}
 	
 	

@@ -67,6 +67,7 @@ describe('cbusNetworkSimulator tests', function(){
     beforeEach (function() {
         network.clearSendArray();
         messagesIn = [];
+		network.HEARTBenabled = false;		// prevent HEARTB affecting tests
         // ensure expected CAN header is reset before each test run
         cbusLib.setCanHeader(2, 60)
    		winston.info({message: ' '});   // blank line to separate tests
