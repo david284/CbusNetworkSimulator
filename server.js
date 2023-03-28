@@ -20,6 +20,7 @@ var testModules = 	[
 	new cbusModules.CANACE8C (303),
 	new cbusModules.CANINP (304),
 	new cbusModules.CANMIO_UNIVERSAL (305),
+	new cbusModules.A53A (306),
 ]
                 
 for (var i = 0; i < testModules.length; i++) {

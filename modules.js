@@ -481,3 +481,37 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
 	}
 }
+
+module.exports.A53A = class A53A extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+		this.NAME = "A53A";
+
+		this.parameters[1] = 0xA5;								// Manufacturer Id - MERG
+		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 0x3A;								// Module Id
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 3;									// Number of event variables
+		this.parameters[6] = 12;								// Number of Node Variables
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+			
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
+		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
+				"Diagnostics": { "1": 255, "2": 127 }
+		};
+		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
+				"Diagnostics": { "1": 255, "2": 127, "3":255 }
+		}			
+
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+	}
+}
+
+
