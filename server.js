@@ -32,13 +32,15 @@ const NET_PORT = 5550;
 let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules);
 
 console.log("setup <node number> - forces specific node into setp mode");
+console.log("heartb - toggles heartb on/off");
+console.log(" ");
 
 
 // Process console input on a line by line basis
 rl.on('line', function (cmd) {
 	const msgArray = cmd.toString().split(" ");
 	if (msgArray.length > 0) {
-		switch(msgArray[0]) {
+		switch(msgArray[0].toLowerCase()) {
 			case "help":
 				console.log("");
 				console.log("");
@@ -75,6 +77,13 @@ rl.on('line', function (cmd) {
 					else {
 						console.log("setup: no node number found");
 					}
+				break;
+				case "heartb":
+						if (network.toggleHEARTB()) {
+							console.log("HEARTB enabled");
+						} else {
+							console.log("HEARTB disabled");
+						}
 				break;
 			default:
 				console.log("unknown command");

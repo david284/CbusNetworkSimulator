@@ -14,7 +14,7 @@ class cbusNetworkSimulator {
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
-		this.HEARTBenabled = true;
+		this.HEARTBenabled = false;
         
         this.clients = [];
 		
@@ -341,6 +341,15 @@ class cbusNetworkSimulator {
             break;
         }        
     }
+	
+	toggleHEARTB(){
+		if (this.HEARTBenabled) {
+			this.HEARTBenabled = false;
+		} else {
+			this.HEARTBenabled = true;
+		}
+		return this.HEARTBenabled;
+	}
 
 	startSetup(module){
 		module.startSetupMode();
