@@ -14,13 +14,16 @@ var rl = readline.createInterface({
 
 
 var testModules = 	[
-    new cbusModules.CANTEST (300),
-    new cbusModules.CANACC5 (301),
-    new cbusModules.CANACC8 (302),
-	new cbusModules.CANACE8C (303),
-	new cbusModules.CANINP (304),
-	new cbusModules.CANMIO_UNIVERSAL (305),
-	new cbusModules.A53A (306),
+    new cbusModules.CANACC4 (301),				// type 0x01
+    new cbusModules.CANACC5 (302),				// type 0x02
+    new cbusModules.CANACC8 (303),				// type 0x03
+	new cbusModules.CANACE3 (304),				// type 0x04
+	new cbusModules.CANACE8C (305),				// type 0x05
+	new cbusModules.CANMIO_UNIVERSAL (320),		// type 0x20
+	new cbusModules.CANACE3C (330),				// type 0x1E
+	new cbusModules.A53A (358),					// type 0x3A
+	new cbusModules.CANINP (362),				// type 0x3E
+    new cbusModules.CANTEST (551),				// type 0xFB
 ]
                 
 for (var i = 0; i < testModules.length; i++) {
