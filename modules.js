@@ -3,6 +3,16 @@ var winston = require('winston');		// use config from root instance
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
 
+const Flags = {
+  Consumer: 1,
+  Producer: 2,
+  FLiM: 4,
+  Bootloading: 8,
+  SelfConsuming:16,
+  Learn:32
+};
+
+
 class CbusModule {
 	constructor(nodeNumber) {
 		this.events = []
@@ -126,7 +136,7 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
 		this.parameters[5] = 3;									// Number of event variables
 		this.parameters[6] = 10;								// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
-		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
 		this.parameters[9] = 1;									// CPU type
 		this.parameters[10] = 1;								// interface type
 		this.parameters[11] = 0;                                // 11-14 load address
@@ -167,7 +177,7 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		this.parameters[5] = 3;									// Number of event variables
 		this.parameters[6] = 8;								  // Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
-		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
 		this.parameters[9] = 1;									// CPU type
 		this.parameters[10] = 1;								// interface type
 		this.parameters[11] = 0;                                // 11-14 load address
@@ -209,7 +219,7 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 		this.parameters[5] = 3;									  // Number of event variables
 		this.parameters[6] = 8;								    // Number of Node Variables
 		this.parameters[7] = 2;									  // Major version number
-		this.parameters[8] = 0xD;								  // Flags - not a producer
+		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
@@ -245,7 +255,7 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 		this.parameters[5] = 3;									// Number of event variables
 		this.parameters[6] = 1;									// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
-		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[8] = Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags - not a consumer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
@@ -280,7 +290,7 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 		this.parameters[5] = 2;									// Number of event variables
 		this.parameters[6] = 9;									// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
-		this.parameters[8] = 15;								// Flags
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
 		this.parameters[9] = 1;								  // CPU type
 		this.parameters[10] = 1;								// interface type
 		this.parameters[11] = 0;                // 11-14 load address
@@ -324,7 +334,7 @@ module.exports.CANLED64 = class CANLED64 extends CbusModule{
 		this.parameters[5] = 1;									// Number of event variables
 		this.parameters[6] = 0;									// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
-		this.parameters[8] = 1; 								// Flags - consumer only
+		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
 		this.parameters[9] = 1;								  // CPU type
 		this.parameters[10] = 1;								// interface type
 		this.parameters[11] = 0;                // 11-14 load address
@@ -359,7 +369,7 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 		this.parameters[5] = 3;									// Number of event variables
 		this.parameters[6] = 9;									// Number of Node Variables
 		this.parameters[7] = 3;									// Major version number
-		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
@@ -395,7 +405,7 @@ module.exports.CANINP = class CANINP extends CbusModule{
 		this.parameters[5] = 2;									// Number of event variables
 		this.parameters[6] = 9;									// Number of node variables
 		this.parameters[7] = 2;									// Major version number
-		this.parameters[8] = 14;								// Flags
+		this.parameters[8] = Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags - not a consumer
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
