@@ -487,20 +487,6 @@ module.exports.CANINP = class CANINP extends CbusModule{
 	}
 }
 
-module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
-	constructor(nodeNumber) {
-		super(nodeNumber);			// Call parent class constructor
-
-		this.parameters[1] = 165;								// Manufacturer Id - MERG
-		this.parameters[3] = 19;								// Module Id
-		this.parameters[8] = 7;									// Flags
-		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
-
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
-	}
-}
 
 module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 	constructor(nodeNumber) {
