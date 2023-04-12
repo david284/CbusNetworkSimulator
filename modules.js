@@ -354,6 +354,43 @@ module.exports.CANLED64 = class CANLED64 extends CbusModule{
 }
 
 //
+// ACC4_2 - ID 8
+//
+module.exports.CANACC4_2 = class CANACC4_2 extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+		this.NAME = "ACC4";
+		
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "q".charCodeAt(0);	// Minor version number - decimal 113
+		this.parameters[3] = 8;									// Module Id
+		this.parameters[4] = 128;								// Number of supported events
+		this.parameters[5] = 3;									// Number of event variables
+		this.parameters[6] = 10;								// Number of Node Variables
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
+		this.parameters[9] = 1;									// CPU type
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+		
+		super.fillNodeVariables(this.parameters[6])
+
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+
+	}
+	shouldFeedback(eventIndex) { return true;}
+}
+
+
+//
 // CANSERVO - ID 11
 //
 module.exports.CANSERVO = class CANSERVO extends CbusModule{
