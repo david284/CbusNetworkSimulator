@@ -127,7 +127,8 @@ class CbusModule {
 module.exports.CANACC4 = class CANACC4 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "ACC4";
+               //1234567//
+		this.NAME = "ACC4   ";
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "q".charCodeAt(0);	// Minor version number - decimal 113
@@ -168,7 +169,8 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
 module.exports.CANACC5 = class CANACC5 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "ACC5";
+               //1234567//
+		this.NAME = "ACC5   ";
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);	// Minor version number - decimal 117
@@ -210,7 +212,9 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 module.exports.CANACC8 = class CANACC8 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "ACC8";
+               //1234567//
+		this.NAME = "ACC8   ";
+
 
 		this.parameters[1] = 165;								  // Manufacturer Id - MERG
 		this.parameters[2] = "v".charCodeAt(0);	  // Minor version number - 118(0x76)
@@ -246,7 +250,8 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 module.exports.CANACE3 = class CANACE3 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "ACE3";
+               //1234567//
+		this.NAME = "ACE3   ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "g".charCodeAt(0);	// Minor version number - 103(0x67)
@@ -281,7 +286,8 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 module.exports.CANACE8C = class CANACE8C extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "ACE8C";
+               //1234567//
+		this.NAME = "ACE8C  ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "q".charCodeAt(0);	// Minor version number - decimal 113 (0x71)
@@ -325,6 +331,7 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 module.exports.CANLED64 = class CANLED64 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
+               //1234567//
 		this.NAME = "LED64  ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -359,7 +366,8 @@ module.exports.CANLED64 = class CANLED64 extends CbusModule{
 module.exports.CANACC4_2 = class CANACC4_2 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "ACC4";
+               //1234567//
+		this.NAME = "ACC4   ";
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "q".charCodeAt(0);	// Minor version number - decimal 113
@@ -396,6 +404,7 @@ module.exports.CANACC4_2 = class CANACC4_2 extends CbusModule{
 module.exports.CANSERVO = class CANSERVO extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
+               //1234567//
 		this.NAME = "SERVO  ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -431,6 +440,7 @@ module.exports.CANSERVO = class CANSERVO extends CbusModule{
 module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
+               //1234567//
 		this.NAME = "SERVO8C";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
@@ -459,13 +469,51 @@ module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
 	}
 }
 
+
+//
+// CANPAN - ID 29
+//
+module.exports.CANPAN = class CANPAN extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567// 
+		this.NAME = "PAN    ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "y".charCodeAt(0);	// Minor version number - decimal 121 (0x79)
+		this.parameters[3] = 29;								// Module Id
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 13;									// Number of event variables
+		this.parameters[6] = 1;								// Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;
+		this.parameters[9] = 1;								  // CPU type
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+		this.parameters[15] = 228;              // 15-18 manufacturers chip ID
+		this.parameters[16] = 26;
+		this.parameters[17] = 0;
+		this.parameters[18] = 0;
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 3;								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+	}
+}
+
+
 //
 // ACE3C - type 30
 //
 module.exports.CANACE3C = class CANACE3C extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "ACE3C";
+               //1234567//
+		this.NAME = "ACE3C  ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "a".charCodeAt(0);	// Minor version number - 97 (0x61)
@@ -496,12 +544,51 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 
 
 //
-// ACE3C - type 62
+// SOL - type 34
+//
+module.exports.CANSOL = class CANSOL extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "SOL    ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "b".charCodeAt(0);	// Minor version number - 98 (0x62)
+		this.parameters[3] = 34;								// Module Id - 0x22
+		this.parameters[4] = 128;								// Number of supported events
+		this.parameters[5] = 2;									// Number of event variables
+		this.parameters[6] = 16;								// Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Bootloading;	// Flags - not a producer
+		this.parameters[9] = 1;									// CPU type
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+    // skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+		
+		super.fillNodeVariables(this.parameters[6])
+
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0]})
+
+
+	}
+}
+
+
+//
+// INP - type 62
 //
 module.exports.CANINP = class CANINP extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "CANINP";
+               //1234567//
+		this.NAME = "INP    ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "s".charCodeAt(0);	// Minor version number - 115 (0x73)
@@ -572,7 +659,8 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 module.exports.CANCAB = class CANCAB extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "CANCAB";
+               //1234567//
+		this.NAME = "CAB    ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[3] = 8;									// Module Id
@@ -585,26 +673,11 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 	}
 }
 
-module.exports.CANPAN = class CANPAN extends CbusModule{
-	constructor(nodeNumber) {
-		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "CANPAN";
-
-		this.parameters[1] = 165;								// Manufacturer Id - MERG
-		this.parameters[3] = 29;								// Module Id
-		this.parameters[8] = 7;									// Flags
-		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
-
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
-	}
-}
-
 module.exports.CANCMD = class CANCMD extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "CANCMD";
+               //1234567//
+		this.NAME = "CMD    ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[3] = 10;								// Module Id
