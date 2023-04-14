@@ -26,8 +26,9 @@ var testModules = 	[
 	new cbusModules.CANSERVO8C (319),				  // type 0x13
 	new cbusModules.CANPAN (329),				      // type 0x1D
 	new cbusModules.CANACE3C (330),				    // type 0x1E
-	new cbusModules.CANSOL (334),				      // type 0x22
 	new cbusModules.CANMIO_UNIVERSAL (332),		// type 0x20
+	new cbusModules.CANSOL (334),				      // type 0x22
+	new cbusModules.CANMIO_SVO (350),		      // type 0x32
 	new cbusModules.CANPiNODE (358),		      // type 0x3A
 	new cbusModules.CANINP (362),				      // type 0x3E
   new cbusModules.CANTEST (1000),				    // type 0x0
