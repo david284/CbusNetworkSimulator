@@ -437,6 +437,49 @@ module.exports.CANSERVO = class CANSERVO extends CbusModule{
 }
 
 //
+// TOTI - ID 17
+//
+module.exports.CANTOTI = class CANTOTI extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "TOTI   ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "q".charCodeAt(0);	// Minor version number - decimal 113 (0x71)
+		this.parameters[3] = 17;									// Module Id
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 2;									// Number of event variables
+		this.parameters[6] = 9;									// Number of Node Variables
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
+		this.parameters[9] = 1;								  // CPU type - P18F2480
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+		this.parameters[15] = 228;              // 15-18 manufacturers chip ID
+		this.parameters[16] = 26;
+		this.parameters[17] = 0;
+		this.parameters[18] = 0;
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 3;								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
+		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
+
+		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
+				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
+		}
+	}
+}
+
+
+//
 // CANSERVO8C - ID 19
 //
 module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{

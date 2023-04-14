@@ -22,6 +22,7 @@ var testModules = 	[
 	new cbusModules.CANLED64 (307),				    // type 0x07
   new cbusModules.CANACC4_2 (308),			    // type 0x08
 	new cbusModules.CANSERVO (311),				    // type 0x0B
+	new cbusModules.CANTOTI (317),				    // type 0x11
 	new cbusModules.CANSERVO8C (319),				  // type 0x13
 	new cbusModules.CANPAN (329),				      // type 0x1D
 	new cbusModules.CANACE3C (330),				    // type 0x1E
