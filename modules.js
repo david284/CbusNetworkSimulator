@@ -109,7 +109,7 @@ class CbusModule {
 	getNodeVariables() { return this.nodeVariables}
 	fillNodeVariables(variableCount) {
 		for (var i = 0; i <= variableCount ; i++) {
-			this.nodeVariables.push(i);
+			this.nodeVariables.push(0);
 		}
 	}
 	
