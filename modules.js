@@ -721,7 +721,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = 250;								// Minor version number
-		this.parameters[3] = 251;								// Module Id
+		this.parameters[3] = 0;								  // Module Id
 		this.parameters[4] = 252;								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
 		this.parameters[6] = 25;								// Number of Node Variables
@@ -789,10 +789,10 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 	}
 }
 
-module.exports.A53A = class A53A extends CbusModule{
+module.exports.CANPiNODE = class CANPiNODE extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "A53A";
+		this.NAME = "PiNODE";
 
 		this.parameters[1] = 0xA5;								// Manufacturer Id - MERG
 		this.parameters[2] = "u".charCodeAt(0);					// Minor version number

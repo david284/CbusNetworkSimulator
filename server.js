@@ -27,9 +27,9 @@ var testModules = 	[
 	new cbusModules.CANACE3C (330),				    // type 0x1E
 	new cbusModules.CANSOL (334),				      // type 0x22
 	new cbusModules.CANMIO_UNIVERSAL (332),		// type 0x20
-	new cbusModules.A53A (358),					      // type 0x3A
+	new cbusModules.CANPiNODE (358),		      // type 0x3A
 	new cbusModules.CANINP (362),				      // type 0x3E
-  new cbusModules.CANTEST (551),				    // type 0xFB
+  new cbusModules.CANTEST (1000),				    // type 0x0
 ]
                 
 for (var i = 0; i < testModules.length; i++) {
