@@ -151,12 +151,11 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
-
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
+  	this.addNewEvent('012D0101');
+  	this.addNewEvent('012D0102');
+  	this.addNewEvent('012D0103');
+  	this.addNewEvent('012D0104');
+  	this.addNewEvent('012D0105');
 
 	}
 	shouldFeedback(eventIndex) { return true;}
@@ -193,8 +192,7 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+  	this.addNewEvent('012D0101');
 
 		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
 				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
@@ -229,18 +227,7 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 			
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
-		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
-				"Diagnostics": { "1": 255, "2": 127 }
-		};
-		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
-				"Diagnostics": { "1": 255, "2": 127, "3":255 }
-		}			
-
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -267,18 +254,6 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 			
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
-		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
-				"Diagnostics": { "1": 255, "2": 127 }
-		};
-		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
-				"Diagnostics": { "1": 255, "2": 127, "3":255 }
-		}			
-
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
 	}
 }
 
@@ -315,12 +290,7 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
-
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -359,6 +329,8 @@ module.exports.CANLED64 = class CANLED64 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
+
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -392,9 +364,7 @@ module.exports.CANACC4_2 = class CANACC4_2 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
-
+  	this.addNewEvent('012D0101');
 	}
 	shouldFeedback(eventIndex) { return true;}
 }
@@ -433,6 +403,7 @@ module.exports.CANSERVO = class CANSERVO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -469,12 +440,7 @@ module.exports.CANTOTI = class CANTOTI extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
-
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -511,6 +477,8 @@ module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
+    
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -547,6 +515,8 @@ module.exports.CANPAN = class CANPAN extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
+
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -573,18 +543,7 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 			
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
-		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
-				"Diagnostics": { "1": 255, "2": 127 }
-		};
-		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
-				"Diagnostics": { "1": 255, "2": 127, "3":255 }
-		}			
-
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -622,9 +581,7 @@ module.exports.CANACE8MIO = class CANACE8MIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0]})
-
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -659,10 +616,7 @@ module.exports.CANSOL = class CANSOL extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0]})
-
-
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -699,6 +653,8 @@ module.exports.CANMIO_SVO = class CANMIO_SVO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
+    
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -736,8 +692,7 @@ module.exports.CANMIO_OUT = class CANMIO_OUT extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -775,8 +730,33 @@ module.exports.CANBIP_OUT = class CANBIP_OUT extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0 ]})
+  	this.addNewEvent('012D0101');
+	}
+}
+
+
+//
+// CANPiNODE - ID 58
+//
+module.exports.CANPiNODE = class CANPiNODE extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "PiNODE ";
+
+		this.parameters[1] = 0xA5;								// Manufacturer Id - MERG
+		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 58;								// Module Id - 0x3A
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 3;									// Number of event variables
+		this.parameters[6] = 12;								// Number of Node Variables
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = 0xD;								// Flags - not a producer
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -803,12 +783,7 @@ module.exports.CANINP = class CANINP extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
-
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -842,18 +817,7 @@ module.exports.CANMIO_UNIVERSAL = class CANMIO_UNIVERSAL extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
-		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
-				"Diagnostics": { "1": 255, "2": 127 }
-		};
-		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
-				"Diagnostics": { "3": 255, "4": 127 }
-		}
-
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+  	this.addNewEvent('012D0101');
 	}
 }
 
@@ -868,9 +832,6 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 		this.parameters[8] = 7;									// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
 	}
 }
 
@@ -885,9 +846,6 @@ module.exports.CANCMD = class CANCMD extends CbusModule{
 		this.parameters[8] = 7;									// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
 	}
 }
 
@@ -965,42 +923,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}
 
-
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
+  	this.addNewEvent('012D0101');
 	}
 }
-
-module.exports.CANPiNODE = class CANPiNODE extends CbusModule{
-	constructor(nodeNumber) {
-		super(nodeNumber);			// Call parent class constructor
-		this.NAME = "PiNODE";
-
-		this.parameters[1] = 0xA5;								// Manufacturer Id - MERG
-		this.parameters[2] = "u".charCodeAt(0);					// Minor version number
-		this.parameters[3] = 0x3A;								// Module Id
-		this.parameters[4] = 32;								// Number of supported events
-		this.parameters[5] = 3;									// Number of event variables
-		this.parameters[6] = 12;								// Number of Node Variables
-		this.parameters[7] = 2;									// Major version number
-		this.parameters[8] = 0xD;								// Flags - not a producer
-		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
-
-		super.fillNodeVariables(this.parameters[6])
-			
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
-		this.services["1"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 2,
-				"Diagnostics": { "1": 255, "2": 127 }
-		};
-		this.services["2"] = { "ServiceIndex": 255, "ServiceType" : 3, "ServiceVersion" : 1,
-				"Diagnostics": { "1": 255, "2": 127, "3":255 }
-		}			
-
-		this.events.push({'eventName': '012D0103', "variables":[ 0, 0, 0, 0 ]})
-		this.events.push({'eventName': '012D0104', "variables":[ 0, 0, 0, 0 ]})
-	}
-}
-
 
