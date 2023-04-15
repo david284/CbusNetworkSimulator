@@ -204,6 +204,7 @@ class cbusNetworkSimulator {
             if (this.getModule(nodeNumber) != undefined) {
                 var events = this.getModule(nodeNumber).getStoredEvents();
                 for (var i = 0; i < events.length; i++) {
+                    winston.info({message: 'CBUS Network Sim: event index ' + i + ' event count ' + events.length});
                     this.outputENRSP(nodeNumber, i);
                 }
             }
@@ -321,14 +322,15 @@ class cbusNetworkSimulator {
             break;
         case 'B2': // REQEV
                 winston.info({message: 'CBUS Network Sim: received REQEV'});
-            this.outputEVANS(cbusMsg.nodeNumber, cbusMsg.eventNumber, cbusMsg.eventName, cbusMsg.eventVariableIndex)
+            this.outputEVANS(cbusMsg.nodeNumber, cbusMsg.eventNumber, cbusMsg.eventIdentifier, cbusMsg.eventVariableIndex)
             break;
         case 'D2': // EVLRN
+            winston.debug({message: 'CBUS Network Sim: EVLRN ' +  JSON.stringify(cbusMsg) });
             if (this.learningNode != undefined) {
                 // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
-                var event = this.getEventByName(this.learningNode, cbusMsg.eventName);
+                var event = this.getEventByName(this.learningNode, cbusMsg.eventIdentifier);
                 event.variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue;
-                winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' eventName ' + cbusMsg.eventName + 
+                winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' eventIdentifier ' + cbusMsg.eventIdentifier + 
                     ' taught EV ' + cbusMsg.eventVariableIndex + ' = ' + cbusMsg.eventVariableValue});
                 this.outputWRACK(this.learningNode);
             } else {
@@ -384,6 +386,7 @@ class cbusNetworkSimulator {
 
 	getEventByName(nodeNumber, eventName) {
         winston.info({message: 'CBUS Network Sim: getEventByName : nodeNumber ' + nodeNumber + ' eventName ' + eventName});
+    if (eventName != undefined) {
         if (this.getModule(nodeNumber) != undefined) {
             var events = this.getModule(nodeNumber).getStoredEvents();
             for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
@@ -392,6 +395,9 @@ class cbusNetworkSimulator {
             // if we get here then event doesn't yet exist, so create it
             return this.getModule(nodeNumber).addNewEvent(eventName);
         }
+    } else {
+        winston.warn({message: 'CBUS Network Sim: *** WARNING *** getEventByName : eventName undefined'});
+    }
 	}
 
 	deleteEventByName(nodeNumber, eventName) {
