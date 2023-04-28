@@ -30,6 +30,7 @@ var testModules = 	[
 	new cbusModules.CANACE8MIO (333),		      // type 0x21
 	new cbusModules.CANSOL (334),				      // type 0x22
 	new cbusModules.CANMIO_SVO (350),		      // type 0x32
+	new cbusModules.CANMIO_INP (351),		      // type 0x33
 	new cbusModules.CANMIO_OUT (352),		      // type 0x34
 	new cbusModules.CANBIP_OUT (353),		      // type 0x35
 	new cbusModules.CANPiNODE (358),		      // type 0x3A
