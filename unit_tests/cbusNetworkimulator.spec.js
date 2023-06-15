@@ -10,8 +10,8 @@ const cbusModules = require('./../modules.js')
 
 var testModules = 	[
                 new cbusModules.CANTEST(0),
-                new cbusModules.CANACC8(1),
-				new cbusModules.CANMIO_UNIVERSAL (65535),
+                new cbusModules.CANTEST(1),
+                new cbusModules.CANTEST(65535),
                 ]
                 
 for (var i = 0; i < testModules.length; i++) {
@@ -744,7 +744,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('SD');
      		expect(cbusLib.decode(messagesIn[2]).mnemonic).to.equal('SD');
 			done();
-		}, 30);
+		}, 50);
 	})
 
 

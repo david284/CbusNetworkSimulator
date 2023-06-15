@@ -9,14 +9,14 @@ class cbusNetworkSimulator {
     constructor(NET_PORT, suppliedModules) {
 		winston.info({message: '\nCBUS Network Sim: Starting on Port Number : ' + NET_PORT + '\n'});
         
-        this.modules = suppliedModules;
+    this.modules = suppliedModules;
 
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
 		this.HEARTBenabled = false;
         
-        this.clients = [];
+    this.clients = [];
 		
 		// we want heartbeat to be sent out every 5 seconds for each module
 		// we use a counter to send one module out each pass of the interval
@@ -298,8 +298,11 @@ class cbusNetworkSimulator {
             }
             break;
         case '96': // NVSET
-            if (this.getModule(cbusMsg.nodeNumber) != undefined) {
-                var nodeVariables = this.getModule(cbusMsg.nodeNumber).getNodeVariables();
+            var module = this.getModule(cbusMsg.nodeNumber);
+            if (module != undefined) {
+              // check if module needs to be in learn mode, and if so, is it in learn mode?
+              if ((!module.NVsetNeedsLearnMode) || ((module.NVsetNeedsLearnMode) && (this.learningNode == cbusMsg.nodeNumber))) {
+                var nodeVariables = module.getNodeVariables();
                 if (cbusMsg.nodeVariableIndex < nodeVariables.length) {
                     nodeVariables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
                     winston.info({message: 'CBUS Network Sim: NVSET Nove variable ' + cbusMsg.nodeVariableIndex + ' set to ' + cbusMsg.nodeVariableValue});
@@ -307,8 +310,12 @@ class cbusNetworkSimulator {
                 }
                 else {
                     winston.info({message: 'CBUS Network Sim:  ************ NVSET variable index exceeded ************'});
-                    this.outputCMDERR(cbusMsg.nodeNumber, 10);
+                    this.outputCMDERR(cbusMsg.nodeNumber, 10);  // 10 = Invalid Node Variable Index
                 }
+              } else {
+                  winston.info({message: 'CBUS Network Sim:  ************ NVSET needs to be in learn mode ************'});
+                  this.outputCMDERR(cbusMsg.nodeNumber, 2);   // 2 = Not in learn mode
+              }
             }
             break;
         case '98': // ASON
@@ -590,24 +597,27 @@ class cbusNetworkSimulator {
 	// AC - SD
     // SD Format: [<MjPri><MinPri=3><CANID>]<AC><NN hi><NN lo><ServiceIndex><ServiceType><ServiceVersion>
 	//
-	 outputSD(nodeNumber) {
-        if (this.getModule(nodeNumber) != undefined) {
-			var services = this.getModule(nodeNumber).getServices();
-			// A special SD message is generated with the count of all the supported services
-			var count = 0;
-			for (var key in services) { count++;};
-			winston.debug({message: 'CBUS Network Sim:  service count ' + count});
-			var msgData = cbusLib.encodeSD(nodeNumber, 0, 0, count);
-			this.broadcast(msgData);
-			winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-			// Now generate SD messages for all the supported services
-			for (var key in services) {
-				winston.info({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
-				var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
-				this.broadcast(msgData);
-				winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+	outputSD(nodeNumber) {
+    if (this.getModule(nodeNumber) != undefined) {
+      var services = this.getModule(nodeNumber).getServices();
+      // A special SD message is generated with the count of all the supported services
+      var count = 0;
+      for (var key in services) { count++;};
+      winston.debug({message: 'CBUS Network Sim:  service count ' + count});
+      var msgData = cbusLib.encodeSD(nodeNumber, 0, 0, count);
+      this.broadcast(msgData);
+      winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+      // Now generate SD messages for all the supported services
+      for (var key in services) {
+        winston.info({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
+        var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
+        this.broadcast(msgData);
+        winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 			}
 		}
+    else {
+      winston.warn({message: 'CBUS Network Sim:  ************ node number ' + nodeNumber + ' undefined ************'});
+    }
 	}
 
 

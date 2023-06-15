@@ -29,6 +29,7 @@ class CbusModule {
 			
 		this.nodeVariables = [];
 		this.services = {};
+    this.NVsetNeedsLearnMode = false;
 
 
 		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
@@ -780,6 +781,8 @@ module.exports.CANMIO_SVO = class CANMIO_SVO extends CbusModule{
 		super.fillNodeVariables(this.parameters[6])
     
   	this.addNewEvent('012D0101');
+    this.NVsetNeedsLearnMode = true;
+
 	}
 }
 
@@ -1028,6 +1031,10 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		}
 
   	this.addNewEvent('012D0101');
+  	this.addNewEvent('012D0102');
+  	this.addNewEvent('012D0103');
+  	this.addNewEvent('012D0104');
+  	this.addNewEvent('012D0105');
 	}
 }
 
