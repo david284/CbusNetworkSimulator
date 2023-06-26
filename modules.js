@@ -82,7 +82,11 @@ class CbusModule {
 		this.setupMode=false;
 		winston.info({message: 'CBUS Network Sim: Module exiting setup mode'});
 	}
-
+  
+  sendEvents(){
+    // base function that does nothing
+  }
+  
 	// Node Number
 	getNodeNumber(){return this.nodeNumber}
 	getNodeNumberHex(){return decToHex(this.nodeNumber, 4)}
@@ -157,9 +161,13 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
   	this.addNewEvent('012D0103');
   	this.addNewEvent('012D0104');
   	this.addNewEvent('012D0105');
+    
 
 	}
 	shouldFeedback(eventIndex) { return true;}
+  sendEvents() {
+    winston.info({message: 'CBUS Network Sim: module ' + this.NAME + ' send events '});
+  }
 }
 
 
@@ -200,8 +208,6 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		}
 
 	}
-
-
 	shouldFeedback(eventIndex) { return true;}
 }
 
@@ -232,7 +238,6 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 	}
 }
 
-
 //
 // CANACE3 - ID 4
 //
@@ -253,8 +258,7 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 		this.parameters[9] = 1;									  // CPU type - P18F2480
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		super.fillNodeVariables(this.parameters[6])
-			
+		super.fillNodeVariables(this.parameters[6])			
 	}
 }
 
@@ -294,7 +298,6 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
   	this.addNewEvent('012D0101');
 	}
 }
-
 
 //
 // CANLED64 - ID 7
@@ -393,7 +396,6 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 
 	}
 }
-
 
 //
 // CANCMD - ID 10

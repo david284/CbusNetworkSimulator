@@ -23,7 +23,12 @@ class cbusNetworkSimulator {
 		// so set interval time as 5 seconds divided by number of modules
 		var interval_time = 5000/this.modules.length;
 		this.interval_counter = 0;
-		setInterval(this.intervalFunc.bind(this), interval_time);
+		setInterval(this.heartbIntervalFunc.bind(this), interval_time);
+    
+    // We want to send out events every 5 seconds if enabled, so create interval for this
+    //
+		setInterval(this.eventIntervalFunc.bind(this),5000);
+    
 		
 		this.server = net.createServer(function (socket) {
 			this.socket=socket;
@@ -83,9 +88,16 @@ class cbusNetworkSimulator {
 	}
 	
 	
-	intervalFunc() {
+	heartbIntervalFunc() {
 		this.outputHEARTB(this.modules[this.interval_counter].getNodeNumber());
 		if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
+	};
+
+	eventIntervalFunc() {
+		winston.info({message: 'CBUS Network Sim: event interval'});
+    for (var i = 0; i < this.modules.length; i++) {
+      this.modules[i].sendEvents()
+    }
 	};
 
 
