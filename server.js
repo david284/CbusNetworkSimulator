@@ -49,10 +49,7 @@ const NET_PORT = 5550;
 
 let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules);
 
-console.log("setup <node number> - forces specific node into setp mode");
-console.log("heartb - toggles heartb on/off");
-console.log(" ");
-
+showHelp();
 
 // Process console input on a line by line basis
 rl.on('line', function (cmd) {
@@ -60,14 +57,7 @@ rl.on('line', function (cmd) {
 	if (msgArray.length > 0) {
 		switch(msgArray[0].toLowerCase()) {
 			case "help":
-				console.log("");
-				console.log("");
-				console.log("=== Cbus Network Simulator Help ===");
-				console.log("CTRL-C twice        - terminates running");
-				console.log("help                - shows this text");
-				console.log("setup <node number> - forces specific node into setp mode");
-				console.log("");
-				console.log("");
+        showHelp();
 				break;
 			case "setup":
 					if (msgArray.length > 1) {
@@ -95,17 +85,57 @@ rl.on('line', function (cmd) {
 					else {
 						console.log("setup: no node number found");
 					}
-				break;
-				case "heartb":
-						if (network.toggleHEARTB()) {
-							console.log("HEARTB enabled");
-						} else {
-							console.log("HEARTB disabled");
+          break;
+			case "events":
+					if (msgArray.length > 1) {
+						if (parseInt(msgArray[1])) {
+							var nodeNumber = parseInt(msgArray[1]);
+							var module = undefined;
+							// now try to find a matching modules
+							for (var i = 0; i < testModules.length; i++) {
+								if (nodeNumber == testModules[i].getNodeNumber()){
+									module = testModules[i];
+								}
+							}
+							if (module) {
+								console.log("events: matching module found");
+//								network.startSetup(module);
+							}
+							else {
+								console.log("events: no matching module");
+							}
 						}
-				break;
+						else {
+							console.log("events: argument not a number");
+						}
+					}
+					else {
+						console.log("events: no node number found");
+					}
+          break;
+      case "heartb":
+          if (network.toggleHEARTB()) {
+            console.log("HEARTB enabled");
+          } else {
+            console.log("HEARTB disabled");
+          }
+          break;
 			default:
 				console.log("unknown command");
 				break;			
 		}
 	}
 });
+
+function showHelp() {
+  console.log("");
+  console.log("=== Cbus Network Simulator Help ===");
+  console.log("CTRL-C twice         - terminates running");
+  console.log("help                 - shows this text");
+  console.log("events <node number> - forces specific node to transmit it's events");
+  console.log("heartb               - toggles the sending of heartb messages on/off");
+  console.log("setup <node number>  - forces specific node into setp mode");
+  console.log("");
+}
+
+
