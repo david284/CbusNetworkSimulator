@@ -16,6 +16,7 @@ const Flags = {
 class CbusModule {
 	constructor(nodeNumber) {
 		this.events = []
+    this.eventsEnabled = false;
 		this.CanId = 0;
 		this.setupMode = false;
 		this.nodeNumber = nodeNumber;
@@ -165,9 +166,6 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
 
 	}
 	shouldFeedback(eventIndex) { return true;}
-  sendEvents() {
-    winston.info({message: 'CBUS Network Sim: module ' + this.NAME + ' send events '});
-  }
 }
 
 
@@ -260,6 +258,12 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])			
 	}
+  sendEvents() {
+    //producer, so can send events
+    if (this.eventsEnabled) {
+      winston.info({message: 'CBUS Network Sim: module ' + this.NAME + ' send events '});
+    }
+  }
 }
 
 //

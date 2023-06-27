@@ -87,14 +87,13 @@ class cbusNetworkSimulator {
 		winston.info({message: 'CBUS Network Sim: Server closing'});
 	}
 	
-	
 	heartbIntervalFunc() {
 		this.outputHEARTB(this.modules[this.interval_counter].getNodeNumber());
 		if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
 	};
 
 	eventIntervalFunc() {
-		winston.info({message: 'CBUS Network Sim: event interval'});
+		winston.debug({message: 'CBUS Network Sim: event interval'});
     for (var i = 0; i < this.modules.length; i++) {
       this.modules[i].sendEvents()
     }
@@ -381,6 +380,20 @@ class cbusNetworkSimulator {
 	endSetup(module){
 		module.endSetupMode();
 	}
+  
+  enableEvents(nodeNumber){
+    if (nodeNumber) {
+      var module = this.getModule(nodeNumber)
+      if (module) {
+        winston.info({message: 'CBUS Network Sim: enableEvents: matching module found ' + module.NAME});
+        module.eventsEnabled = true;
+      } else {
+        winston.info({message: 'CBUS Network Sim: enableEvents: No matching module found'});
+      }
+    }
+  }
+	
+
 
 	getSendArray() {
 		return this.sendArray;

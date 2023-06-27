@@ -88,22 +88,9 @@ rl.on('line', function (cmd) {
           break;
 			case "events":
 					if (msgArray.length > 1) {
-						if (parseInt(msgArray[1])) {
-							var nodeNumber = parseInt(msgArray[1]);
-							var module = undefined;
-							// now try to find a matching modules
-							for (var i = 0; i < testModules.length; i++) {
-								if (nodeNumber == testModules[i].getNodeNumber()){
-									module = testModules[i];
-								}
-							}
-							if (module) {
-								console.log("events: matching module found");
-//								network.startSetup(module);
-							}
-							else {
-								console.log("events: no matching module");
-							}
+						var nodeNumber = parseInt(msgArray[1]);
+						if (nodeNumber) {
+							network.enableEvents(nodeNumber);
 						}
 						else {
 							console.log("events: argument not a number");
