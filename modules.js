@@ -17,6 +17,7 @@ class CbusModule {
 	constructor(nodeNumber) {
 		this.events = []
     this.eventsEnabled = false;
+    this.sendEventIndex = 0;
 		this.CanId = 0;
 		this.setupMode = false;
 		this.nodeNumber = nodeNumber;
@@ -37,21 +38,33 @@ class CbusModule {
 
 	}
 	
+  
+  //-----------------------------------------------------------------------------
 	// Module name
+  //-----------------------------------------------------------------------------
 	getNAME() { return this.NAME; };
 	
+
+  //-----------------------------------------------------------------------------
 	// CAN Id
+  //-----------------------------------------------------------------------------
 	getCanId() { return this.CanId; }
 	setCanId(canId) { 
         this.CanId = canId; 
 		winston.info({message: 'CBUS Network Sim: CBUS module: CAN_ID ' +  this.CanId + ' node: ' + this.nodeNumber + " " + this.constructor.name});
     }
 	
+
+  //-----------------------------------------------------------------------------
 	// Flags
+  //-----------------------------------------------------------------------------
 	getFlags() {return this.parameters[8]}
 	getFlagsHex() {return decToHex(this.parameters[8], 2)}
 	
+
+  //-----------------------------------------------------------------------------
 	// Events
+  //-----------------------------------------------------------------------------
 	addNewEvent(eventName) {
 		winston.info({message: 'CBUS Network Sim: add new event: node ' + this.getNodeNumber() + ' eventName ' + eventName});
 		var variables = [];
@@ -59,18 +72,42 @@ class CbusModule {
 		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
 		this.events.push({'eventName': eventName, "variables": variables});
 		winston.info({message: 'CBUS Network Sim: events: ' + JSON.stringify(this.events)});
-		return this.events[this.events.length - 1];		// adjust as array is zero based	
-        
+		return this.events[this.events.length - 1];		// adjust as array is zero based	    
 	}
-    clearStoredEvents() { this.events = []; }
+  clearStoredEvents() { this.events = []; }
 	getStoredEvents() { return this.events; }
 	getStoredEventsCount() { return this.events.length; }
-    getFreeSpace() { return 100; }
+  getFreeSpace() { return 100; }
+  sendEvents(){
+    if (this.eventsEnabled) {
+      if(this.isProducer()) { 
+        winston.debug({message: 'modules: node ' + this.nodeNumber + ' ' + this.NAME + ' is a producer'})
+        if (this.events.length > 0) {
+          if (this.sendEventIndex < this.events.length ) {
+            var event = this.events[this.sendEventIndex]
+            winston.debug({message: 'modules: node ' + this.nodeNumber + ' ' + this.NAME + ' event ' + event.eventName})
+            this.sendEventIndex++
+            return event
+          } else {
+            this.sendEventIndex = 0
+          }
+        }
+      } else {
+        winston.debug({message: 'modules: node ' + this.nodeNumber + ' ' + this.NAME +' is not a producer'})
+      }
+    }
+  }
+
 	
+  //-----------------------------------------------------------------------------
 	// Feedback
+  //-----------------------------------------------------------------------------
 	shouldFeedback() { return false;}
 	
+
+  //-----------------------------------------------------------------------------
 	//setup mode
+  //-----------------------------------------------------------------------------
 	inSetupMode(){
 		return this.setupMode;
 		winston.info({message: 'CBUS Network Sim: Module setup mode ' + this.setupMode});
@@ -84,11 +121,10 @@ class CbusModule {
 		winston.info({message: 'CBUS Network Sim: Module exiting setup mode'});
 	}
   
-  sendEvents(){
-    // base function that does nothing
-  }
-  
+
+  //-----------------------------------------------------------------------------
 	// Node Number
+  //-----------------------------------------------------------------------------
 	getNodeNumber(){return this.nodeNumber}
 	getNodeNumberHex(){return decToHex(this.nodeNumber, 4)}
 	setNodeNumber(newNodeNumber) { 
@@ -99,29 +135,46 @@ class CbusModule {
 			winston.info({message: 'CBUS Network Sim: Module has new node number ' + newNodeNumber});
 		}
 	}
+
 	
+  //-----------------------------------------------------------------------------
 	// Module Id
+  //-----------------------------------------------------------------------------
 	getModuleId() {return this.parameters[3]}
 	getModuleIdHex() {return decToHex(this.parameters[3], 2)}
 
+
+  //-----------------------------------------------------------------------------
 	// Manufacturer Id
+  //-----------------------------------------------------------------------------
 	getManufacturerId() {return this.parameters[1]}
 	getManufacturerIdHex() {return decToHex(this.parameters[1], 2)}
 
+
+  //-----------------------------------------------------------------------------
 	// Parameters
+  //-----------------------------------------------------------------------------
 	getParameter(i) {return this.parameters[i]}
+  isProducer() {
+    return this.parameters[8] & Flags.Producer
+  }
+
 	
+  //-----------------------------------------------------------------------------
 	// nodeVariables
+  //-----------------------------------------------------------------------------
 	getNodeVariables() { return this.nodeVariables}
 	fillNodeVariables(variableCount) {
 		for (var i = 0; i <= variableCount ; i++) {
 			this.nodeVariables.push(0);
 		}
 	}
+
 	
+  //-----------------------------------------------------------------------------
 	// Services
+  //-----------------------------------------------------------------------------
 	getServices() { 
-//		winston.debug({message: 'CBUS Network Sim: services ' + JSON.stringify(this.services)});
 		return this.services; 
 	};
 }
@@ -257,13 +310,12 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])			
+  	this.addNewEvent('012D0101');
+  	this.addNewEvent('012D0102');
+  	this.addNewEvent('012D0103');
+  	this.addNewEvent('012D0104');
+  	this.addNewEvent('012D0105');
 	}
-  sendEvents() {
-    //producer, so can send events
-    if (this.eventsEnabled) {
-      winston.info({message: 'CBUS Network Sim: module ' + this.NAME + ' send events '});
-    }
-  }
 }
 
 //

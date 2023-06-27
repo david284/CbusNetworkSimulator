@@ -95,7 +95,10 @@ class cbusNetworkSimulator {
 	eventIntervalFunc() {
 		winston.debug({message: 'CBUS Network Sim: event interval'});
     for (var i = 0; i < this.modules.length; i++) {
-      this.modules[i].sendEvents()
+      var event = this.modules[i].sendEvents()
+      if (event) {
+        this.outputACON(this.modules[i].nodeNumber, parseInt(event.eventName.substr(4,4), 16))
+      }
     }
 	};
 
