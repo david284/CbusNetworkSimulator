@@ -372,9 +372,17 @@ class cbusNetworkSimulator {
 		return this.HEARTBenabled;
 	}
 
-	startSetup(module){
-		module.startSetupMode();
-		this.outputRQNN(module.getNodeNumber())
+	startSetup(nodeNumber){
+    if (nodeNumber) {
+      var module = this.getModule(nodeNumber)
+      if (module) {
+        winston.info({message: 'CBUS Network Sim: startSetup: matching module found - node ' + nodeNumber + ' ' + module.NAME});
+        module.startSetupMode()
+        this.outputRQNN(nodeNumber)
+      } else {
+        winston.info({message: 'CBUS Network Sim: startSetup: No matching module found'});
+      }
+    }
 	}
 
 	endSetup(module){
@@ -385,8 +393,13 @@ class cbusNetworkSimulator {
     if (nodeNumber) {
       var module = this.getModule(nodeNumber)
       if (module) {
-        winston.info({message: 'CBUS Network Sim: enableEvents: matching module found ' + module.NAME});
-        module.eventsEnabled = true;
+        if (module.eventsEnabled) {
+          winston.info({message: 'CBUS Network Sim: enableEvents: disabled for node ' + nodeNumber + ' ' + module.NAME});
+          module.eventsEnabled = false
+        } else {
+          winston.info({message: 'CBUS Network Sim: enableEvents: enabled for node ' + nodeNumber + ' ' + module.NAME});
+          module.eventsEnabled = true;
+        }
       } else {
         winston.info({message: 'CBUS Network Sim: enableEvents: No matching module found'});
       }

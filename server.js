@@ -61,28 +61,13 @@ rl.on('line', function (cmd) {
 				break;
 			case "setup":
 					if (msgArray.length > 1) {
-						if (parseInt(msgArray[1])) {
-							var nodeNumber = parseInt(msgArray[1]);
-							var module = undefined;
-							// now try to find a matching modules
-							for (var i = 0; i < testModules.length; i++) {
-								if (nodeNumber == testModules[i].getNodeNumber()){
-									module = testModules[i];
-								}
-							}
-							if (module) {
-								console.log("setup: matching module found");
-								network.startSetup(module);
-							}
-							else {
-								console.log("setup: no matching module");
-							}
-						}
-						else {
+						var nodeNumber = parseInt(msgArray[1]);
+						if (nodeNumber) {
+							network.startSetup(nodeNumber);
+						}	else {
 							console.log("setup: argument not a number");
 						}
-					}
-					else {
+					}	else {
 						console.log("setup: no node number found");
 					}
           break;
@@ -91,12 +76,10 @@ rl.on('line', function (cmd) {
 						var nodeNumber = parseInt(msgArray[1]);
 						if (nodeNumber) {
 							network.enableEvents(nodeNumber);
-						}
-						else {
+						}	else {
 							console.log("events: argument not a number");
 						}
-					}
-					else {
+					}	else {
 						console.log("events: no node number found");
 					}
           break;
@@ -119,7 +102,7 @@ function showHelp() {
   console.log("=== Cbus Network Simulator Help ===");
   console.log("CTRL-C twice         - terminates running");
   console.log("help                 - shows this text");
-  console.log("events <node number> - forces specific node to transmit it's events");
+  console.log("events <node number> - toggles transmitting of events on/off for specific node");
   console.log("heartb               - toggles the sending of heartb messages on/off");
   console.log("setup <node number>  - forces specific node into setp mode");
   console.log("");
