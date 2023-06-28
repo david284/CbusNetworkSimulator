@@ -216,7 +216,7 @@ class cbusNetworkSimulator {
         case '57': // NERD
             var nodeNumber = cbusMsg.nodeNumber
             if (this.getModule(nodeNumber) != undefined) {
-                var events = this.getModule(nodeNumber).getStoredEvents();
+                var events = this.getModule(nodeNumber).events;
                 for (var i = 0; i < events.length; i++) {
                     winston.info({message: 'CBUS Network Sim: event index ' + i + ' event count ' + events.length});
                     this.outputENRSP(nodeNumber, i);
@@ -439,7 +439,7 @@ class cbusNetworkSimulator {
         winston.info({message: 'CBUS Network Sim: getEventByName : nodeNumber ' + nodeNumber + ' eventName ' + eventName});
     if (eventName != undefined) {
         if (this.getModule(nodeNumber) != undefined) {
-            var events = this.getModule(nodeNumber).getStoredEvents();
+            var events = this.getModule(nodeNumber).events;
             for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
                 if (events[eventIndex].eventName == eventName) return events[eventIndex];
             }
@@ -452,7 +452,7 @@ class cbusNetworkSimulator {
 	}
 
 	deleteEventByName(nodeNumber, eventName) {
-		var events = this.getModule(nodeNumber).getStoredEvents();
+		var events = this.getModule(nodeNumber).events;
 		var eventIndex;
 		// look for matching eventName in array
 		for (var index = 0; index < events.length; index++) {
@@ -471,7 +471,7 @@ class cbusNetworkSimulator {
 		winston.info({message: 'CBUS Network Sim: Processing accessory Event ' + opCode + " Event Name " + eventName });
 		// check each module to see if they have a matching event
 		for (var i = 0; i < this.modules.length; i++) {
-			var events = this.modules[i].getStoredEvents();
+			var events = this.modules[i].events;
 			var nodeNumber = this.modules[i].nodeNumber;
 			// look for matching eventName in array
 			for (var index = 0; index < events.length; index++) {
@@ -676,7 +676,7 @@ class cbusNetworkSimulator {
 	// B5
 	outputNEVAL(nodeNumber, eventIndex, eventVariableIndex) {
         if (this.getModule(nodeNumber) != undefined) {
-            var events = this.getModule(nodeNumber).getStoredEvents();
+            var events = this.getModule(nodeNumber).events;
             if (eventIndex < events.length) {
                 if (eventVariableIndex < events[eventIndex].variables.length) {
                     var eventVariableValue = events[eventIndex].variables[eventVariableIndex];
@@ -802,7 +802,7 @@ class cbusNetworkSimulator {
 	outputENRSP(nodeNumber, eventIndex) {
         if (this.getModule(nodeNumber) != undefined) {
             if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
-                var events = this.getModule(nodeNumber).getStoredEvents();
+                var events = this.getModule(nodeNumber).events;
                 var eventName = events[eventIndex].eventName
                 var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
                 this.broadcast(msgData)

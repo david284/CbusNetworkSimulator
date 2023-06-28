@@ -52,7 +52,6 @@ class CbusModule {
 		return this.events[this.events.length - 1];		// adjust as array is zero based	    
 	}
   clearStoredEvents() { this.events = []; }
-	getStoredEvents() { return this.events; }
 	getStoredEventsCount() { return this.events.length; }
   getFreeSpace() { return 100; }
   sendEvents(){
