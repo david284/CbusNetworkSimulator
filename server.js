@@ -13,7 +13,7 @@ var rl = readline.createInterface({
 
 
 
-var testModules = 	[
+var modules = [
   new cbusModules.CANACC4 (301),				    // type 0x01
   new cbusModules.CANACC5 (302),				    // type 0x02
   new cbusModules.CANACC8 (303),				    // type 0x03
@@ -41,13 +41,13 @@ var testModules = 	[
   new cbusModules.CANTEST (1000),				    // type 0x0
 ]
                 
-for (var i = 0; i < testModules.length; i++) {
-    testModules[i].CanId = i+10;
+for (var i = 0; i < modules.length; i++) {
+    modules[i].CanId = i+10;
 }
 
 const NET_PORT = 5550;
 
-let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules);
+let network = new simuator.cbusNetworkSimulator(NET_PORT, modules);
 
 showHelp();
 
@@ -56,26 +56,11 @@ rl.on('line', function (cmd) {
 	const msgArray = cmd.toString().split(" ");
 	if (msgArray.length > 0) {
 		switch(msgArray[0].toLowerCase()) {
-			case "help":
-        showHelp();
-				break;
-			case "setup":
-					if (msgArray.length > 1) {
-						var nodeNumber = parseInt(msgArray[1]);
-						if (nodeNumber) {
-							network.startSetup(nodeNumber);
-						}	else {
-							console.log("setup: argument not a number");
-						}
-					}	else {
-						console.log("setup: no node number found");
-					}
-          break;
 			case "events":
 					if (msgArray.length > 1) {
 						var nodeNumber = parseInt(msgArray[1]);
 						if (nodeNumber) {
-							network.enableEvents(nodeNumber);
+							network.toggleSendEvents(nodeNumber);
 						}	else {
 							console.log("events: argument not a number");
 						}
@@ -89,6 +74,24 @@ rl.on('line', function (cmd) {
           } else {
             console.log("HEARTB disabled");
           }
+          break;
+			case "help":
+        showHelp();
+				break;
+      case "modules":
+        showModules();
+        break;
+			case "setup":
+					if (msgArray.length > 1) {
+						var nodeNumber = parseInt(msgArray[1]);
+						if (nodeNumber) {
+							network.startSetup(nodeNumber);
+						}	else {
+							console.log("setup: argument not a number");
+						}
+					}	else {
+						console.log("setup: no node number found");
+					}
           break;
 			default:
 				console.log("unknown command");
@@ -104,8 +107,15 @@ function showHelp() {
   console.log("help                 - shows this text");
   console.log("events <node number> - toggles transmitting of events on/off for specific node");
   console.log("heartb               - toggles the sending of heartb messages on/off");
+  console.log("modules              - shows list of modules");
   console.log("setup <node number>  - forces specific node into setp mode");
   console.log("");
+}
+
+function showModules() {
+  for (var i = 0; i < modules.length; i++) {
+		console.log('module ' + modules[i].NAME + ' node number ' + modules[i].nodeNumber);
+  }
 }
 
 

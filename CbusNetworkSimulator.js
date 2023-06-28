@@ -394,17 +394,11 @@ class cbusNetworkSimulator {
 		module.endSetupMode();
 	}
   
-  enableEvents(nodeNumber){
+ toggleSendEvents(nodeNumber){
     if (nodeNumber) {
       var module = this.getModule(nodeNumber)
       if (module) {
-        if (module.eventsEnabled) {
-          winston.info({message: 'CBUS Network Sim: enableEvents: disabled for node ' + nodeNumber + ' ' + module.NAME});
-          module.eventsEnabled = false
-        } else {
-          winston.info({message: 'CBUS Network Sim: enableEvents: enabled for node ' + nodeNumber + ' ' + module.NAME});
-          module.eventsEnabled = true;
-        }
+        module.toggleSendEvents()
       } else {
         winston.info({message: 'CBUS Network Sim: enableEvents: No matching module found'});
       }

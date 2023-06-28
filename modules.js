@@ -29,7 +29,7 @@ class CbusModule {
 		this.nodeVariables = [];
 		this.services = {};
     this.NVsetNeedsLearnMode = false;
-		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
+		winston.info({message: 'modules: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
 	} // end constructor
 	
 
@@ -37,33 +37,42 @@ class CbusModule {
 	// Events
   //-----------------------------------------------------------------------------
 	addNewEvent(eventName) {
-		winston.debug({message: 'CBUS Network Sim: add new event: node ' + this.nodeNumber + ' eventName ' + eventName});
+		winston.debug({message: 'modules: add new event: node ' + this.nodeNumber + ' eventName ' + eventName});
 		var variables = [];
 		// create variable array of correct length for specific module
 		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
 		this.events.push({'eventName': eventName, "variables": variables});
-		winston.debug({message: 'CBUS Network Sim: events: ' + JSON.stringify(this.events)});
+		winston.debug({message: 'modules: events: ' + JSON.stringify(this.events)});
 		return this.events[this.events.length - 1];		// adjust as array is zero based	    
 	}
   clearStoredEvents() { this.events = []; }
 	getStoredEventsCount() { return this.events.length; }
   getFreeSpace() { return 100; }
-  sendEvents(){
-    if (this.eventsEnabled) {
+  toggleSendEvents(value){
       if(this.isProducer()) { 
-        winston.debug({message: 'modules: node ' + this.nodeNumber + ' ' + this.NAME + ' is a producer'})
-        if (this.events.length > 0) {
-          if (this.sendEventIndex < this.events.length ) {
-            var event = this.events[this.sendEventIndex]
-            winston.debug({message: 'modules: node ' + this.nodeNumber + ' ' + this.NAME + ' event ' + event.eventName})
-            this.sendEventIndex++
-            return event
-          } else {
-            this.sendEventIndex = 0
-          }
+        if (this.eventsEnabled) {
+          winston.info({message: 'modules: enableEvents: disabled for node ' + this.nodeNumber + ' ' + this.NAME});
+          this.eventsEnabled = false
+        } else {
+          winston.info({message: 'modules: enableEvents: enabled for node ' + this.nodeNumber + ' ' + this.NAME});
+          this.eventsEnabled = true;
         }
       } else {
-        winston.debug({message: 'modules: node ' + this.nodeNumber + ' ' + this.NAME +' is not a producer'})
+        winston.info({message: 'modules: Events not enabled - node ' + this.nodeNumber + ' ' + this.NAME +' is not a producer'})
+        this.eventsEnabled = false
+      }
+  }  
+  sendEvents(){
+    if (this.eventsEnabled) {
+      if (this.events.length > 0) {
+        if (this.sendEventIndex < this.events.length ) {
+          var event = this.events[this.sendEventIndex]
+          winston.debug({message: 'modules: node ' + this.nodeNumber + ' ' + this.NAME + ' event ' + event.eventName})
+          this.sendEventIndex++
+          return event
+        } else {
+          this.sendEventIndex = 0
+        }
       }
     }
   }
@@ -80,15 +89,15 @@ class CbusModule {
   //-----------------------------------------------------------------------------
 	inSetupMode(){
 		return this.setupMode;
-		winston.info({message: 'CBUS Network Sim: Module setup mode ' + this.setupMode});
+		winston.info({message: 'modules: Module setup mode ' + this.setupMode});
 	}
 	startSetupMode(){ 
 		this.setupMode=true;
-		winston.info({message: 'CBUS Network Sim: Module in setup mode'});
+		winston.info({message: 'modules: Module in setup mode'});
 	}
 	endSetupMode(){ 
 		this.setupMode=false;
-		winston.info({message: 'CBUS Network Sim: Module exiting setup mode'});
+		winston.info({message: 'modules: Module exiting setup mode'});
 	}
   
 
@@ -101,7 +110,7 @@ class CbusModule {
 		if (this.inSetupMode()){
 			this.nodeNumber = newNodeNumber;
 			this.endSetupMode();
-			winston.info({message: 'CBUS Network Sim: Module has new node number ' + newNodeNumber});
+			winston.info({message: 'modules: Module has new node number ' + newNodeNumber});
 		}
 	}
 
