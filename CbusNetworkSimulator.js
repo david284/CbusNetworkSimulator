@@ -643,7 +643,7 @@ class cbusNetworkSimulator {
 	//
 	outputSD(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
-      var services = this.getModule(nodeNumber).getServices();
+      var services = this.getModule(nodeNumber).services;
       // A special SD message is generated with the count of all the supported services
       var count = 0;
       for (var key in services) { count++;};
@@ -714,7 +714,7 @@ class cbusNetworkSimulator {
 	//
 	 outputDGN(nodeNumber, ServiceIndex, DiagnosticCode) {
         if (this.getModule(nodeNumber) != undefined) {
-			var services = this.getModule(nodeNumber).getServices();
+			var services = this.getModule(nodeNumber).services;
 			for (var key in services) {
 				winston.info({message: 'CBUS Network Sim:  serviceIndex ' + services[key]["ServiceIndex"]});
 				if ((ServiceIndex == 0) || (ServiceIndex == services[key]["ServiceIndex"])) {
