@@ -243,7 +243,7 @@ class cbusNetworkSimulator {
         case '6F': // CMDERR - sent by node
             break;
         case '71': // NVRD
-			var nodeVariables = this.getModule(cbusMsg.nodeNumber).getNodeVariables();
+			var nodeVariables = this.getModule(cbusMsg.nodeNumber).nodeVariables;
 			// do either matching index, or all indexes if 0
 			for (var i = 1; i < nodeVariables.length; i++) {
 				if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
@@ -317,7 +317,7 @@ class cbusNetworkSimulator {
             if (module != undefined) {
               // check if module needs to be in learn mode, and if so, is it in learn mode?
               if ((!module.NVsetNeedsLearnMode) || ((module.NVsetNeedsLearnMode) && (this.learningNode == cbusMsg.nodeNumber))) {
-                var nodeVariables = module.getNodeVariables();
+                var nodeVariables = module.nodeVariables;
                 if (cbusMsg.nodeVariableIndex < nodeVariables.length) {
                     nodeVariables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
                     winston.info({message: 'CBUS Network Sim: NVSET Nove variable ' + cbusMsg.nodeVariableIndex + ' set to ' + cbusMsg.nodeVariableValue});
