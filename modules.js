@@ -24,18 +24,12 @@ class CbusModule {
 		this.NAME = "UNINIT";
 		this.parameters = 	[];
 		// prefill parameters array to 21 elements to match dev guide 6c & put length in element 0 (not including 0)
-		for (var i = 0; i < 21 ; i++) {
-			this.parameters.push(0);
-		}
+		for (var i = 0; i < 21 ; i++) {	this.parameters.push(0); }
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
-			
 		this.nodeVariables = [];
 		this.services = {};
     this.NVsetNeedsLearnMode = false;
-
-
 		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
-
 	} // end constructor
 	
 
@@ -43,12 +37,12 @@ class CbusModule {
 	// Events
   //-----------------------------------------------------------------------------
 	addNewEvent(eventName) {
-		winston.info({message: 'CBUS Network Sim: add new event: node ' + this.nodeNumber + ' eventName ' + eventName});
+		winston.debug({message: 'CBUS Network Sim: add new event: node ' + this.nodeNumber + ' eventName ' + eventName});
 		var variables = [];
 		// create variable array of correct length for specific module
 		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
 		this.events.push({'eventName': eventName, "variables": variables});
-		winston.info({message: 'CBUS Network Sim: events: ' + JSON.stringify(this.events)});
+		winston.debug({message: 'CBUS Network Sim: events: ' + JSON.stringify(this.events)});
 		return this.events[this.events.length - 1];		// adjust as array is zero based	    
 	}
   clearStoredEvents() { this.events = []; }
