@@ -43,7 +43,7 @@ class CbusModule {
 	// Events
   //-----------------------------------------------------------------------------
 	addNewEvent(eventName) {
-		winston.info({message: 'CBUS Network Sim: add new event: node ' + this.getNodeNumber() + ' eventName ' + eventName});
+		winston.info({message: 'CBUS Network Sim: add new event: node ' + this.nodeNumber + ' eventName ' + eventName});
 		var variables = [];
 		// create variable array of correct length for specific module
 		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
@@ -102,7 +102,6 @@ class CbusModule {
   //-----------------------------------------------------------------------------
 	// Node Number
   //-----------------------------------------------------------------------------
-	getNodeNumber(){return this.nodeNumber}
 	getNodeNumberHex(){return decToHex(this.nodeNumber, 4)}
 	setNodeNumber(newNodeNumber) { 
 		// can only accept new node number if in setup mode

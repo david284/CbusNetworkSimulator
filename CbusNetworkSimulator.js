@@ -88,7 +88,7 @@ class cbusNetworkSimulator {
 	}
 	
 	heartbIntervalFunc() {
-		this.outputHEARTB(this.modules[this.interval_counter].getNodeNumber());
+		this.outputHEARTB(this.modules[this.interval_counter].nodeNumber);
 		if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
 	};
 
@@ -152,14 +152,14 @@ class cbusNetworkSimulator {
         switch (cbusMsg.opCode) {
         case '0D': //QNN
             for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
-                this.outputPNN(this.modules[moduleIndex].getNodeNumber());
+                this.outputPNN(this.modules[moduleIndex].nodeNumber);
             }
             break;
         case '10': // RQNP
             for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
 				// should only respond if in setup mode
 				if (this.modules[moduleIndex].inSetupMode()){
-					this.outputPARAMS(this.modules[moduleIndex].getNodeNumber());
+					this.outputPARAMS(this.modules[moduleIndex].nodeNumber);
 				}
             }
             break;
@@ -425,13 +425,13 @@ class cbusNetworkSimulator {
 
 	getModule(nodeNumber) {
 		for (var i = 0; i < this.modules.length; i++) {
-			if (this.modules[i].getNodeNumber() == nodeNumber) return this.modules[i];
+			if (this.modules[i].nodeNumber == nodeNumber) return this.modules[i];
 		}
 	}
 
 	getModuleIndex(nodeNumber) {
 		for (var i = 0; i < this.modules.length; i++) {
-			if (this.modules[i].getNodeNumber() == nodeNumber) return i;
+			if (this.modules[i].nodeNumber == nodeNumber) return i;
 		}
 	}
 
@@ -472,7 +472,7 @@ class cbusNetworkSimulator {
 		// check each module to see if they have a matching event
 		for (var i = 0; i < this.modules.length; i++) {
 			var events = this.modules[i].getStoredEvents();
-			var nodeNumber = this.modules[i].getNodeNumber();
+			var nodeNumber = this.modules[i].nodeNumber;
 			// look for matching eventName in array
 			for (var index = 0; index < events.length; index++) {
 				if (events[index].eventName == eventName) {
