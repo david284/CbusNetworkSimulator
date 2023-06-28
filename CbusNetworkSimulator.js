@@ -21,7 +21,8 @@ class cbusNetworkSimulator {
 		// we want heartbeat to be sent out every 5 seconds for each module
 		// we use a counter to send one module out each pass of the interval
 		// so set interval time as 5 seconds divided by number of modules
-		var interval_time = 5000/this.modules.length;
+//		var interval_time = 5000/this.modules.length;
+		var interval_time = 5000;
 		this.interval_counter = 0;
 		setInterval(this.heartbIntervalFunc.bind(this), interval_time);
     
@@ -86,11 +87,16 @@ class cbusNetworkSimulator {
 		this.server.close();
 		winston.info({message: 'CBUS Network Sim: Server closing'});
 	}
+
 	
 	heartbIntervalFunc() {
-		this.outputHEARTB(this.modules[this.interval_counter].nodeNumber);
-		if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
+		if (this.HEARTBenabled) {
+      winston.info({message: 'CBUS Network Sim: HEARTB Interval - node ' + this.modules[this.interval_counter].nodeNumber});
+      this.outputHEARTB(this.modules[this.interval_counter].nodeNumber);
+      if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
+    }
 	};
+
 
 	eventIntervalFunc() {
 		winston.debug({message: 'CBUS Network Sim: event interval'});
@@ -103,49 +109,110 @@ class cbusNetworkSimulator {
 	};
 
 
-    processExtendedMessage(cbusMsg) {
-        winston.info({message: 'CBUS Network Sim: <<< Received EXTENDED ID message ' + cbusMsg.text });
-        if (cbusMsg.type == 'CONTROL') {
-            switch (cbusMsg.SPCMD) {
-                case 0:
-                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_NOP <<< '});
-                    break;
-                case 1:
-                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_RESET  <<< '});
-                    break;
-                case 2:
-                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_RST_CHKSM <<< '});
-                    break;
-                case 3:
-                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_CHK_RUN <<< '});
-                    this.outputExtResponse(1)   // 1 = ok ( 0 = not ok)
-                    break;
-                case 4:
-                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_BOOT_TEST <<< '});
-                    this.outputExtResponse(2)   // 2 = confirm boot load
-                    break;
-                default:
-                    winston.info({message: 'CBUS Network Sim: <<< Received control message UNKNOWN COMMAND ' + cbusMsg.text});
-                    break
+	toggleHEARTB(){
+		if (this.HEARTBenabled) {
+			this.HEARTBenabled = false;
+      winston.info({message: 'CBUS Network Sim: heartb disabled'});
+		} else {
+			this.HEARTBenabled = true;
+      winston.info({message: 'CBUS Network Sim: heartb enabled'});
+		}
+		return this.HEARTBenabled;
+	}
+
+
+	startSetup(nodeNumber){
+    if (nodeNumber != undefined) {
+      var module = this.getModule(nodeNumber)
+      if (module) {
+        winston.info({message: 'CBUS Network Sim: startSetup: matching module found - node ' + nodeNumber + ' ' + module.NAME});
+        module.startSetupMode()
+        this.outputRQNN(nodeNumber)
+      } else {
+        winston.info({message: 'CBUS Network Sim: startSetup: No matching module found'});
+      }
+    } else {
+      winston.warn({message: 'CBUS Network Sim: startSetup: nodeNumber undefined'});
+    }
+	}
+
+
+	endSetup(module){
+		module.endSetupMode();
+	}
+
+  
+ toggleSendEvents(nodeNumber){
+    if (nodeNumber) {
+      var module = this.getModule(nodeNumber)
+      if (module) {
+        module.toggleSendEvents()
+      } else {
+        winston.info({message: 'CBUS Network Sim: enableEvents: No matching module found'});
+      }
+    }
+  }
+	
+
+	getSendArray() {
+		return this.sendArray;
+	}
+
+	
+	clearSendArray() {
+		this.sendArray = [];
+	}
+
+
+	getModule(nodeNumber) {
+		for (var i = 0; i < this.modules.length; i++) {
+			if (this.modules[i].nodeNumber == nodeNumber) return this.modules[i];
+		}
+	}
+
+
+	getModuleIndex(nodeNumber) {
+		for (var i = 0; i < this.modules.length; i++) {
+			if (this.modules[i].nodeNumber == nodeNumber) return i;
+		}
+	}
+
+
+	getEventByName(nodeNumber, eventName) {
+        winston.info({message: 'CBUS Network Sim: getEventByName : nodeNumber ' + nodeNumber + ' eventName ' + eventName});
+    if (eventName != undefined) {
+        if (this.getModule(nodeNumber) != undefined) {
+            var events = this.getModule(nodeNumber).events;
+            for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
+                if (events[eventIndex].eventName == eventName) return events[eventIndex];
             }
+            // if we get here then event doesn't yet exist, so create it
+            return this.getModule(nodeNumber).addNewEvent(eventName);
         }
+    } else {
+        winston.warn({message: 'CBUS Network Sim: *** WARNING *** getEventByName : eventName undefined'});
     }
-    
-    broadcast(msgData) {
-        this.clients.forEach(function (client) {
-            client.write(msgData);
-			winston.debug({message: 'CBUS Network Sim: Transmit >>>> Port: ' + client.remotePort 
-							+ ' Data: ' + msgData + " " + cbusLib.decode(msgData).text});
-        });
-    }
+	}
 
-    
-    outputExtResponse(value) {
-		var msgData = cbusLib.encode_EXT_RESPONSE(value)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT >>>  ' + msgData + " >>> "});
-    }
 
+	deleteEventByName(nodeNumber, eventName) {
+		var events = this.getModule(nodeNumber).events;
+		var eventIndex;
+		// look for matching eventName in array
+		for (var index = 0; index < events.length; index++) {
+			if (events[index].eventName == eventName) {
+				eventIndex = index;
+				break;
+			}
+		}
+		// if a matching eventName was found, then remove entry from array
+		if (eventIndex != undefined) { events.splice(eventIndex, 1) }
+	}
+
+
+//-------------------------------------------------------------------------------
+// Process incoming messages
+//-------------------------------------------------------------------------------
 
     processStandardMessage(cbusMsg) {
         winston.info({message: 'CBUS Network Sim: <<< Received Standard ID message ' + cbusMsg.text});
@@ -366,99 +433,6 @@ class cbusNetworkSimulator {
         }        
     }
 	
-	toggleHEARTB(){
-		if (this.HEARTBenabled) {
-			this.HEARTBenabled = false;
-		} else {
-			this.HEARTBenabled = true;
-		}
-		return this.HEARTBenabled;
-	}
-
-	startSetup(nodeNumber){
-    if (nodeNumber != undefined) {
-      var module = this.getModule(nodeNumber)
-      if (module) {
-        winston.info({message: 'CBUS Network Sim: startSetup: matching module found - node ' + nodeNumber + ' ' + module.NAME});
-        module.startSetupMode()
-        this.outputRQNN(nodeNumber)
-      } else {
-        winston.info({message: 'CBUS Network Sim: startSetup: No matching module found'});
-      }
-    } else {
-      winston.warn({message: 'CBUS Network Sim: startSetup: nodeNumber undefined'});
-    }
-	}
-
-	endSetup(module){
-		module.endSetupMode();
-	}
-  
- toggleSendEvents(nodeNumber){
-    if (nodeNumber) {
-      var module = this.getModule(nodeNumber)
-      if (module) {
-        module.toggleSendEvents()
-      } else {
-        winston.info({message: 'CBUS Network Sim: enableEvents: No matching module found'});
-      }
-    }
-  }
-	
-
-
-	getSendArray() {
-		return this.sendArray;
-	}
-
-	
-	clearSendArray() {
-		this.sendArray = [];
-	}
-
-
-	getModule(nodeNumber) {
-		for (var i = 0; i < this.modules.length; i++) {
-			if (this.modules[i].nodeNumber == nodeNumber) return this.modules[i];
-		}
-	}
-
-	getModuleIndex(nodeNumber) {
-		for (var i = 0; i < this.modules.length; i++) {
-			if (this.modules[i].nodeNumber == nodeNumber) return i;
-		}
-	}
-
-	getEventByName(nodeNumber, eventName) {
-        winston.info({message: 'CBUS Network Sim: getEventByName : nodeNumber ' + nodeNumber + ' eventName ' + eventName});
-    if (eventName != undefined) {
-        if (this.getModule(nodeNumber) != undefined) {
-            var events = this.getModule(nodeNumber).events;
-            for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
-                if (events[eventIndex].eventName == eventName) return events[eventIndex];
-            }
-            // if we get here then event doesn't yet exist, so create it
-            return this.getModule(nodeNumber).addNewEvent(eventName);
-        }
-    } else {
-        winston.warn({message: 'CBUS Network Sim: *** WARNING *** getEventByName : eventName undefined'});
-    }
-	}
-
-	deleteEventByName(nodeNumber, eventName) {
-		var events = this.getModule(nodeNumber).events;
-		var eventIndex;
-		// look for matching eventName in array
-		for (var index = 0; index < events.length; index++) {
-			if (events[index].eventName == eventName) {
-				eventIndex = index;
-				break;
-			}
-		}
-		// if a matching eventName was found, then remove entry from array
-		if (eventIndex != undefined) { events.splice(eventIndex, 1) }
-	}
-
 	processAccessoryEvent(opCode, nodeNumber, eventNumber) {
         // turn the input node & event numbers into an event name
         var eventName = decToHex(nodeNumber, 4) + decToHex(eventNumber,4)
@@ -484,156 +458,170 @@ class cbusNetworkSimulator {
 		}
 	}
 
+    processExtendedMessage(cbusMsg) {
+        winston.info({message: 'CBUS Network Sim: <<< Received EXTENDED ID message ' + cbusMsg.text });
+        if (cbusMsg.type == 'CONTROL') {
+            switch (cbusMsg.SPCMD) {
+                case 0:
+                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_NOP <<< '});
+                    break;
+                case 1:
+                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_RESET  <<< '});
+                    break;
+                case 2:
+                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_RST_CHKSM <<< '});
+                    break;
+                case 3:
+                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_CHK_RUN <<< '});
+                    this.outputExtResponse(1)   // 1 = ok ( 0 = not ok)
+                    break;
+                case 4:
+                    winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_BOOT_TEST <<< '});
+                    this.outputExtResponse(2)   // 2 = confirm boot load
+                    break;
+                default:
+                    winston.info({message: 'CBUS Network Sim: <<< Received control message UNKNOWN COMMAND ' + cbusMsg.text});
+                    break
+            }
+        }
+    }
+    
+
+//-------------------------------------------------------------------------------
+// Output message routines, ordered by opcode
+//-------------------------------------------------------------------------------
 
 	// 21
 	 outputKLOC(session) {
 		var msgData = cbusLib.encodeKLOC(session);
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT >>>  ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+    this.broadcast(msgData)
 	}
 
 
 	// 50
 	 outputRQNN(nodeNumber) {
 		var msgData = cbusLib.encodeRQNN(nodeNumber);
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT >>>  ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+    this.broadcast(msgData)
 	}
 	
 
 	// 52
 	 outputNNACK(nodeNumber) {
-        var msgData = cbusLib.encodeNNACK(nodeNumber)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+    var msgData = cbusLib.encodeNNACK(nodeNumber)
+    this.broadcast(msgData)
 	}
 	
 
 	// 59
 	 outputWRACK(nodeNumber) {
-        var msgData = cbusLib.encodeWRACK(nodeNumber)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+    var msgData = cbusLib.encodeWRACK(nodeNumber)
+    this.broadcast(msgData)
 	}
 	
 
 	// 60
 	 outputDFUN(session, fn1, fn2) {
-        var msgData = cbusLib.encodeDFUN(session, fn1, fn2)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+    var msgData = cbusLib.encodeDFUN(session, fn1, fn2)
+    this.broadcast(msgData)
 	}
 
 
 	// 63
 	 outputERR(data1, data2, errorNumber) {
-        var msgData = cbusLib.encodeERR(data1, data2, errorNumber)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+    var msgData = cbusLib.encodeERR(data1, data2, errorNumber)
+    this.broadcast(msgData)
 	}
 
 
 	// 6F
 	 outputCMDERR(nodeNumber, errorNumber) {
-        var msgData = cbusLib.encodeCMDERR(nodeNumber, errorNumber)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+    var msgData = cbusLib.encodeCMDERR(nodeNumber, errorNumber)
+    this.broadcast(msgData)
 	}
 
 
 	// 70
 	 outputEVNLF(nodeNumber) {
-        if (this.getModule(nodeNumber) != undefined) {
-            var msgData = cbusLib.encodeEVNLF(nodeNumber, this.getModule(nodeNumber).getFreeSpace())
-            this.broadcast(msgData)
-            winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-        }
+    if (this.getModule(nodeNumber) != undefined) {
+        var msgData = cbusLib.encodeEVNLF(nodeNumber, this.getModule(nodeNumber).getFreeSpace())
+        this.broadcast(msgData)
+    }
 	}
 
 
 	// 74
-	 outputNUMEV(nodeNumber) {
-        if (this.getModule(nodeNumber) != undefined) {
-            var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
-            var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
-            this.broadcast(msgData)
-            winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-        }
+	outputNUMEV(nodeNumber) {
+    if (this.getModule(nodeNumber) != undefined) {
+        var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
+        var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
+        this.broadcast(msgData)
+    }
 		else{
-            winston.info({message: 'CBUS Network Sim:  module undefined for nodeNumber : ' + nodeNumber});
+      winston.info({message: 'CBUS Network Sim:  module undefined for nodeNumber : ' + nodeNumber});
 		}
 	}
 
 	// 90
-	 outputACON(nodeNumber, eventNumber) {
-        var msgData = cbusLib.encodeACON(nodeNumber, eventNumber)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+	outputACON(nodeNumber, eventNumber) {
+    var msgData = cbusLib.encodeACON(nodeNumber, eventNumber)
+    this.broadcast(msgData)
 	}
 
 
 	// 91
-	 outputACOF(nodeNumber, eventNumber) {
-        var msgData = cbusLib.encodeACOF(nodeNumber, eventNumber)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+	outputACOF(nodeNumber, eventNumber) {
+    var msgData = cbusLib.encodeACOF(nodeNumber, eventNumber)
+    this.broadcast(msgData)
 	}
 
 
 	// 97
-	 outputNVANS(nodeNumber, nodeVariableIndex, nodeVariableValue) {
-        if (this.getModule(nodeNumber) != undefined) {
+	outputNVANS(nodeNumber, nodeVariableIndex, nodeVariableValue) {
+    if (this.getModule(nodeNumber) != undefined) {
 			var msgData = cbusLib.encodeNVANS(nodeNumber, nodeVariableIndex, nodeVariableValue)
 			this.broadcast(msgData)
-			winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 		}
 	}
 
 
 	// 98
 	 outputASON(nodeNumber, deviceNumber) {
-        var msgData = cbusLib.encodeASON(nodeNumber, deviceNumber)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+    var msgData = cbusLib.encodeASON(nodeNumber, deviceNumber)
+    this.broadcast(msgData)
 	}
 
 
 	// 99
 	 outputASOF(nodeNumber, deviceNumber) {
-        var msgData = cbusLib.encodeASOF(nodeNumber, deviceNumber)
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+    var msgData = cbusLib.encodeASOF(nodeNumber, deviceNumber)
+    this.broadcast(msgData)
 	}
 
 
 	// 9B
 	 outputPARAN(nodeNumber, parameterIndex) {
-        if (this.getModule(nodeNumber) != undefined) {
-            if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
-                var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
-                var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
-                this.broadcast(msgData)
-                winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-            }
-            else {
-                winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
-                this.outputCMDERR(nodeNumber, 9)                    
-            }
-        }
+    if (this.getModule(nodeNumber) != undefined) {
+      if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
+        var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
+        var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
+        this.broadcast(msgData)
+      } else {
+        winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
+        this.outputCMDERR(nodeNumber, 9)                    
+      }
+    }
 	}
 	
 
 	// AB
 	outputHEARTB(nodeNumber) {
 		var msgData = cbusLib.encodeHEARTB(nodeNumber, 2, 3, 4);
-		if (this.HEARTBenabled) {
-			this.broadcast(msgData)
-		}
+		this.broadcast(msgData)
 	}
 	
 	
 	// AC - SD
-    // SD Format: [<MjPri><MinPri=3><CANID>]<AC><NN hi><NN lo><ServiceIndex><ServiceType><ServiceVersion>
+  // SD Format: [<MjPri><MinPri=3><CANID>]<AC><NN hi><NN lo><ServiceIndex><ServiceType><ServiceVersion>
 	//
 	outputSD(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
@@ -647,10 +635,9 @@ class cbusNetworkSimulator {
       winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
       // Now generate SD messages for all the supported services
       for (var key in services) {
-        winston.info({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
+        winston.debug({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
         var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
         this.broadcast(msgData);
-        winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 			}
 		}
     else {
@@ -663,30 +650,26 @@ class cbusNetworkSimulator {
 	outputGRSP(nodeNumber, requestOpCode, serviceType, result) {
 		var msgData = cbusLib.encodeGRSP(nodeNumber, requestOpCode, serviceType, result);
 		this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 	}
 	
 	
 	// B5
 	outputNEVAL(nodeNumber, eventIndex, eventVariableIndex) {
-        if (this.getModule(nodeNumber) != undefined) {
-            var events = this.getModule(nodeNumber).events;
-            if (eventIndex < events.length) {
-                if (eventVariableIndex < events[eventIndex].variables.length) {
-                    var eventVariableValue = events[eventIndex].variables[eventVariableIndex];
-                    var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
-                    this.broadcast(msgData)
-                    winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-                }
-                else {
-                    winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
-                    this.outputCMDERR(nodeNumber, 6)                    
-                }
-            }
-            else {
-                winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
-            }
+    if (this.getModule(nodeNumber) != undefined) {
+      var events = this.getModule(nodeNumber).events;
+      if (eventIndex < events.length) {
+        if (eventVariableIndex < events[eventIndex].variables.length) {
+          var eventVariableValue = events[eventIndex].variables[eventVariableIndex];
+          var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
+          this.broadcast(msgData)
+        } else {
+          winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+          this.outputCMDERR(nodeNumber, 6)                    
         }
+      } else {
+        winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
+      }
+    }
 	}
 	
 	// B6
@@ -694,20 +677,19 @@ class cbusNetworkSimulator {
 		 // *** quick hack to ensure that PNN is sent with CANID specific to each module (needs fixing for all opcodes!)
 		var CANID = cbusLib.getCanHeader().CAN_ID;			// save for later
 		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-        var msgData = cbusLib.encodePNN(nodeNumber, 
-            this.getModule(nodeNumber).getManufacturerId(),
-            this.getModule(nodeNumber).getModuleId(),
-            this.getModule(nodeNumber).getFlags())
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+      var msgData = cbusLib.encodePNN(nodeNumber, 
+          this.getModule(nodeNumber).getManufacturerId(),
+          this.getModule(nodeNumber).getModuleId(),
+          this.getModule(nodeNumber).getFlags())
+      this.broadcast(msgData)
 		cbusLib.setCanHeader(2, CANID);
 	}
 	
 	// C7 - DGN
-    // DGN Format: [<MjPri><MinPri=3><CANID>]<C7><NN hi><NN lo><ServiceIndex><DiagnosticCode><DiagnosticValue>
+  // DGN Format: [<MjPri><MinPri=3><CANID>]<C7><NN hi><NN lo><ServiceIndex><DiagnosticCode><DiagnosticValue>
 	//
 	 outputDGN(nodeNumber, ServiceIndex, DiagnosticCode) {
-        if (this.getModule(nodeNumber) != undefined) {
+    if (this.getModule(nodeNumber) != undefined) {
 			var services = this.getModule(nodeNumber).services;
 			for (var key in services) {
 				winston.info({message: 'CBUS Network Sim:  serviceIndex ' + services[key]["ServiceIndex"]});
@@ -718,7 +700,6 @@ class cbusNetworkSimulator {
 							winston.info({message: 'CBUS Network Sim:  diagnostic ' + code});
 							var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], code, services[key]["Diagnostics"][code]);
 							this.broadcast(msgData);
-							winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 						}
 					}
 				}
@@ -729,84 +710,76 @@ class cbusNetworkSimulator {
 
 	// D3
 	outputEVANS(nodeNumber, eventNumber, eventName, eventVariableIndex) {
-        winston.info({message: 'CBUS Network Sim: EVANS : Node ' + nodeNumber + " eventNumber " + eventNumber + " eventName "+ eventName + " evIndex " + eventVariableIndex});
-        if (this.getModule(this.learningNode) != undefined) {
-            var event = this.getEventByName(this.learningNode, eventName);
-            if (event != undefined) {
-                if (eventVariableIndex < event.variables.length) {
-                    var eventVariableValue = event.variables[eventVariableIndex];
-                    var msgData = cbusLib.encodeEVANS(nodeNumber, eventNumber, eventVariableIndex, eventVariableValue)
-                    this.broadcast(msgData)
-                    winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-                }
-                else {
-                    winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
-                    this.outputCMDERR(nodeNumber, 6)    // Invalid event variable index                    
-                }
-            }
-            else {
-                winston.info({message: 'CBUS Network Sim:  ************ event number not valid ' + eventNumber + ' ************'});
-                this.outputCMDERR(nodeNumber, 7)        // invalid event                    
-            }
+    winston.info({message: 'CBUS Network Sim: EVANS : Node ' + nodeNumber + " eventNumber " + eventNumber + " eventName "+ eventName + " evIndex " + eventVariableIndex});
+    if (this.getModule(this.learningNode) != undefined) {
+      var event = this.getEventByName(this.learningNode, eventName);
+      if (event != undefined) {
+        if (eventVariableIndex < event.variables.length) {
+          var eventVariableValue = event.variables[eventVariableIndex];
+          var msgData = cbusLib.encodeEVANS(nodeNumber, eventNumber, eventVariableIndex, eventVariableValue)
+          this.broadcast(msgData)
+        } else {
+          winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+          this.outputCMDERR(nodeNumber, 6)    // Invalid event variable index                    
         }
-        else {
-                winston.info({message: 'CBUS Network Sim:  ************ node number not valid ' + nodeNumber + ' ************'});
-        }
+      } else {
+        winston.info({message: 'CBUS Network Sim:  ************ event number not valid ' + eventNumber + ' ************'});
+        this.outputCMDERR(nodeNumber, 7)        // invalid event                    
+      }
+    }
+    else {
+      winston.info({message: 'CBUS Network Sim:  ************ node number not valid ' + nodeNumber + ' ************'});
+    }
 	}
 	
 	//E2
 	//[<MjPri><MinPri=3><CANID>]<E2><char1><char2><char3><char4><char5><char6><char7>
 	outputNAME(name) {
-            var msgData = cbusLib.encodeNAME(name);
-            this.broadcast(msgData);
-            winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+    var msgData = cbusLib.encodeNAME(name);
+    this.broadcast(msgData);
 	}
 	
 
 	// E7 - ESD
-    // ESD Format: [<MjPri><MinPri=3><CANID>]<E7><NN hi><NN lo><ServiceIndex><Data1><Data2><Data3><Data4>
+  // ESD Format: [<MjPri><MinPri=3><CANID>]<E7><NN hi><NN lo><ServiceIndex><Data1><Data2><Data3><Data4>
 	//
 	 outputESD(nodeNumber, ServiceIndex) {
-        if (this.getModule(nodeNumber) != undefined) {
+    if (this.getModule(nodeNumber) != undefined) {
 			var msgData = cbusLib.encodeESD(nodeNumber, ServiceIndex, 1, 2, 3, 4);
 			this.broadcast(msgData);
-			winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
 		}
 	}
 
 
 	// EF
 	 outputPARAMS(nodeNumber) {
-        if (this.getModule(nodeNumber) != undefined) {
-            var msgData = cbusLib.encodePARAMS(
-                this.getModule(nodeNumber).getParameter(1), 
-                this.getModule(nodeNumber).getParameter(2), 
-                this.getModule(nodeNumber).getParameter(3), 
-                this.getModule(nodeNumber).getParameter(4), 
-                this.getModule(nodeNumber).getParameter(5), 
-                this.getModule(nodeNumber).getParameter(6), 
-                this.getModule(nodeNumber).getParameter(7), 
-                )
-            this.broadcast(msgData)
-            winston.info({message: 'CBUS Network Sim:  OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
-        }
+    if (this.getModule(nodeNumber) != undefined) {
+      var msgData = cbusLib.encodePARAMS(
+        this.getModule(nodeNumber).getParameter(1), 
+        this.getModule(nodeNumber).getParameter(2), 
+        this.getModule(nodeNumber).getParameter(3), 
+        this.getModule(nodeNumber).getParameter(4), 
+        this.getModule(nodeNumber).getParameter(5), 
+        this.getModule(nodeNumber).getParameter(6), 
+        this.getModule(nodeNumber).getParameter(7), 
+        )
+      this.broadcast(msgData)
+    }
 	}
 	
 	//F2
 	outputENRSP(nodeNumber, eventIndex) {
-        if (this.getModule(nodeNumber) != undefined) {
-            if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
-                var events = this.getModule(nodeNumber).events;
-                var eventName = events[eventIndex].eventName
-                var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
-                this.broadcast(msgData)
-                winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-            }
-            else {
-                winston.info({message: 'CBUS Network Sim:  ************ EVENT index exceeded ************'});
-                this.outputCMDERR(nodeNumber, 7);
-            }
-        }
+    if (this.getModule(nodeNumber) != undefined) {
+      if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
+        var events = this.getModule(nodeNumber).events;
+        var eventName = events[eventIndex].eventName
+        var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
+        this.broadcast(msgData)
+      } else {
+        winston.info({message: 'CBUS Network Sim:  ************ EVENT index exceeded ************'});
+        this.outputCMDERR(nodeNumber, 7);
+      }
+    }
 	}
 
 
@@ -815,9 +788,25 @@ class cbusNetworkSimulator {
 		// Ficticious opcode - 'FC' currently unused 
 		// Format: [<MjPri><MinPri=3><CANID>]<FC><NN hi><NN lo>
 		var msgData = ':SB780N' + 'FC' + decToHex(nodeNumber, 4) + ';';     // don't have an encode for ficticious opcode
-        this.broadcast(msgData)
-		winston.info({message: 'CBUS Network Sim:  OUT>> ' + msgData + " " + cbusLib.decode(msgData).text});
+    this.broadcast(msgData)
 	}
+
+
+  broadcast(msgData) {
+    winston.info({message: 'CBUS Network Sim: OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+    this.clients.forEach(function (client) {
+      client.write(msgData);
+      winston.debug({message: 'CBUS Network Sim: Transmit >>>> Port: ' + client.remotePort 
+        + ' Data: ' + msgData + " " + cbusLib.decode(msgData).text});
+    });
+  }
+
+  
+  outputExtResponse(value) {
+    var msgData = cbusLib.encode_EXT_RESPONSE(value)
+    this.broadcast(msgData)
+  }
+
 }
 
 module.exports = {

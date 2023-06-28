@@ -69,11 +69,7 @@ rl.on('line', function (cmd) {
 					}
           break;
       case "heartb":
-          if (network.toggleHEARTB()) {
-            console.log("HEARTB enabled");
-          } else {
-            console.log("HEARTB disabled");
-          }
+          network.toggleHEARTB()
           break;
 			case "help":
         showHelp();

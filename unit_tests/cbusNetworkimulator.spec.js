@@ -1028,6 +1028,30 @@ describe('cbusNetworkSimulator tests', function(){
 		}, 10);
 	})
 
+  // AB HEARTB
+  //
+	function GetTestCase_HEARTB () {
+		var testCases = [];
+		for (a1 = 1; a1 < 4; a1++) {
+			if (a1 == 1) arg1 = 0;
+			if (a1 == 2) arg1 = 1;
+			if (a1 == 3) arg1 = 65535;
+				testCases.push({'nodeNumber':arg1});
+		}
+		return testCases;
+	}
+
+	itParam("HEARTB test ${JSON.stringify(value)}",  GetTestCase_HEARTB(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN HEARTB test ' + JSON.stringify(value)});
+		network.outputHEARTB(value.nodeNumber)
+		setTimeout(function(){
+			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('AB');
+			expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
+			done();
+		}, 10);
+	})
+    
+
     // AC SD
     //
 	function GetTestCase_SD () {
