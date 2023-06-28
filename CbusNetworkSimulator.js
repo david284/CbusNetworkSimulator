@@ -268,7 +268,7 @@ class cbusNetworkSimulator {
             if (module != undefined) {
 				switch (cbusMsg.ModeNumber){
 					case 0:		// setup mode
-						this.startSetup(module);
+						this.startSetup(cbusMsg.nodeNumber);
 						this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
 						break;
 					case 1:
@@ -376,7 +376,7 @@ class cbusNetworkSimulator {
 	}
 
 	startSetup(nodeNumber){
-    if (nodeNumber) {
+    if (nodeNumber != undefined) {
       var module = this.getModule(nodeNumber)
       if (module) {
         winston.info({message: 'CBUS Network Sim: startSetup: matching module found - node ' + nodeNumber + ' ' + module.NAME});
@@ -385,6 +385,8 @@ class cbusNetworkSimulator {
       } else {
         winston.info({message: 'CBUS Network Sim: startSetup: No matching module found'});
       }
+    } else {
+      winston.warn({message: 'CBUS Network Sim: startSetup: nodeNumber undefined'});
     }
 	}
 

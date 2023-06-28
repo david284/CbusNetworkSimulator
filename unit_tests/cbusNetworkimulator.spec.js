@@ -132,8 +132,8 @@ describe('cbusNetworkSimulator tests', function(){
     //
 	it("RQNP test", function (done) {
 		winston.info({message: 'TEST: BEGIN RQNP test'});
-        msgData = cbusLib.encodeRQNP();
-		network.startSetup(testModules[0]);
+    msgData = cbusLib.encodeRQNP();
+		network.startSetup(testModules[0].nodeNumber);
 		// Putting a module into setup will trigger an RQNN message to begin with - so expect two messages to be received
     	testClient.write(msgData);
 		setTimeout(function(){
@@ -150,7 +150,7 @@ describe('cbusNetworkSimulator tests', function(){
 	it("RQMN test", function (done) {
 		winston.info({message: 'TEST: BEGIN RQMN test'});
         msgData = cbusLib.encodeRQMN();
-		network.startSetup(testModules[0]);
+		network.startSetup(testModules[0].nodeNumber);
 		// Putting a module into setup will trigger an RQNN message to begin with - so expect two messages to be received
     	testClient.write(msgData);
 		setTimeout(function(){
@@ -204,7 +204,7 @@ describe('cbusNetworkSimulator tests', function(){
 	itParam("SNN test ${JSON.stringify(value)}", GetTestCase_SNN(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN SNN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeSNN(value.nodeNumber);
-		network.startSetup(testModules[0]);
+		network.startSetup(testModules[0].nodeNumber);
 		// Putting a module into setup will trigger an RQNN message to begin with - so expect two messages to be received
     	testClient.write(msgData);
 		setTimeout(function(){
