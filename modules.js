@@ -36,24 +36,7 @@ class CbusModule {
 
 		winston.info({message: 'CBUS Network Sim: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
 
-	}
-	
-  
-  //-----------------------------------------------------------------------------
-	// CAN Id
-  //-----------------------------------------------------------------------------
-	getCanId() { return this.CanId; }
-	setCanId(canId) { 
-        this.CanId = canId; 
-		winston.info({message: 'CBUS Network Sim: CBUS module: CAN_ID ' +  this.CanId + ' node: ' + this.nodeNumber + " " + this.constructor.name});
-    }
-	
-
-  //-----------------------------------------------------------------------------
-	// Flags
-  //-----------------------------------------------------------------------------
-	getFlags() {return this.parameters[8]}
-	getFlagsHex() {return decToHex(this.parameters[8], 2)}
+	} // end constructor
 	
 
   //-----------------------------------------------------------------------------
@@ -132,23 +115,15 @@ class CbusModule {
 
 	
   //-----------------------------------------------------------------------------
-	// Module Id
-  //-----------------------------------------------------------------------------
-	getModuleId() {return this.parameters[3]}
-	getModuleIdHex() {return decToHex(this.parameters[3], 2)}
-
-
-  //-----------------------------------------------------------------------------
-	// Manufacturer Id
-  //-----------------------------------------------------------------------------
-	getManufacturerId() {return this.parameters[1]}
-	getManufacturerIdHex() {return decToHex(this.parameters[1], 2)}
-
-
-  //-----------------------------------------------------------------------------
 	// Parameters
   //-----------------------------------------------------------------------------
 	getParameter(i) {return this.parameters[i]}
+	getManufacturerId() {return this.parameters[1]}
+	getManufacturerIdHex() {return decToHex(this.parameters[1], 2)}
+	getModuleId() {return this.parameters[3]}
+	getModuleIdHex() {return decToHex(this.parameters[3], 2)}
+	getFlags() {return this.parameters[8]}
+	getFlagsHex() {return decToHex(this.parameters[8], 2)}
   isProducer() {
     return this.parameters[8] & Flags.Producer
   }
@@ -162,7 +137,6 @@ class CbusModule {
 			this.nodeVariables.push(0);
 		}
 	}
-
 	
 }
 

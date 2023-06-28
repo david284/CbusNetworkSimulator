@@ -42,7 +42,7 @@ var testModules = 	[
 ]
                 
 for (var i = 0; i < testModules.length; i++) {
-    testModules[i].setCanId(i+10);
+    testModules[i].CanId = i+10;
 }
 
 const NET_PORT = 5550;

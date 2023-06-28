@@ -15,7 +15,7 @@ var testModules = 	[
                 ]
                 
 for (var i = 0; i < testModules.length; i++) {
-    testModules[i].setCanId(i+80);
+    testModules[i].CanId= i+80;
 }
 
 
