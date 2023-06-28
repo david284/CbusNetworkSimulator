@@ -91,26 +91,26 @@ describe('cbusNetworkSimulator tests', function(){
     //
 	it("multiple client test", function (done) {
 		winston.info({message: 'TEST: BEGIN multiple client test'});
-        testClient2 = new net.Socket()
-        testClient2.connect(NET_PORT, NET_ADDRESS)
-        var secondClientData = ''
-        testClient2.on('data', function (data) {
-            secondClientData = data
-            winston.info({message: 'TEST: Test client2: data received ' + data});
-        })
-        msgData = cbusLib.encodeQNN();
-        setTimeout(function(){
-            testClient.write(msgData);
-        }, 10);
-        setTimeout(function(){
-            expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
-            expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
-            expect(secondClientData.length).to.be.above(0, '2nd client data');
-            setTimeout(function(){
-                testClient2.end()
-                done();
-            }, 100);
-        }, 100);
+    testClient2 = new net.Socket()
+    testClient2.connect(NET_PORT, NET_ADDRESS)
+    var secondClientData = ''
+    testClient2.on('data', function (data) {
+      secondClientData = data
+      winston.info({message: 'TEST: Test client2: data received ' + data});
+    })
+    msgData = cbusLib.encodeQNN();
+    setTimeout(function(){
+      testClient.write(msgData);
+    }, 10);
+    setTimeout(function(){
+      expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+      expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
+      expect(secondClientData.length).to.be.above(0, '2nd client data');
+      setTimeout(function(){
+        testClient2.end()
+        done();
+      }, 100);
+    }, 100);
 	})
 
 

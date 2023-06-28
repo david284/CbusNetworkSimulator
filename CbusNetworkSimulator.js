@@ -168,7 +168,7 @@ class cbusNetworkSimulator {
             for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
 				// should only accept node number if in setup mode
 				if (this.modules[moduleIndex].inSetupMode()){
-					this.outputNAME(this.modules[moduleIndex].getNAME());
+					this.outputNAME(this.modules[moduleIndex].NAME);
 				}
             }
             break;
