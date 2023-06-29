@@ -91,7 +91,7 @@ class cbusNetworkSimulator {
 	
 	heartbIntervalFunc() {
 		if (this.HEARTBenabled) {
-      winston.info({message: 'CBUS Network Sim: HEARTB Interval - node ' + this.modules[this.interval_counter].nodeNumber});
+      winston.debug({message: 'CBUS Network Sim: HEARTB Interval - node ' + this.modules[this.interval_counter].nodeNumber});
       this.outputHEARTB(this.modules[this.interval_counter].nodeNumber);
       if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
     }
@@ -493,6 +493,7 @@ class cbusNetworkSimulator {
 
 	// 21
 	 outputKLOC(session) {
+//		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 		var msgData = cbusLib.encodeKLOC(session);
     this.broadcast(msgData)
 	}
@@ -500,6 +501,7 @@ class cbusNetworkSimulator {
 
 	// 50
 	 outputRQNN(nodeNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 		var msgData = cbusLib.encodeRQNN(nodeNumber);
     this.broadcast(msgData)
 	}
@@ -507,6 +509,7 @@ class cbusNetworkSimulator {
 
 	// 52
 	 outputNNACK(nodeNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeNNACK(nodeNumber)
     this.broadcast(msgData)
 	}
@@ -514,6 +517,7 @@ class cbusNetworkSimulator {
 
 	// 59
 	 outputWRACK(nodeNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeWRACK(nodeNumber)
     this.broadcast(msgData)
 	}
@@ -535,6 +539,7 @@ class cbusNetworkSimulator {
 
 	// 6F
 	 outputCMDERR(nodeNumber, errorNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeCMDERR(nodeNumber, errorNumber)
     this.broadcast(msgData)
 	}
@@ -543,8 +548,9 @@ class cbusNetworkSimulator {
 	// 70
 	 outputEVNLF(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
-        var msgData = cbusLib.encodeEVNLF(nodeNumber, this.getModule(nodeNumber).getFreeSpace())
-        this.broadcast(msgData)
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+      var msgData = cbusLib.encodeEVNLF(nodeNumber, this.getModule(nodeNumber).getFreeSpace())
+      this.broadcast(msgData)
     }
 	}
 
@@ -552,9 +558,10 @@ class cbusNetworkSimulator {
 	// 74
 	outputNUMEV(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
-        var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
-        var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
-        this.broadcast(msgData)
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+      var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
+      var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
+      this.broadcast(msgData)
     }
 		else{
       winston.info({message: 'CBUS Network Sim:  module undefined for nodeNumber : ' + nodeNumber});
@@ -563,6 +570,7 @@ class cbusNetworkSimulator {
 
 	// 90
 	outputACON(nodeNumber, eventNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeACON(nodeNumber, eventNumber)
     this.broadcast(msgData)
 	}
@@ -570,6 +578,7 @@ class cbusNetworkSimulator {
 
 	// 91
 	outputACOF(nodeNumber, eventNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeACOF(nodeNumber, eventNumber)
     this.broadcast(msgData)
 	}
@@ -578,6 +587,7 @@ class cbusNetworkSimulator {
 	// 97
 	outputNVANS(nodeNumber, nodeVariableIndex, nodeVariableValue) {
     if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 			var msgData = cbusLib.encodeNVANS(nodeNumber, nodeVariableIndex, nodeVariableValue)
 			this.broadcast(msgData)
 		}
@@ -586,6 +596,7 @@ class cbusNetworkSimulator {
 
 	// 98
 	 outputASON(nodeNumber, deviceNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeASON(nodeNumber, deviceNumber)
     this.broadcast(msgData)
 	}
@@ -593,6 +604,7 @@ class cbusNetworkSimulator {
 
 	// 99
 	 outputASOF(nodeNumber, deviceNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeASOF(nodeNumber, deviceNumber)
     this.broadcast(msgData)
 	}
@@ -601,6 +613,7 @@ class cbusNetworkSimulator {
 	// 9B
 	 outputPARAN(nodeNumber, parameterIndex) {
     if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
         var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
         var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
@@ -615,6 +628,7 @@ class cbusNetworkSimulator {
 
 	// AB
 	outputHEARTB(nodeNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 		var msgData = cbusLib.encodeHEARTB(nodeNumber, 2, 3, 4);
 		this.broadcast(msgData)
 	}
@@ -625,6 +639,7 @@ class cbusNetworkSimulator {
 	//
 	outputSD(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       var services = this.getModule(nodeNumber).services;
       // A special SD message is generated with the count of all the supported services
       var count = 0;
@@ -648,6 +663,7 @@ class cbusNetworkSimulator {
 
 	// AF
 	outputGRSP(nodeNumber, requestOpCode, serviceType, result) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 		var msgData = cbusLib.encodeGRSP(nodeNumber, requestOpCode, serviceType, result);
 		this.broadcast(msgData)
 	}
@@ -656,6 +672,7 @@ class cbusNetworkSimulator {
 	// B5
 	outputNEVAL(nodeNumber, eventIndex, eventVariableIndex) {
     if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       var events = this.getModule(nodeNumber).events;
       if (eventIndex < events.length) {
         if (eventVariableIndex < events[eventIndex].variables.length) {
@@ -674,15 +691,12 @@ class cbusNetworkSimulator {
 	
 	// B6
 	 outputPNN(nodeNumber) {
-		 // *** quick hack to ensure that PNN is sent with CANID specific to each module (needs fixing for all opcodes!)
-		var CANID = cbusLib.getCanHeader().CAN_ID;			// save for later
 		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       var msgData = cbusLib.encodePNN(nodeNumber, 
           this.getModule(nodeNumber).getManufacturerId(),
           this.getModule(nodeNumber).getModuleId(),
           this.getModule(nodeNumber).getFlags())
       this.broadcast(msgData)
-		cbusLib.setCanHeader(2, CANID);
 	}
 	
 	// C7 - DGN
@@ -690,6 +704,7 @@ class cbusNetworkSimulator {
 	//
 	 outputDGN(nodeNumber, ServiceIndex, DiagnosticCode) {
     if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 			var services = this.getModule(nodeNumber).services;
 			for (var key in services) {
 				winston.info({message: 'CBUS Network Sim:  serviceIndex ' + services[key]["ServiceIndex"]});
@@ -712,6 +727,7 @@ class cbusNetworkSimulator {
 	outputEVANS(nodeNumber, eventNumber, eventName, eventVariableIndex) {
     winston.info({message: 'CBUS Network Sim: EVANS : Node ' + nodeNumber + " eventNumber " + eventNumber + " eventName "+ eventName + " evIndex " + eventVariableIndex});
     if (this.getModule(this.learningNode) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       var event = this.getEventByName(this.learningNode, eventName);
       if (event != undefined) {
         if (eventVariableIndex < event.variables.length) {
@@ -745,6 +761,7 @@ class cbusNetworkSimulator {
 	//
 	 outputESD(nodeNumber, ServiceIndex) {
     if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 			var msgData = cbusLib.encodeESD(nodeNumber, ServiceIndex, 1, 2, 3, 4);
 			this.broadcast(msgData);
 		}
@@ -754,6 +771,7 @@ class cbusNetworkSimulator {
 	// EF
 	 outputPARAMS(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       var msgData = cbusLib.encodePARAMS(
         this.getModule(nodeNumber).getParameter(1), 
         this.getModule(nodeNumber).getParameter(2), 
@@ -770,6 +788,7 @@ class cbusNetworkSimulator {
 	//F2
 	outputENRSP(nodeNumber, eventIndex) {
     if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
         var events = this.getModule(nodeNumber).events;
         var eventName = events[eventIndex].eventName
@@ -787,6 +806,7 @@ class cbusNetworkSimulator {
 	 outputUNSUPOPCODE(nodeNumber) {
 		// Ficticious opcode - 'FC' currently unused 
 		// Format: [<MjPri><MinPri=3><CANID>]<FC><NN hi><NN lo>
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 		var msgData = ':SB780N' + 'FC' + decToHex(nodeNumber, 4) + ';';     // don't have an encode for ficticious opcode
     this.broadcast(msgData)
 	}
