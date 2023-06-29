@@ -534,29 +534,34 @@ describe('cbusNetworkSimulator tests', function(){
     //
 	function GetTestCase_ERR () {
 		var testCases = [];
-		for (D1 = 1; D1 < 4; D1++) {
-			if (D1 == 1) data1 = 0;
-			if (D1 == 2) data1 = 1;
-			if (D1 == 3) data1 = 255;
-            for (D2 = 1; D2 < 4; D2++) {
-                if (D2 == 1) data2 = 0;
-                if (D2 == 2) data2 = 1;
-                if (D2 == 3) data2 = 255;
-                for (errorIndex = 1; errorIndex < 4; errorIndex++) {
-                    if (errorIndex == 1) errorNumber = 0;
-                    if (errorIndex == 2) errorNumber = 1;
-                    if (errorIndex == 3) errorNumber = 255;
-                    testCases.push({'data1':data1, 'data2':data2, 'errorNumber':errorNumber});
-                }
-            }
-		}
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+      for (D1 = 1; D1 < 4; D1++) {
+        if (D1 == 1) data1 = 0;
+        if (D1 == 2) data1 = 1;
+        if (D1 == 3) data1 = 255;
+        for (D2 = 1; D2 < 4; D2++) {
+          if (D2 == 1) data2 = 0;
+          if (D2 == 2) data2 = 1;
+          if (D2 == 3) data2 = 255;
+          for (errorIndex = 1; errorIndex < 4; errorIndex++) {
+            if (errorIndex == 1) errorNumber = 0;
+            if (errorIndex == 2) errorNumber = 1;
+            if (errorIndex == 3) errorNumber = 255;
+            testCases.push({'nodeNumber':nodeNumber, 'data1':data1, 'data2':data2, 'errorNumber':errorNumber});
+          }
+        }
+      }
+    }
 		return testCases;
 	}
 
 	itParam("ERR test ${JSON.stringify(value)}", GetTestCase_ERR(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN ERR test ' + JSON.stringify(value)});
 		expected = ":SA780N63" + decToHex(value.data1, 2) + decToHex(value.data2, 2) + decToHex(value.errorNumber, 2) + ";";
-        network.outputERR(value.data1, value.data2, value.errorNumber)
+        network.outputERR(value.nodeNumber, value.data1, value.data2, value.errorNumber)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();

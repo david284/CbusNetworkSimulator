@@ -235,7 +235,7 @@ class cbusNetworkSimulator {
             for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
 				// should only accept node number if in setup mode
 				if (this.modules[moduleIndex].inSetupMode()){
-					this.outputNAME(this.modules[moduleIndex].NAME);
+					this.outputNAME(this.modules[moduleIndex].nodeNumber, this.modules[moduleIndex].NAME);
 				}
             }
             break;
@@ -532,7 +532,8 @@ class cbusNetworkSimulator {
 
 
 	// 63
-	 outputERR(data1, data2, errorNumber) {
+	outputERR(nodeNumber, data1, data2, errorNumber) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeERR(data1, data2, errorNumber)
     this.broadcast(msgData)
 	}
@@ -751,7 +752,8 @@ class cbusNetworkSimulator {
 	
 	//E2
 	//[<MjPri><MinPri=3><CANID>]<E2><char1><char2><char3><char4><char5><char6><char7>
-	outputNAME(name) {
+	outputNAME(nodeNumber, name) {
+    cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeNAME(name);
     this.broadcast(msgData);
 	}
