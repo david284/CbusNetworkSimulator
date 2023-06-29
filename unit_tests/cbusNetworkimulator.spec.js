@@ -13,9 +13,10 @@ var testModules = 	[
                 new cbusModules.CANTEST(1),
                 new cbusModules.CANTEST(65535),
                 ]
-                
+
+// set all the modules to use the same CanId to make checking easier                
 for (var i = 0; i < testModules.length; i++) {
-    testModules[i].CanId= i+80;
+    testModules[i].CanId= 60;
 }
 
 
@@ -164,6 +165,7 @@ describe('cbusNetworkSimulator tests', function(){
 
     // 21 KLOC
     //
+    /*
 	function GetTestCase_KLOC() {
 		var testCases = [];
 		for (S = 1; S < 4; S++) {
@@ -174,12 +176,32 @@ describe('cbusNetworkSimulator tests', function(){
 		}
 		return testCases;
 	}
+  */
+
+	function GetTestCase_KLOC () {
+		var testCases = [];
+		for (a1 = 1; a1 < 4; a1++) {
+			if (a1 == 1) arg1 = 0;
+			if (a1 == 2) arg1 = 1;
+			if (a1 == 3) arg1 = 65535;
+        for (a2 = 1; a2 < 4; a2++) {
+          if (a2 == 1) arg2 = 0;
+          if (a2 == 2) arg2 = 1;
+          if (a2 == 3) arg2 = 255;
+          testCases.push({
+            'nodeNumber':arg1, 
+            'session':arg2
+          });
+        }
+		}
+		return testCases;
+	}
 
 	itParam("KLOC test ${JSON.stringify(value)}", GetTestCase_KLOC(), function (done, value) {
     	// Format: [<MjPri><MinPri=2><CANID>]<21><Session>
 		winston.info({message: 'TEST: BEGIN KLOC test ' + JSON.stringify(value)});
 		expected = ":SA780N21" + decToHex(value.session, 2) + ";";
-        network.outputKLOC(value.session)
+        network.outputKLOC(value.nodeNumber, value.session)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
@@ -473,29 +495,34 @@ describe('cbusNetworkSimulator tests', function(){
     //
 	function GetTestCase_DFUN () {
 		var testCases = [];
-		for (sessionIndex = 1; sessionIndex < 4; sessionIndex++) {
-			if (sessionIndex == 1) session = 0;
-			if (sessionIndex == 2) session = 1;
-			if (sessionIndex == 3) session = 255;
-			for (Fn1Index = 1; Fn1Index < 4; Fn1Index++) {
-				if (Fn1Index == 1) Fn1 = 0;
-				if (Fn1Index == 2) Fn1 = 1;
-				if (Fn1Index == 3) Fn1 = 255;
-				for (Fn2Index = 1; Fn2Index < 4; Fn2Index++) {
-					if (Fn2Index == 1) Fn2 = 0;
-					if (Fn2Index == 2) Fn2 = 1;
-					if (Fn2Index == 3) Fn2 = 255;
-					testCases.push({'session':session, 'Fn1':Fn1, 'Fn2':Fn2});
-				}
-			}
-		}
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeNumber = 0;
+			if (NN == 2) nodeNumber = 1;
+			if (NN == 3) nodeNumber = 65535;
+      for (sessionIndex = 1; sessionIndex < 4; sessionIndex++) {
+        if (sessionIndex == 1) session = 0;
+        if (sessionIndex == 2) session = 1;
+        if (sessionIndex == 3) session = 255;
+        for (Fn1Index = 1; Fn1Index < 4; Fn1Index++) {
+          if (Fn1Index == 1) Fn1 = 0;
+          if (Fn1Index == 2) Fn1 = 1;
+          if (Fn1Index == 3) Fn1 = 255;
+          for (Fn2Index = 1; Fn2Index < 4; Fn2Index++) {
+            if (Fn2Index == 1) Fn2 = 0;
+            if (Fn2Index == 2) Fn2 = 1;
+            if (Fn2Index == 3) Fn2 = 255;
+            testCases.push({'nodeNumber':nodeNumber, 'session':session, 'Fn1':Fn1, 'Fn2':Fn2});
+          }
+        }
+      }
+    }
 		return testCases;
 	}
 
 	itParam("DFUN test ${JSON.stringify(value)}", GetTestCase_DFUN(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN DFUN test ' + JSON.stringify(value)});
 		expected = ":SA780N60" + decToHex(value.session, 2) + decToHex(value.Fn1, 2) + decToHex(value.Fn2, 2) + ";";
-        network.outputDFUN(value.session, value.Fn1, value.Fn2)
+        network.outputDFUN(value.nodeNumber, value.session, value.Fn1, value.Fn2)
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();

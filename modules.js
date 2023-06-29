@@ -1,5 +1,15 @@
 'use strict';
-var winston = require('winston');		// use config from root instance
+const winston = require('winston');		// use config from root instance
+
+
+// Scope:
+// variables declared outside of the class are 'global' to this module only
+// callbacks need a bind(this) option to allow access to the class members
+// let has block scope (or global if top level)
+// var has function scope (or global if top level)
+// const has block scope (like let), but can't be changed through reassigment or redeclared
+
+
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
 

@@ -492,8 +492,8 @@ class cbusNetworkSimulator {
 //-------------------------------------------------------------------------------
 
 	// 21
-	 outputKLOC(session) {
-//		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+	 outputKLOC(nodeNumber, session) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 		var msgData = cbusLib.encodeKLOC(session);
     this.broadcast(msgData)
 	}
@@ -508,7 +508,7 @@ class cbusNetworkSimulator {
 	
 
 	// 52
-	 outputNNACK(nodeNumber) {
+	outputNNACK(nodeNumber) {
 		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeNNACK(nodeNumber)
     this.broadcast(msgData)
@@ -516,7 +516,7 @@ class cbusNetworkSimulator {
 	
 
 	// 59
-	 outputWRACK(nodeNumber) {
+	outputWRACK(nodeNumber) {
 		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeWRACK(nodeNumber)
     this.broadcast(msgData)
@@ -524,7 +524,8 @@ class cbusNetworkSimulator {
 	
 
 	// 60
-	 outputDFUN(session, fn1, fn2) {
+	outputDFUN(nodeNumber, session, fn1, fn2) {
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeDFUN(session, fn1, fn2)
     this.broadcast(msgData)
 	}
