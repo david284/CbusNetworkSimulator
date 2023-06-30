@@ -40,7 +40,7 @@ var modules = [
 	,new cbusModules.CANINP (362)				      // type 0x3E
   ,new cbusModules.CANTEST (1000)				    // type 0x0
 ]
-                
+ 
 for (var i = 0; i < modules.length; i++) {
     modules[i].CanId = i+10;
 }
@@ -74,8 +74,15 @@ rl.on('line', function (cmd) {
 			case "help":
         showHelp();
 				break;
-      case "modules":
-        showModules();
+      case "list":
+        switch(msgArray[1].toLowerCase()) {
+          case "events":
+            listEvents();
+            break;
+          case "modules":
+            listModules();
+            break;
+        }
         break;
 			case "setup":
 					if (msgArray.length > 1) {
@@ -103,14 +110,28 @@ function showHelp() {
   console.log("help                 - shows this text");
   console.log("events <node number> - toggles transmitting of events on/off for specific node");
   console.log("heartb               - toggles the sending of heartb messages on/off for all modules");
-  console.log("modules              - shows list of modules");
+  console.log("list events          - list all events");
+  console.log("list modules         - list all modules");
   console.log("setup <node number>  - forces specific node into setup mode");
   console.log("");
 }
 
-function showModules() {
+function listModules() {
   for (var i = 0; i < modules.length; i++) {
 		console.log('module ' + modules[i].NAME + ' node number ' + modules[i].nodeNumber);
+  }
+}
+
+function listEvents() {
+  for (var i = 0; i < modules.length; i++) {
+    var defaultEvents = modules[i].defaultEvents
+    for (let j in defaultEvents) {
+      console.log('node ' + modules[i].nodeNumber + ' ' + modules[i].NAME + ' default eventID ' + defaultEvents[j].eventName);      
+    }
+    var storedEvents = modules[i].storedEvents
+    for (let j in storedEvents) {
+      console.log('node ' + modules[i].nodeNumber + ' ' + modules[i].NAME + ' stored eventID ' + storedEvents[j].eventName);      
+    }
   }
 }
 
