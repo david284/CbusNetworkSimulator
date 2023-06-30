@@ -1117,8 +1117,8 @@ describe('cbusNetworkSimulator tests', function(){
 			if (NN == 2) nodeNumber = 1;
 			if (NN == 3) nodeNumber = 65535;
 			for (ENindex = 1; ENindex < 3; ENindex++) {
-				if (ENindex == 1) eventIndex = 0;
-				if (ENindex == 2) eventIndex = 1;
+				if (ENindex == 1) eventIndex = 1;
+				if (ENindex == 2) eventIndex = 2;
                 for (EVindex = 1; EVindex < 4; EVindex++) {
                     if (EVindex == 1) eventVariableIndex = 0;
                     if (EVindex == 2) eventVariableIndex = 1;
@@ -1134,6 +1134,7 @@ describe('cbusNetworkSimulator tests', function(){
 		winston.info({message: 'TEST: BEGIN NEVAL test ' + JSON.stringify(value)});
 		network.outputNEVAL(value.nodeNumber, value.eventIndex, value.eventVariableIndex)
 		setTimeout(function(){
+			expect(messagesIn.length).to.be.above(0);
 			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('B5');
 			expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
@@ -1219,8 +1220,8 @@ describe('cbusNetworkSimulator tests', function(){
 			if (NN == 2) nodeNumber = 1;
 			if (NN == 3) nodeNumber = 65535;
             for (EVindex = 1; EVindex < 3; EVindex++) {
-                if (EVindex == 1) eventIndex = 0;
-                if (EVindex == 2) eventIndex = 1;
+                if (EVindex == 1) eventIndex = 1;
+                if (EVindex == 2) eventIndex = 2;
                 testCases.push({'nodeNumber':nodeNumber, 'eventIndex':eventIndex});
             }
 		}

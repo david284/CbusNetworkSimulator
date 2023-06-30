@@ -25,8 +25,9 @@ const Flags = {
 
 class CbusModule {
 	constructor(nodeNumber) {
-		this.events = []
-    this.eventsEnabled = false;
+		this.defaultEvents = []
+		this.storedEvents = []
+    this.defaultEventsEnabled = false;
     this.sendEventIndex = 0;
 		this.CanId = 0;
 		this.setupMode = false;
@@ -46,37 +47,46 @@ class CbusModule {
   //-----------------------------------------------------------------------------
 	// Events
   //-----------------------------------------------------------------------------
-	addNewEvent(eventName) {
-		winston.debug({message: 'modules: add new event: node ' + this.nodeNumber + ' eventName ' + eventName});
+	addNewDefaultEvent(eventName) {
+		winston.debug({message: 'modules: add new default event: node ' + this.nodeNumber + ' eventName ' + eventName});
 		var variables = [];
 		// create variable array of correct length for specific module
 		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
-		this.events.push({'eventName': eventName, "variables": variables});
-		winston.debug({message: 'modules: events: ' + JSON.stringify(this.events)});
-		return this.events[this.events.length - 1];		// adjust as array is zero based	    
+		this.defaultEvents.push({'eventName': eventName, "variables": variables});
+		winston.debug({message: 'modules: events: ' + JSON.stringify(this.defaultEvents)});
+		return this.defaultEvents[this.defaultEvents.length - 1];		// adjust as array is zero based	    
 	}
-  clearStoredEvents() { this.events = []; }
-	getStoredEventsCount() { return this.events.length; }
+	addNewStoredEvent(eventName) {
+		winston.debug({message: 'modules: add new stored event: node ' + this.nodeNumber + ' eventName ' + eventName});
+		var variables = [];
+		// create variable array of correct length for specific module
+		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
+		this.storedEvents.push({'eventName': eventName, "variables": variables});
+		winston.debug({message: 'modules: events: ' + JSON.stringify(this.storedEvents)});
+		return this.storedEvents[this.storedEvents.length - 1];		// adjust as array is zero based	    
+	}
+  clearStoredEvents() { this.storedEvents = []; }
+	getStoredEventsCount() { return this.storedEvents.length; }
   getFreeSpace() { return 100; }
   toggleSendEvents(value){
       if(this.isProducer()) { 
-        if (this.eventsEnabled) {
+        if (this.defaultEventsEnabled) {
           winston.info({message: 'modules: enableEvents: disabled for node ' + this.nodeNumber + ' ' + this.NAME});
-          this.eventsEnabled = false
+          this.defaultEventsEnabled = false
         } else {
           winston.info({message: 'modules: enableEvents: enabled for node ' + this.nodeNumber + ' ' + this.NAME});
-          this.eventsEnabled = true;
+          this.defaultEventsEnabled = true;
         }
       } else {
         winston.info({message: 'modules: Events not enabled - node ' + this.nodeNumber + ' ' + this.NAME +' is not a producer'})
-        this.eventsEnabled = false
+        this.defaultEventsEnabled = false
       }
   }  
   sendEvents(){
-    if (this.eventsEnabled) {
-      if (this.events.length > 0) {
-        if (this.sendEventIndex < this.events.length ) {
-          var event = this.events[this.sendEventIndex]
+    if (this.defaultEventsEnabled) {
+      if (this.defaultEvents.length > 0) {
+        if (this.sendEventIndex < this.defaultEvents.length ) {
+          var event = this.defaultEvents[this.sendEventIndex]
           winston.debug({message: 'modules: node ' + this.nodeNumber + ' ' + this.NAME + ' event ' + event.eventName})
           this.sendEventIndex++
           return event
@@ -171,7 +181,7 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
 		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
 		this.parameters[9] = 1;									// CPU type - P18F2480
 		this.parameters[10] = 1;								// interface type
-		this.parameters[11] = 0;                                // 11-14 load address
+		this.parameters[11] = 0;                // 11-14 load address
 		this.parameters[12] = 8;
 		this.parameters[13] = 0;
 		this.parameters[14] = 0;
@@ -182,13 +192,7 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
-  	this.addNewEvent('012D0102');
-  	this.addNewEvent('012D0103');
-  	this.addNewEvent('012D0104');
-  	this.addNewEvent('012D0105');
-    
-
+    // no default events
 	}
 	shouldFeedback(eventIndex) { return true;}
 }
@@ -224,7 +228,7 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 
 		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
 				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
@@ -257,7 +261,7 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 			
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -273,7 +277,7 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "g".charCodeAt(0);	// Minor version number - 103(0x67)
 		this.parameters[3] = 4;									// Module Id
-		this.parameters[4] = 0;								// Number of supported events
+		this.parameters[4] = 0;								  // Number of supported events
 		this.parameters[5] = 0;									// Number of event variables
 		this.parameters[6] = 1;									// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
@@ -282,11 +286,14 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])			
-  	this.addNewEvent('012D0101');
-  	this.addNewEvent('012D0102');
-  	this.addNewEvent('012D0103');
-  	this.addNewEvent('012D0104');
-  	this.addNewEvent('012D0105');
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(1, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(2, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(3, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(4, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(5, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(6, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(7, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(8, 4));
 	}
 }
 
@@ -323,7 +330,7 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -360,7 +367,7 @@ module.exports.CANLED64 = class CANLED64 extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -372,7 +379,7 @@ module.exports.CANACC4_2 = class CANACC4_2 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
                //1234567//
-		this.NAME = "ACC4   ";
+		this.NAME = "ACC4_2 ";
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "q".charCodeAt(0);	// Minor version number - decimal 113
@@ -395,7 +402,7 @@ module.exports.CANACC4_2 = class CANACC4_2 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 	shouldFeedback(eventIndex) { return true;}
 }
@@ -422,6 +429,7 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 		this.parameters[8] = Flags.Producer + Flags.Bootloading;	// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+    // no default events
 	}
 }
 
@@ -444,6 +452,7 @@ module.exports.CANCMD = class CANCMD extends CbusModule{
 		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+    // no default events
 	}
 }
 
@@ -481,7 +490,7 @@ module.exports.CANSERVO = class CANSERVO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -519,7 +528,7 @@ module.exports.CANTOTI = class CANTOTI extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -557,7 +566,7 @@ module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
     
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -595,7 +604,7 @@ module.exports.CANPAN = class CANPAN extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -622,7 +631,7 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 			
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -660,7 +669,7 @@ module.exports.CANPanel = class CANPanel extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -699,7 +708,7 @@ module.exports.CANMIO = class CANMIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -737,7 +746,7 @@ module.exports.CANACE8MIO = class CANACE8MIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -772,7 +781,7 @@ module.exports.CANSOL = class CANSOL extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -810,7 +819,7 @@ module.exports.CANMIO_SVO = class CANMIO_SVO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
     
-  	this.addNewEvent('012D0101');
+    // no default events
     this.NVsetNeedsLearnMode = true;
 
 	}
@@ -850,7 +859,7 @@ module.exports.CANMIO_INP = class CANMIO_INP extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
     
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -888,7 +897,7 @@ module.exports.CANMIO_OUT = class CANMIO_OUT extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -926,7 +935,7 @@ module.exports.CANBIP_OUT = class CANBIP_OUT extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -952,7 +961,7 @@ module.exports.CANPiNODE = class CANPiNODE extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -979,7 +988,7 @@ module.exports.CANINP = class CANINP extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-  	this.addNewEvent('012D0101');
+    // no default events
 	}
 }
 
@@ -1060,11 +1069,14 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}
 
-  	this.addNewEvent('012D0101');
-  	this.addNewEvent('012D0102');
-  	this.addNewEvent('012D0103');
-  	this.addNewEvent('012D0104');
-  	this.addNewEvent('012D0105');
+  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(1, 4));
+  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(2, 4));
+  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(3, 4));
+  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(4, 4));
+  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(5, 4));
+  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(6, 4));
+  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(7, 4));
+  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(8, 4));
 	}
 }
 

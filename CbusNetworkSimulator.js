@@ -182,12 +182,12 @@ class cbusNetworkSimulator {
         winston.info({message: 'CBUS Network Sim: getEventByName : nodeNumber ' + nodeNumber + ' eventName ' + eventName});
     if (eventName != undefined) {
         if (this.getModule(nodeNumber) != undefined) {
-            var events = this.getModule(nodeNumber).events;
+            var events = this.getModule(nodeNumber).storedEvents;
             for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
                 if (events[eventIndex].eventName == eventName) return events[eventIndex];
             }
             // if we get here then event doesn't yet exist, so create it
-            return this.getModule(nodeNumber).addNewEvent(eventName);
+            return this.getModule(nodeNumber).addNewStoredEvent(eventName);
         }
     } else {
         winston.warn({message: 'CBUS Network Sim: *** WARNING *** getEventByName : eventName undefined'});
@@ -196,7 +196,7 @@ class cbusNetworkSimulator {
 
 
 	deleteEventByName(nodeNumber, eventName) {
-		var events = this.getModule(nodeNumber).events;
+		var events = this.getModule(nodeNumber).storedEvents;
 		var eventIndex;
 		// look for matching eventName in array
 		for (var index = 0; index < events.length; index++) {
@@ -283,10 +283,11 @@ class cbusNetworkSimulator {
         case '57': // NERD
             var nodeNumber = cbusMsg.nodeNumber
             if (this.getModule(nodeNumber) != undefined) {
-                var events = this.getModule(nodeNumber).events;
-                for (var i = 0; i < events.length; i++) {
-                    winston.info({message: 'CBUS Network Sim: event index ' + i + ' event count ' + events.length});
-                    this.outputENRSP(nodeNumber, i);
+                var storedEvents = this.getModule(nodeNumber).storedEvents;
+                for (var i = 0; i < storedEvents.length; i++) {
+                    winston.info({message: 'CBUS Network Sim: event index ' + i + ' event count ' + storedEvents.length});
+                    // events need to start at 1
+                    this.outputENRSP(nodeNumber, i + 1);
                 }
             }
             break;
@@ -439,7 +440,7 @@ class cbusNetworkSimulator {
 		winston.info({message: 'CBUS Network Sim: Processing accessory Event ' + opCode + " Event Name " + eventName });
 		// check each module to see if they have a matching event
 		for (var i = 0; i < this.modules.length; i++) {
-			var events = this.modules[i].events;
+			var events = this.modules[i].storedEvents;
 			var nodeNumber = this.modules[i].nodeNumber;
 			// look for matching eventName in array
 			for (var index = 0; index < events.length; index++) {
@@ -672,21 +673,25 @@ class cbusNetworkSimulator {
 	
 	
 	// B5
+  // eventIndex starts from 1
+  // storedEvents array starts at 0, so subtract 1
 	outputNEVAL(nodeNumber, eventIndex, eventVariableIndex) {
     if (this.getModule(nodeNumber) != undefined) {
       cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      var events = this.getModule(nodeNumber).events;
-      if (eventIndex < events.length) {
-        if (eventVariableIndex < events[eventIndex].variables.length) {
-          var eventVariableValue = events[eventIndex].variables[eventVariableIndex];
-          var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
-          this.broadcast(msgData)
+      var storedEvents = this.getModule(nodeNumber).storedEvents;
+      if (eventIndex > 0) {
+        if (eventIndex <= storedEvents.length) {
+          if (eventVariableIndex < storedEvents[eventIndex-1].variables.length) {
+            var eventVariableValue = storedEvents[eventIndex-1].variables[eventVariableIndex];
+            var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
+            this.broadcast(msgData)
+          } else {
+            winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+            this.outputCMDERR(nodeNumber, 6)                    
+          }
         } else {
-          winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
-          this.outputCMDERR(nodeNumber, 6)                    
+          winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
         }
-      } else {
-        winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
       }
     }
 	}
@@ -789,17 +794,21 @@ class cbusNetworkSimulator {
 	}
 	
 	//F2
+  // eventIndex starts at 1
+  // but events array is zero based, so subtract 1
 	outputENRSP(nodeNumber, eventIndex) {
     if (this.getModule(nodeNumber) != undefined) {
       cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
-        var events = this.getModule(nodeNumber).events;
-        var eventName = events[eventIndex].eventName
-        var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
-        this.broadcast(msgData)
-      } else {
-        winston.info({message: 'CBUS Network Sim:  ************ EVENT index exceeded ************'});
-        this.outputCMDERR(nodeNumber, 7);
+      if (eventIndex > 0) {
+        if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
+          var events = this.getModule(nodeNumber).storedEvents;
+          var eventName = events[eventIndex - 1].eventName
+          var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
+          this.broadcast(msgData)
+        } else {
+          winston.info({message: 'CBUS Network Sim:  ************ EVENT index exceeded ************'});
+          this.outputCMDERR(nodeNumber, 7);
+        }
       }
     }
 	}
