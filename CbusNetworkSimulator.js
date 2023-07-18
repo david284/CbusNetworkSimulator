@@ -712,26 +712,59 @@ class cbusNetworkSimulator {
     if (this.getModule(nodeNumber) != undefined) {
       cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 			var services = this.getModule(nodeNumber).services;
+      var serviceValid = false;
+      var diagnosticCodeValid = false;
 			for (var key in services) {
-				winston.info({message: 'CBUS Network Sim:  serviceIndex ' + services[key]["ServiceIndex"]});
-				if ((ServiceIndex == 0) || (ServiceIndex == services[key]["ServiceIndex"])) {
-					// either do all services if '0' or only matching ServiceIndex
-					for (var code in services[key]["Diagnostics"]){
-						if ((DiagnosticCode == 0) || (DiagnosticCode == code)) {
-              // check diagnostic code requested actually exists
-              if (DiagnosticCode <= this.getModule(nodeNumber).getServiceDiagnosticCount(key)) {
+				if (ServiceIndex == 0){
+          //
+					// if ServiceIndex is 0 then do all services & all diagnostics
+          //
+          serviceValid = true;    // must be at least one service
+  				winston.info({message: 'CBUS Network Sim:  serviceIndex ' + services[key].ServiceIndex});
+          for (var code in services[key]["Diagnostics"]){
                 winston.info({message: 'CBUS Network Sim:  diagnostic ' + code});
                 var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], code, services[key]["Diagnostics"][code]);
                 this.broadcast(msgData);
-              } else {
-                // command was RDGN (0x87)
-                winston.info({message: 'CBUS Network Sim:  outputDGN - DiagnosticCode invalid'});
-                this.outputGRSP(nodeNumber, '87', 1, 9);
-              }
 						}
-					}
-				}        
+        } else if (ServiceIndex == services[key].ServiceIndex) {
+          //
+          // do all the diagnostics for the matching service if non-zero
+          //
+          serviceValid = true;    // must be matching service
+          winston.info({message: 'CBUS Network Sim:  DGN single serviceIndex ' + services[key].ServiceIndex});
+          for (var code in services[key].Diagnostics){
+            var diagnosticValue = services[key].Diagnostics[code]
+            winston.debug({message: 'CBUS Network Sim: DGN diagnosticCode ' + code + ' value ' + diagnosticValue});
+            if (DiagnosticCode == 0) {
+              diagnosticCodeValid = true;
+              winston.info({message: 'CBUS Network Sim: diagnostic ' + code + ' value ' + diagnosticValue});
+              var msgData = cbusLib.encodeDGN(nodeNumber, services[key].ServiceIndex, code, diagnosticValue);
+              this.broadcast(msgData);
+            } else {
+              //
+              // just do the single diagnostic for the single service
+              //
+              if (DiagnosticCode == code) {
+                diagnosticCodeValid = true;
+                winston.info({message: 'CBUS Network Sim: single diagnostic ' + code + ' value ' + diagnosticValue});
+                var msgData = cbusLib.encodeDGN(nodeNumber, services[key].ServiceIndex, code, diagnosticValue);
+                this.broadcast(msgData);
+              }
+            }
+          }
+        }
 			}
+
+      if (!serviceValid){
+        // command was RDGN (0x87)
+        winston.info({message: 'CBUS Network Sim:  outputDGN - Service invalid'});
+        this.outputGRSP(nodeNumber, '87', 1, 252);
+      }
+      if (!diagnosticCodeValid){
+        // command was RDGN (0x87)
+        winston.info({message: 'CBUS Network Sim:  outputDGN - DiagnosticCode invalid'});
+        this.outputGRSP(nodeNumber, '87', 1, 253);
+      }
 		}
 	}
 
@@ -775,7 +808,25 @@ class cbusNetworkSimulator {
 	//
 	outputESD(nodeNumber, ServiceIndex) {
     var module = this.getModule(nodeNumber)
+    var msgData = undefined
     if (module != undefined) {
+			var services = module.services;
+			for (var key in services) {
+        if (ServiceIndex == services[key].ServiceIndex) {
+          var msgData = cbusLib.encodeESD(nodeNumber, services[key].ServiceIndex, 1, 2, 3, 4);
+        }
+      }
+    }
+    if (msgData != undefined){
+      this.broadcast(msgData);
+      winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+    } else {
+          // command was RQSD (0x78)
+          winston.info({message: 'CBUS Network Sim:  outputESD - serviceIndex invalid'});
+          this.outputGRSP(nodeNumber, '78', 1, 9);
+    }
+
+/*
       winston.info({message: 'CBUS Network Sim:  outputESD - service count ' + module.getServiceCount()});
       if (ServiceIndex <= module.getServiceCount()){
           var msgData = cbusLib.encodeESD(nodeNumber, ServiceIndex, 1, 2, 3, 4);
@@ -787,6 +838,7 @@ class cbusNetworkSimulator {
           this.outputGRSP(nodeNumber, '78', 1, 9);
       }
     }
+    */
 	}
 
 

@@ -146,6 +146,7 @@ class CbusModule {
   //-----------------------------------------------------------------------------
 	// services
 	//-----------------------------------------------------------------------------
+	
   getServiceCount() {
 		var count = 0
 		if(this.services){
@@ -153,6 +154,7 @@ class CbusModule {
 		}
 		return count
 	}
+	/*
   getServiceDiagnosticCount(Service) {
 		var count = 0
 		if (Service != undefined){
@@ -163,6 +165,7 @@ class CbusModule {
 		}
 		return count
 	}
+	*/
 
 
   //-----------------------------------------------------------------------------
@@ -1052,6 +1055,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
 		}
+		
 		this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 254, "2": 126 }
 		};
@@ -1090,6 +1094,8 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}
+		
+		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
 
   	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(1, 4));
   	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(2, 4));
