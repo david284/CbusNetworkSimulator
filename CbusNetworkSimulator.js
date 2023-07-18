@@ -643,15 +643,14 @@ class cbusNetworkSimulator {
 	outputSD(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
       cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      var services = this.getModule(nodeNumber).services;
       // A special SD message is generated with the count of all the supported services
-      var count = 0;
-      for (var key in services) { count++;};
+      var count = this.getModule(nodeNumber).getServiceCount();
       winston.debug({message: 'CBUS Network Sim:  service count ' + count});
       var msgData = cbusLib.encodeSD(nodeNumber, 0, 0, count);
       this.broadcast(msgData);
       winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
       // Now generate SD messages for all the supported services
+      var services = this.getModule(nodeNumber).services;
       for (var key in services) {
         winston.debug({message: 'CBUS Network Sim:  service ' + JSON.stringify(services[key])});
         var msgData = cbusLib.encodeSD(nodeNumber, services[key]["ServiceIndex"], services[key]["ServiceType"], services[key]["ServiceVersion"]);
@@ -767,12 +766,20 @@ class cbusNetworkSimulator {
 	// E7 - ESD
   // ESD Format: [<MjPri><MinPri=3><CANID>]<E7><NN hi><NN lo><ServiceIndex><Data1><Data2><Data3><Data4>
 	//
-	 outputESD(nodeNumber, ServiceIndex) {
-    if (this.getModule(nodeNumber) != undefined) {
-      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-			var msgData = cbusLib.encodeESD(nodeNumber, ServiceIndex, 1, 2, 3, 4);
-			this.broadcast(msgData);
-		}
+	outputESD(nodeNumber, ServiceIndex) {
+    var module = this.getModule(nodeNumber)
+    if (module != undefined) {
+      winston.info({message: 'CBUS Network Sim:  outputESD - service count ' + module.getServiceCount()});
+      if (ServiceIndex <= module.getServiceCount()){
+          var msgData = cbusLib.encodeESD(nodeNumber, ServiceIndex, 1, 2, 3, 4);
+          this.broadcast(msgData);
+          winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
+      } else {
+          // command was RQSD (0x78)
+          winston.info({message: 'CBUS Network Sim:  outputESD - serviceIndex invalid'});
+          this.outputGRSP(nodeNumber, '78', 1, 9);
+      }
+    }
 	}
 
 
