@@ -21,8 +21,8 @@ class cbusNetworkSimulator {
 		// we want heartbeat to be sent out every 5 seconds for each module
 		// we use a counter to send one module out each pass of the interval
 		// so set interval time as 5 seconds divided by number of modules
-//		var interval_time = 5000/this.modules.length;
-		var interval_time = 5000;
+		var interval_time = 5000/this.modules.length;
+//		var interval_time = 5000;
 		this.interval_counter = 0;
 		setInterval(this.heartbIntervalFunc.bind(this), interval_time);
     
