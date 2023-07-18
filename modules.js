@@ -148,7 +148,19 @@ class CbusModule {
 	//-----------------------------------------------------------------------------
   getServiceCount() {
 		var count = 0
-		for (var key in this.services) { count++;};
+		if(this.services){
+			for (var key in this.services) { count++;};
+		}
+		return count
+	}
+  getServiceDiagnosticCount(Service) {
+		var count = 0
+		if (Service != undefined){
+			winston.debug({message: 'modules: getServiceDiagnosticCount - service ' + Service + ' ' + JSON.stringify(this.services[Service])});
+			if (this.services[Service].Diagnostics){
+				for (var key in this.services[Service].Diagnostics) { count++;};
+			}
+		}
 		return count
 	}
 

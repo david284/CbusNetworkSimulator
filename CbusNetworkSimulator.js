@@ -718,12 +718,19 @@ class cbusNetworkSimulator {
 					// either do all services if '0' or only matching ServiceIndex
 					for (var code in services[key]["Diagnostics"]){
 						if ((DiagnosticCode == 0) || (DiagnosticCode == code)) {
-							winston.info({message: 'CBUS Network Sim:  diagnostic ' + code});
-							var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], code, services[key]["Diagnostics"][code]);
-							this.broadcast(msgData);
+              // check diagnostic code requested actually exists
+              if (DiagnosticCode <= this.getModule(nodeNumber).getServiceDiagnosticCount(key)) {
+                winston.info({message: 'CBUS Network Sim:  diagnostic ' + code});
+                var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], code, services[key]["Diagnostics"][code]);
+                this.broadcast(msgData);
+              } else {
+                // command was RDGN (0x87)
+                winston.info({message: 'CBUS Network Sim:  outputDGN - DiagnosticCode invalid'});
+                this.outputGRSP(nodeNumber, '87', 1, 9);
+              }
 						}
 					}
-				}
+				}        
 			}
 		}
 	}
