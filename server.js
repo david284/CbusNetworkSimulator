@@ -126,13 +126,21 @@ function listEvents() {
   for (var i = 0; i < modules.length; i++) {
     var defaultEvents = modules[i].defaultEvents
     for (let j in defaultEvents) {
-      console.log('node ' + modules[i].nodeNumber + ' ' + modules[i].NAME + ' default eventID ' + defaultEvents[j].eventName);      
+      var text = 'node ' + modules[i].nodeNumber + ' ' + modules[i].NAME + ' default ' + formatEvent(defaultEvents[j])
+      console.log( text );      
     }
     var storedEvents = modules[i].storedEvents
     for (let j in storedEvents) {
-      console.log('node ' + modules[i].nodeNumber + ' ' + modules[i].NAME + ' stored eventID ' + storedEvents[j].eventName);      
+      var text = 'node ' + modules[i].nodeNumber + ' ' + modules[i].NAME + ' stored ' + formatEvent(storedEvents[j])
+      console.log( text );      
     }
   }
 }
 
-
+function formatEvent(event) {
+  var result = 'eventID ' + event.eventName + ' variables ';
+  for (let i in event.variables) {
+    result += ' ' + event.variables[i]
+  }
+  return result
+}

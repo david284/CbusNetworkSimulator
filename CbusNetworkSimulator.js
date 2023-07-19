@@ -823,22 +823,8 @@ class cbusNetworkSimulator {
     } else {
           // command was RQSD (0x78)
           winston.info({message: 'CBUS Network Sim:  outputESD - serviceIndex invalid'});
-          this.outputGRSP(nodeNumber, '78', 1, 9);
+          this.outputGRSP(nodeNumber, '78', 1, 252);
     }
-
-/*
-      winston.info({message: 'CBUS Network Sim:  outputESD - service count ' + module.getServiceCount()});
-      if (ServiceIndex <= module.getServiceCount()){
-          var msgData = cbusLib.encodeESD(nodeNumber, ServiceIndex, 1, 2, 3, 4);
-          this.broadcast(msgData);
-          winston.info({message: 'CBUS Network Sim:  OUT>>  ' + msgData + " " + cbusLib.decode(msgData).text});
-      } else {
-          // command was RQSD (0x78)
-          winston.info({message: 'CBUS Network Sim:  outputESD - serviceIndex invalid'});
-          this.outputGRSP(nodeNumber, '78', 1, 9);
-      }
-    }
-    */
 	}
 
 
