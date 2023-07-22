@@ -2,6 +2,7 @@
 var winston = require('winston');		// use config from root instance
 const net = require('net');
 var cbusLib = require('cbuslibrary')
+const GRSP = require('./Definitions/GRSP_definitions.js');
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
 
@@ -251,7 +252,7 @@ class cbusNetworkSimulator {
             break;
         case '4F': // NNRSM
             winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + " NNRSM command" });
-            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
             break;
         case '50': // RQNN sent by node
             break;
@@ -306,63 +307,71 @@ class cbusNetworkSimulator {
             break;
         case '5E': // NNRST
             winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + " NNRST command" });
-            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
             break;
         case '6F': // CMDERR - sent by node
             break;
         case '71': // NVRD
-			var nodeVariables = this.getModule(cbusMsg.nodeNumber).nodeVariables;
-			// do either matching index, or all indexes if 0
-			for (var i = 1; i < nodeVariables.length; i++) {
-				if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
-					this.outputNVANS(cbusMsg.nodeNumber, i, nodeVariables[i]);
-				}
-			}
-			if (cbusMsg.nodeVariableIndex + 1 > nodeVariables.length) {
-				this.outputCMDERR(cbusMsg.nodeNumber, 10);
-				this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 10);
-			}
-            break;
-        case '72': // NENRD
-            if (this.getModule(cbusMsg.nodeNumber) != undefined) {
-                this.outputENRSP(cbusMsg.nodeNumber, cbusMsg.eventIndex);
+          if (cbusMsg.encoded.length != 16) {
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.InvalidNodeVariableIndex);
+          } else {
+            var nodeVariables = this.getModule(cbusMsg.nodeNumber).nodeVariables;
+            // do either matching index, or all indexes if 0
+            for (var i = 1; i < nodeVariables.length; i++) {
+              if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
+                this.outputNVANS(cbusMsg.nodeNumber, i, nodeVariables[i]);
+              }
             }
-            break;
+            if (cbusMsg.nodeVariableIndex + 1 > nodeVariables.length) {
+              this.outputCMDERR(cbusMsg.nodeNumber, 10);
+              this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidParameterIndex);
+            }
+          }
+          break;
+        case '72': // NENRD
+          if (this.getModule(cbusMsg.nodeNumber) != undefined) {
+              this.outputENRSP(cbusMsg.nodeNumber, cbusMsg.eventIndex);
+          }
+          break;
         case '73': // RQNPN
+          if (cbusMsg.encoded.length != 16) {
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
+          } else {
             this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
-            break;
-		case '76': // MODE Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ModeNumber>
-			var module = this.getModule(cbusMsg.nodeNumber);
-            if (module != undefined) {
-				switch (cbusMsg.ModeNumber){
-					case 0:		// setup mode
-						this.startSetup(cbusMsg.nodeNumber);
-						this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
-						break;
-					case 1:
-						this.endSetup(module);
-						this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
-						break;
-					case 2:
-						this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, 0);
-						break;
-					default:
-						winston.info({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
-				}
-			} else {
-				winston.info({message: 'CBUS Network Sim: No module found for Node Number ' + cbusMsg.nodeNumber});
-			}
-			break;
-		case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
-			if (cbusMsg.ServiceIndex == 0){
-				this.outputSD(cbusMsg.nodeNumber);
-			} else {
-				this.outputESD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
-			}
-			break;
-		case '87': // RDGN Format: [<MjPri><MinPri=3><CANID>]<87><NN hi><NN lo><ServiceIndex><DiagnosticeCode>
-			this.outputDGN(cbusMsg.nodeNumber, cbusMsg.ServiceIndex, cbusMsg.DiagnosticCode);
-			break;
+          }
+          break;
+        case '76': // MODE Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ModeNumber>
+          var module = this.getModule(cbusMsg.nodeNumber);
+                if (module != undefined) {
+            switch (cbusMsg.ModeNumber){
+              case 0:		// setup mode
+                this.startSetup(cbusMsg.nodeNumber);
+                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                break;
+              case 1:
+                this.endSetup(module);
+                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                break;
+              case 2:
+                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                break;
+              default:
+                winston.info({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
+            }
+          } else {
+            winston.info({message: 'CBUS Network Sim: No module found for Node Number ' + cbusMsg.nodeNumber});
+          }
+          break;
+        case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
+          if (cbusMsg.ServiceIndex == 0){
+            this.outputSD(cbusMsg.nodeNumber);
+          } else {
+            this.outputESD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
+          }
+          break;
+        case '87': // RDGN Format: [<MjPri><MinPri=3><CANID>]<87><NN hi><NN lo><ServiceIndex><DiagnosticeCode>
+          this.outputDGN(cbusMsg.nodeNumber, cbusMsg.ServiceIndex, cbusMsg.DiagnosticCode);
+          break;
         case '90': // ACON
             this.processAccessoryEvent("ACON", cbusMsg.nodeNumber, cbusMsg.eventNumber);
             break;
@@ -623,7 +632,7 @@ class cbusNetworkSimulator {
         this.broadcast(msgData)
       } else {
         winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
-        this.outputCMDERR(nodeNumber, 9)                    
+        this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)                    
       }
     }
 	}
@@ -758,12 +767,12 @@ class cbusNetworkSimulator {
       if (!serviceValid){
         // command was RDGN (0x87)
         winston.info({message: 'CBUS Network Sim:  outputDGN - Service invalid'});
-        this.outputGRSP(nodeNumber, '87', 1, 252);
+        this.outputGRSP(nodeNumber, '87', 1, GRSP.InvalidService);
       }
       if (!diagnosticCodeValid){
         // command was RDGN (0x87)
         winston.info({message: 'CBUS Network Sim:  outputDGN - DiagnosticCode invalid'});
-        this.outputGRSP(nodeNumber, '87', 1, 253);
+        this.outputGRSP(nodeNumber, '87', 1, GRSP.InvalidDiagnosticCode);
       }
 		}
 	}
@@ -823,7 +832,7 @@ class cbusNetworkSimulator {
     } else {
           // command was RQSD (0x78)
           winston.info({message: 'CBUS Network Sim:  outputESD - serviceIndex invalid'});
-          this.outputGRSP(nodeNumber, '78', 1, 252);
+          this.outputGRSP(nodeNumber, '78', 1, GRSP.InvalidService);
     }
 	}
 
