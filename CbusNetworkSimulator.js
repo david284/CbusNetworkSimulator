@@ -313,7 +313,7 @@ class cbusNetworkSimulator {
             break;
         case '71': // NVRD
           if (cbusMsg.encoded.length != 16) {
-            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.InvalidNodeVariableIndex);
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.Invalid_Command);
           } else {
             var nodeVariables = this.getModule(cbusMsg.nodeNumber).nodeVariables;
             // do either matching index, or all indexes if 0
@@ -335,7 +335,7 @@ class cbusNetworkSimulator {
           break;
         case '73': // RQNPN
           if (cbusMsg.encoded.length != 16) {
-            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_Command);
           } else {
             this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
           }
@@ -363,10 +363,14 @@ class cbusNetworkSimulator {
           }
           break;
         case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
-          if (cbusMsg.ServiceIndex == 0){
-            this.outputSD(cbusMsg.nodeNumber);
+          if (cbusMsg.encoded.length != 16) {
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, cbusMsg.ServiceIndex, GRSP.Invalid_Command);
           } else {
-            this.outputESD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
+            if (cbusMsg.ServiceIndex == 0){
+              this.outputSD(cbusMsg.nodeNumber);
+            } else {
+              this.outputESD(cbusMsg.nodeNumber, cbusMsg.ServiceIndex);
+            }
           }
           break;
         case '87': // RDGN Format: [<MjPri><MinPri=3><CANID>]<87><NN hi><NN lo><ServiceIndex><DiagnosticeCode>
