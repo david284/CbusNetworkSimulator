@@ -374,7 +374,11 @@ class cbusNetworkSimulator {
           }
           break;
         case '87': // RDGN Format: [<MjPri><MinPri=3><CANID>]<87><NN hi><NN lo><ServiceIndex><DiagnosticeCode>
-          this.outputDGN(cbusMsg.nodeNumber, cbusMsg.ServiceIndex, cbusMsg.DiagnosticCode);
+          if (cbusMsg.encoded.length != 18) {
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.Invalid_Command);
+          } else {
+            this.outputDGN(cbusMsg.nodeNumber, cbusMsg.ServiceIndex, cbusMsg.DiagnosticCode);
+          }
           break;
         case '90': // ACON
             this.processAccessoryEvent("ACON", cbusMsg.nodeNumber, cbusMsg.eventNumber);
@@ -743,6 +747,7 @@ class cbusNetworkSimulator {
           //
           // do all the diagnostics for the matching service if non-zero
           //
+          winston.info({message: 'CBUS Network Sim:  outputDGN - service is valid  ' + services[key].ServiceIndex});
           serviceValid = true;    // must be matching service
           winston.info({message: 'CBUS Network Sim:  DGN single serviceIndex ' + services[key].ServiceIndex});
           for (var code in services[key].Diagnostics){
@@ -772,8 +777,7 @@ class cbusNetworkSimulator {
         // command was RDGN (0x87)
         winston.info({message: 'CBUS Network Sim:  outputDGN - Service invalid'});
         this.outputGRSP(nodeNumber, '87', 1, GRSP.InvalidService);
-      }
-      if (!diagnosticCodeValid){
+      } else if (!diagnosticCodeValid){
         // command was RDGN (0x87)
         winston.info({message: 'CBUS Network Sim:  outputDGN - DiagnosticCode invalid'});
         this.outputGRSP(nodeNumber, '87', 1, GRSP.InvalidDiagnosticCode);
