@@ -1025,7 +1025,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
 		
-		this.NAME = "CANTEST";
+		this.NAME = "TESTDAE";
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
