@@ -323,8 +323,8 @@ class cbusNetworkSimulator {
               }
             }
             if (cbusMsg.nodeVariableIndex + 1 > nodeVariables.length) {
-              this.outputCMDERR(cbusMsg.nodeNumber, 10);
-              this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidParameterIndex);
+              this.outputCMDERR(cbusMsg.nodeNumber, GRSP.InvalidNodeVariableIndex);
+              this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
             }
           }
           break;
@@ -640,7 +640,8 @@ class cbusNetworkSimulator {
         this.broadcast(msgData)
       } else {
         winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
-        this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)                    
+        this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)
+        this.outputGRSP(nodeNumber, '73', 1, GRSP.InvalidParameterIndex);
       }
     }
 	}
