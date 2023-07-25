@@ -398,23 +398,27 @@ class cbusNetworkSimulator {
             }
             break;
         case '96': // NVSET
+          if (cbusMsg.encoded.length != 18) {
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 0, GRSP.Invalid_Command);
+          } else {
             var module = this.getModule(cbusMsg.nodeNumber);
-            if (module != undefined) {
-              // check if module needs to be in learn mode, and if so, is it in learn mode?
-              if ((!module.NVsetNeedsLearnMode) || ((module.NVsetNeedsLearnMode) && (this.learningNode == cbusMsg.nodeNumber))) {
-                var nodeVariables = module.nodeVariables;
-                if (cbusMsg.nodeVariableIndex < nodeVariables.length) {
-                    nodeVariables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
-                    winston.info({message: 'CBUS Network Sim: NVSET Nove variable ' + cbusMsg.nodeVariableIndex + ' set to ' + cbusMsg.nodeVariableValue});
-                    this.outputWRACK(cbusMsg.nodeNumber);
+              if (module != undefined) {
+                // check if module needs to be in learn mode, and if so, is it in learn mode?
+                if ((!module.NVsetNeedsLearnMode) || ((module.NVsetNeedsLearnMode) && (this.learningNode == cbusMsg.nodeNumber))) {
+                  var nodeVariables = module.nodeVariables;
+                  if (cbusMsg.nodeVariableIndex < nodeVariables.length) {
+                      nodeVariables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
+                      winston.info({message: 'CBUS Network Sim: NVSET Nove variable ' + cbusMsg.nodeVariableIndex + ' set to ' + cbusMsg.nodeVariableValue});
+                      this.outputWRACK(cbusMsg.nodeNumber);
+                  }
+                  else {
+                      winston.info({message: 'CBUS Network Sim:  ************ NVSET variable index exceeded ************'});
+                      this.outputCMDERR(cbusMsg.nodeNumber, 10);  // 10 = Invalid Node Variable Index
+                  }
+                } else {
+                    winston.info({message: 'CBUS Network Sim:  ************ NVSET needs to be in learn mode ************'});
+                    this.outputCMDERR(cbusMsg.nodeNumber, 2);   // 2 = Not in learn mode
                 }
-                else {
-                    winston.info({message: 'CBUS Network Sim:  ************ NVSET variable index exceeded ************'});
-                    this.outputCMDERR(cbusMsg.nodeNumber, 10);  // 10 = Invalid Node Variable Index
-                }
-              } else {
-                  winston.info({message: 'CBUS Network Sim:  ************ NVSET needs to be in learn mode ************'});
-                  this.outputCMDERR(cbusMsg.nodeNumber, 2);   // 2 = Not in learn mode
               }
             }
             break;
