@@ -380,6 +380,26 @@ class cbusNetworkSimulator {
             this.outputDGN(cbusMsg.nodeNumber, cbusMsg.ServiceIndex, cbusMsg.DiagnosticCode);
           }
           break;
+        case '8E': // NVSETRD
+          if (cbusMsg.encoded.length != 18) {
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 0, GRSP.Invalid_Command);
+          } else {
+            var module = this.getModule(cbusMsg.nodeNumber);
+            if (module != undefined) {
+              var nodeVariables = module.nodeVariables;
+              if (cbusMsg.nodeVariableIndex < nodeVariables.length) {
+                  nodeVariables[cbusMsg.nodeVariableIndex] = cbusMsg.nodeVariableValue;
+                  winston.info({message: 'CBUS Network Sim: NVSETRD Node variable ' + cbusMsg.nodeVariableIndex + ' set to ' + cbusMsg.nodeVariableValue});
+                  this.outputNVANS(cbusMsg.nodeNumber, cbusMsg.nodeVariableIndex, nodeVariables[cbusMsg.nodeVariableIndex])  
+              }
+              else {
+                  winston.info({message: 'CBUS Network Sim:  ************ NVSETRD variable index exceeded ************'});
+//                  this.outputCMDERR(cbusMsg.nodeNumber, 10);  // 10 = Invalid Node Variable Index
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 0, GRSP.InvalidNodeVariableIndex);
+                }
+              }
+            }
+            break;
         case '90': // ACON
             this.processAccessoryEvent("ACON", cbusMsg.nodeNumber, cbusMsg.eventNumber);
             break;
