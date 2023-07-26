@@ -1051,6 +1051,10 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[0] = 20;								// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
+
+    this.nodeVariables[1] = 1;
+    this.nodeVariables[this.parameters[6]] = this.parameters[6];
+
 		
 		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
