@@ -340,6 +340,17 @@ class cbusNetworkSimulator {
             this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
           }
           break;
+          case '75': // CANID
+          if (cbusMsg.encoded.length < 16) {
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_Command);
+          } else if ((cbusMsg.CAN_ID < 1) || (cbusMsg.CAN_ID > 99)){
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_parameter);  
+            this.outputCMDERR(cbusMsg.nodeNumber, GRSP.InvalidEvent);
+          } else {
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);  
+            this.outputWRACK(cbusMsg.nodeNumber);                
+          }
+          break;
         case '76': // MODE Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ModeNumber>
           var module = this.getModule(cbusMsg.nodeNumber);
                 if (module != undefined) {
