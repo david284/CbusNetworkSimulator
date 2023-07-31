@@ -481,7 +481,10 @@ class cbusNetworkSimulator {
             }
             break;
         default:
-            winston.info({message: 'CBUS Network Sim: *************************** received unknown opcode ' + cbusMsg.opCode});
+            winston.info({message: 'CBUS Network Sim: *************************** received unknown opcode ' + JSON.stringify(cbusMsg)});
+            if (cbusMsg.nodeNumber) {
+              this.outputCMDERR(cbusMsg.nodeNumber, GRSP.CommandNotSupported);
+            }
             break;
         }        
     }
@@ -594,6 +597,7 @@ class cbusNetworkSimulator {
 
 	// 6F
 	 outputCMDERR(nodeNumber, errorNumber) {
+    winston.info({message: 'CBUS Network Sim: outputCMDERR : ' + nodeNumber + ' ' + errorNumber});
 		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeCMDERR(nodeNumber, errorNumber)
     this.broadcast(msgData)
