@@ -66,7 +66,11 @@ class CbusModule {
 		return this.storedEvents[this.storedEvents.length - 1];		// adjust as array is zero based	    
 	}
   clearStoredEvents() { this.storedEvents = []; }
-	getStoredEventsCount() { return this.storedEvents.length; }
+	getStoredEventsCount() {
+		var count = 0
+    for (var key in this.storedEvents) { count++;};
+		return count
+  }
   getFreeSpace() { return 100; }
   toggleSendEvents(value){
       if(this.isProducer()) { 
