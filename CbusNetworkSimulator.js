@@ -262,10 +262,18 @@ class cbusNetworkSimulator {
             break;
         case '53': // NNLRN
             this.learningNode = cbusMsg.nodeNumber
+            if (this.getModule(cbusMsg.nodeNumber) != undefined) {
+              // set bit 5 (0x20)
+              this.getModule(cbusMsg.nodeNumber).parameters[8] |= 0x20;
+            }
             winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' put into learn mode' });
             break;
         case '54': // NNULN
             this.learningNode = undefined;
+            if (this.getModule(cbusMsg.nodeNumber) != undefined) {
+              // clear bit 5 (0x20)
+              this.getModule(cbusMsg.nodeNumber).parameters[8] &= ~0x20;
+            }
             winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + ' learn mode cancelled' });
             break;
         case '55': // NNCLR
