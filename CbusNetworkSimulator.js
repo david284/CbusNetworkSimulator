@@ -195,6 +195,27 @@ class cbusNetworkSimulator {
     }
 	}
 
+	getEventByName2(nodeNumber, eventIdentifier) {
+    winston.info({message: 'CBUS Network Sim: getEventByName2 : nodeNumber ' + nodeNumber + ' eventIdentifier ' + eventIdentifier});
+    var returnEvent = null
+    if ((nodeNumber != undefined) && (eventIdentifier != undefined)) {
+      var module = this.getModule(nodeNumber);
+      if (module){
+        var events = module.storedEvents;
+        module.storedEvents.forEach(event => {
+          if (event.eventName == eventIdentifier) {
+            winston.debug({message: 'CBUS Network Sim: getEventByName2: matched eventIdentifier ' + eventIdentifier});
+            returnEvent = event
+          }
+        })
+        if (returnEvent == null ){ winston.debug({message: 'CBUS Network Sim: getEventByName2: no event found for eventIdentifier ' + eventIdentifier}); }
+      } else {
+        winston.debug({message: 'CBUS Network Sim: getEventByName2: nodeNumber ' + nodeNumber + " undefined module"});        
+      }
+    }
+    return returnEvent
+  }
+    
 
 	deleteEventByName(nodeNumber, eventName) {
     var result = false
@@ -487,7 +508,7 @@ class cbusNetworkSimulator {
           if (cbusMsg.encoded.length != 20) {
             this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
           } else {
-            this.outputEVANS(cbusMsg.nodeNumber, cbusMsg.eventNumber, cbusMsg.eventIdentifier, cbusMsg.eventVariableIndex)
+            this.outputEVANS(this.learningNode, cbusMsg.eventIdentifier, cbusMsg.eventVariableIndex)
           }
           break;
         case 'D2': // EVLRN
@@ -626,7 +647,6 @@ class cbusNetworkSimulator {
 	// 6F
 	 outputCMDERR(nodeNumber, errorNumber) {
     winston.info({message: 'CBUS Network Sim: outputCMDERR : ' + nodeNumber + ' ' + errorNumber});
-		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeCMDERR(nodeNumber, errorNumber)
     this.broadcast(msgData)
 	}
@@ -855,22 +875,24 @@ class cbusNetworkSimulator {
 
 
 	// D3
-	outputEVANS(nodeNumber, eventNumber, eventName, eventVariableIndex) {
-    winston.info({message: 'CBUS Network Sim: EVANS : Node ' + nodeNumber + " eventNumber " + eventNumber + " eventName "+ eventName + " evIndex " + eventVariableIndex});
+	outputEVANS(nodeNumber, eventIdentifier, eventVariableIndex) {
+    winston.info({message: 'CBUS Network Sim: EVANS : nodeNumber ' + nodeNumber + " eventIdentifier "+ eventIdentifier + " eventIndex " + eventVariableIndex});
+    var eventNodeNumber = parseInt(eventIdentifier.substr(0, 4), 16);
+    var eventNumber = parseInt(eventIdentifier.substr(4, 4), 16);
     if (this.getModule(this.learningNode) != undefined) {
-      var event = this.getEventByName(this.learningNode, eventName);
+      var event = this.getEventByName2(this.learningNode, eventIdentifier);
       if (event != undefined) {
-        if (eventVariableIndex < event.variables.length) {
+        if (eventVariableIndex <= event.variables.length) {
           var eventVariableValue = event.variables[eventVariableIndex];
-          var msgData = cbusLib.encodeEVANS(nodeNumber, eventNumber, eventVariableIndex, eventVariableValue)
+          var msgData = cbusLib.encodeEVANS(eventNodeNumber, eventNumber, eventVariableIndex, eventVariableValue)
           this.broadcast(msgData)
         } else {
           winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
-          this.outputCMDERR(nodeNumber, 6)    // Invalid event variable index                    
+          this.outputCMDERR(nodeNumber, GRSP.InvalidEventVariableIndex)                    
         }
       } else {
         winston.info({message: 'CBUS Network Sim:  ************ event number not valid ' + eventNumber + ' ************'});
-        this.outputCMDERR(nodeNumber, 7)        // invalid event                    
+        this.outputCMDERR(nodeNumber, GRSP.InvalidEvent)                    
       }
     }
     else {
