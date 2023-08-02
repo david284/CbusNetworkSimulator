@@ -197,6 +197,7 @@ class cbusNetworkSimulator {
 
 
 	deleteEventByName(nodeNumber, eventName) {
+    var result = false
 		var events = this.getModule(nodeNumber).storedEvents;
 		var eventIndex;
 		// look for matching eventName in array
@@ -207,7 +208,11 @@ class cbusNetworkSimulator {
 			}
 		}
 		// if a matching eventName was found, then remove entry from array
-		if (eventIndex != undefined) { events.splice(eventIndex, 1) }
+		if (eventIndex != undefined) { 
+      events.splice(eventIndex, 1) 
+      result = true
+    }
+    return result
 	}
 
 
@@ -427,11 +432,18 @@ class cbusNetworkSimulator {
             break;
         case '95': // EVULN
             if (this.learningNode != undefined) {
+              if (cbusMsg.encoded.length != 18) {
+                this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
+              } else {
                 // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
-                var eventName = decToHex(cbusMsg.nodeNumber,4) + decToHex(cbusMsg.eventNumber,4)
-                this.deleteEventByName(this.learningNode, cbusMsg.eventIdentifier);
-                winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' deleted eventIdentifier ' + cbusMsg.eventIdentifier});
-                this.outputWRACK(this.learningNode);
+                
+                if (this.deleteEventByName(this.learningNode, cbusMsg.eventIdentifier)){
+                  winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' deleted eventIdentifier ' + cbusMsg.eventIdentifier});
+                  this.outputWRACK(this.learningNode);
+                } else {
+                  this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.InvalidEvent);
+                }
+              }
             } else {
                 winston.info({message: 'CBUS Network Sim: EVULN - not in learn mode'});
             }
