@@ -838,7 +838,6 @@ class cbusNetworkSimulator {
 	outputEVANS(nodeNumber, eventNumber, eventName, eventVariableIndex) {
     winston.info({message: 'CBUS Network Sim: EVANS : Node ' + nodeNumber + " eventNumber " + eventNumber + " eventName "+ eventName + " evIndex " + eventVariableIndex});
     if (this.getModule(this.learningNode) != undefined) {
-      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       var event = this.getEventByName(this.learningNode, eventName);
       if (event != undefined) {
         if (eventVariableIndex < event.variables.length) {
