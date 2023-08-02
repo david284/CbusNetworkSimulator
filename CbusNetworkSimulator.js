@@ -441,7 +441,7 @@ class cbusNetworkSimulator {
                   winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' deleted eventIdentifier ' + cbusMsg.eventIdentifier});
                   this.outputWRACK(this.learningNode);
                 } else {
-                  this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.InvalidEvent);
+                  this.outputCMDERR(this.learningNode, GRSP.InvalidEvent);
                 }
               }
             } else {
