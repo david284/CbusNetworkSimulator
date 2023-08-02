@@ -471,23 +471,31 @@ class cbusNetworkSimulator {
             this.outputNEVAL(cbusMsg.nodeNumber, cbusMsg.eventIndex, cbusMsg.eventVariableIndex)
             break;
         case 'B2': // REQEV
-                winston.info({message: 'CBUS Network Sim: received REQEV'});
+          winston.info({message: 'CBUS Network Sim: received REQEV'});
+          if (cbusMsg.encoded.length != 20) {
+            this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
+          } else {
             this.outputEVANS(cbusMsg.nodeNumber, cbusMsg.eventNumber, cbusMsg.eventIdentifier, cbusMsg.eventVariableIndex)
-            break;
+          }
+          break;
         case 'D2': // EVLRN
-            winston.debug({message: 'CBUS Network Sim: EVLRN ' +  JSON.stringify(cbusMsg) });
+          winston.debug({message: 'CBUS Network Sim: EVLRN ' +  JSON.stringify(cbusMsg) });
+          if (cbusMsg.encoded.length != 22) {
+            this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
+          } else {
             if (this.learningNode != undefined) {
-                // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
-                var event = this.getEventByName(this.learningNode, cbusMsg.eventIdentifier);
-                event.variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue;
-                winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' eventIdentifier ' + cbusMsg.eventIdentifier + 
-                    ' taught EV ' + cbusMsg.eventVariableIndex + ' = ' + cbusMsg.eventVariableValue});
-                this.outputWRACK(this.learningNode);
+              // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
+              var event = this.getEventByName(this.learningNode, cbusMsg.eventIdentifier);
+              event.variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue;
+              winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' eventIdentifier ' + cbusMsg.eventIdentifier + 
+                  ' taught EV ' + cbusMsg.eventVariableIndex + ' = ' + cbusMsg.eventVariableValue});
+              this.outputWRACK(this.learningNode);
             } else {
-                winston.info({message: 'CBUS Network Sim: EVLRN - not in learn mode'});
-                this.outputCMDERR(0, 2); // not striclty correct, as we don't know which module ought to be in learn mode, hence zero
+              winston.info({message: 'CBUS Network Sim: EVLRN - not in learn mode'});
+              this.outputCMDERR(0, 2); // not striclty correct, as we don't know which module ought to be in learn mode, hence zero
             }
-            break;
+          }
+          break;
         default:
             winston.info({message: 'CBUS Network Sim: *************************** received unknown opcode ' + JSON.stringify(cbusMsg)});
             if (cbusMsg.nodeNumber) {
@@ -730,7 +738,7 @@ class cbusNetworkSimulator {
 
 	// AF
 	outputGRSP(nodeNumber, requestOpCode, serviceType, result) {
-		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+//		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 		var msgData = cbusLib.encodeGRSP(nodeNumber, requestOpCode, serviceType, result);
 		this.broadcast(msgData)
 	}
