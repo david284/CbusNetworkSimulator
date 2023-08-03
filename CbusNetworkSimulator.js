@@ -508,7 +508,16 @@ class cbusNetworkSimulator {
           if (cbusMsg.encoded.length != 20) {
             this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
           } else {
-            this.outputEVANS(this.learningNode, cbusMsg.eventIdentifier, cbusMsg.eventVariableIndex)
+            var module = this.getModule(this.learningNode);
+            if (module){
+              if (cbusMsg.eventVariableIndex <= module.parameters[5]){
+                this.outputEVANS(this.learningNode, cbusMsg.eventIdentifier, cbusMsg.eventVariableIndex)
+              } else {
+                this.outputCMDERR(this.learningNode, GRSP.InvalidEventVariableIndex);
+              }
+            } else {
+              winston.err({message: 'CBUS Network Sim: REQEV: ***** ERROR ***** no module found for nodeNumber ' + this.learningNode  });
+            }
           }
           break;
         case 'D2': // EVLRN
@@ -518,11 +527,26 @@ class cbusNetworkSimulator {
           } else {
             if (this.learningNode != undefined) {
               // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
-              var event = this.getEventByName(this.learningNode, cbusMsg.eventIdentifier);
-              event.variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue;
-              winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' eventIdentifier ' + cbusMsg.eventIdentifier + 
-                  ' taught EV ' + cbusMsg.eventVariableIndex + ' = ' + cbusMsg.eventVariableValue});
-              this.outputWRACK(this.learningNode);
+              var module = this.getModule(this.learningNode);
+              var event = this.getEventByName2(this.learningNode, cbusMsg.eventIdentifier);
+              if (event){
+                event.variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue;
+                winston.info({message: 'CBUS Network Sim: Node ' + this.learningNode + ' eventIdentifier ' + cbusMsg.eventIdentifier + 
+                    ' taught EV ' + cbusMsg.eventVariableIndex + ' = ' + cbusMsg.eventVariableValue});
+                if (cbusMsg.eventVariableIndex <= module.parameters[5]){
+                  this.outputWRACK(this.learningNode);
+                } else {
+                  this.outputCMDERR(this.learningNode, GRSP.InvalidEventVariableIndex);
+                }
+              } else {
+                if ( module.getStoredEventsCount() < module.parameters[4] ) {
+                  module.addNewStoredEvent(cbusMsg.eventIdentifier) // addEvent
+                  this.outputWRACK(this.learningNode);
+                } else {
+                  // out of space
+                  this.outputCMDERR(this.learningNode, GRSP.InvalidEvent);
+                }
+              }
             } else {
               winston.info({message: 'CBUS Network Sim: EVLRN - not in learn mode'});
               this.outputCMDERR(0, 2); // not striclty correct, as we don't know which module ought to be in learn mode, hence zero
