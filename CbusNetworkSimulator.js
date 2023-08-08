@@ -451,6 +451,9 @@ class cbusNetworkSimulator {
         case '91': // ACOF
             this.processAccessoryEvent("ACOF", cbusMsg.nodeNumber, cbusMsg.eventNumber);
             break;
+        case '92': // AREQ
+            this.outputARON(cbusMsg.nodeNumber, cbusMsg.eventNumber);
+            break;
         case '95': // EVULN
             if (this.learningNode != undefined) {
               if (cbusMsg.encoded.length != 18) {
@@ -713,6 +716,15 @@ class cbusNetworkSimulator {
     var msgData = cbusLib.encodeACOF(nodeNumber, eventNumber)
     this.broadcast(msgData)
 	}
+
+
+  // 93
+  outputARON(nodeNumber, eventNumber) {
+    // Format: [<MjPri><MinPri=3><CANID>]<93><NN hi><NN lo><EN hi><EN lo>
+		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+    var msgData = cbusLib.encodeARON(nodeNumber, eventNumber);
+    this.broadcast(msgData)
+  }
 
 
 	// 97
