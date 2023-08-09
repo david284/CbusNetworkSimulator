@@ -503,6 +503,19 @@ class cbusNetworkSimulator {
         case '99': // ASOF
             this.processAccessoryEvent("ASOF", 0, cbusMsg.deviceNumber);
             break;
+        case '9A': //ASRQ
+          // Format: [<MjPri><MinPri=3><CANID>]<9A><NN hi><NN lo><EN hi><EN lo>
+          winston.debug({message: 'CBUS Network Sim: received ASRQ'});
+          if (cbusMsg.encoded.length != 18) {
+            this.outputGRSP(this.learningNode, cbusMsg.opCode, 1, GRSP.Invalid_Command);
+          } else {
+            if (cbusMsg.deviceNumber > 0 ) {
+              this.outputARSON(cbusMsg.nodeNumber, cbusMsg.deviceNumber)
+            } else {
+              this.outputARSOF(cbusMsg.nodeNumber, cbusMsg.deviceNumber)
+            }
+          }
+          break;
         case '9C': // REVAL
             this.outputNEVAL(cbusMsg.nodeNumber, cbusMsg.eventIndex, cbusMsg.eventVariableIndex)
             break;
@@ -769,6 +782,22 @@ class cbusNetworkSimulator {
     }
 	}
 	
+  // 9D
+  outputARSON(nodeNumber, eventNumber) {
+    // Format: [<MjPri><MinPri=3><CANID>]<9D><NN hi><NN lo><EN hi><EN lo>
+    var msgData = cbusLib.encodeARSON(nodeNumber, eventNumber);
+    this.broadcast(msgData)
+  }
+
+
+  // 9E
+  outputARSOF(nodeNumber, eventNumber) {
+    // Format: [<MjPri><MinPri=3><CANID>]<9E><NN hi><NN lo><EN hi><EN lo>
+    var msgData = cbusLib.encodeARSOF(nodeNumber, eventNumber);
+    this.broadcast(msgData)
+  }
+
+
 
 	// AB
 	outputHEARTB(nodeNumber) {
