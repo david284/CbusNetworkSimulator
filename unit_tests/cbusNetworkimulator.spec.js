@@ -3,7 +3,7 @@ var winston = require('./config/winston_test.js');
 var itParam = require('mocha-param');
 const net = require('net')
 const io = require('socket.io-client');
-var cbusLib = require('cbusLibrary')
+var cbusLib = require('cbuslibrary')
 
 const simuator = require('./../CbusNetworkSimulator.js')
 const cbusModules = require('./../modules.js')
