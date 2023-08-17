@@ -734,7 +734,7 @@ class cbusNetworkSimulator {
   // 93
   outputARON(nodeNumber, eventNumber) {
     // Format: [<MjPri><MinPri=3><CANID>]<93><NN hi><NN lo><EN hi><EN lo>
-		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+//		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     var msgData = cbusLib.encodeARON(nodeNumber, eventNumber);
     this.broadcast(msgData)
   }
