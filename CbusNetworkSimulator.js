@@ -892,10 +892,11 @@ class cbusNetworkSimulator {
           serviceValid = true;    // must be at least one service
   				winston.info({message: 'CBUS Network Sim:  serviceIndex ' + services[key].ServiceIndex});
           for (var code in services[key]["Diagnostics"]){
-                winston.info({message: 'CBUS Network Sim:  diagnostic ' + code});
-                var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], code, services[key]["Diagnostics"][code]);
-                this.broadcast(msgData);
-						}
+            diagnosticCodeValid = true;
+            winston.info({message: 'CBUS Network Sim:  diagnostic ' + code});
+            var msgData = cbusLib.encodeDGN(nodeNumber, services[key]["ServiceIndex"], code, services[key]["Diagnostics"][code]);
+            this.broadcast(msgData);
+        }
         } else if (ServiceIndex == services[key].ServiceIndex) {
           //
           // do all the diagnostics for the matching service if non-zero
