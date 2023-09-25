@@ -349,16 +349,19 @@ class cbusNetworkSimulator {
           if (cbusMsg.encoded.length != 16) {
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.Invalid_Command);
           } else {
-            var nodeVariables = this.getModule(cbusMsg.nodeNumber).nodeVariables;
-            // do either matching index, or all indexes if 0
-            for (var i = 1; i < nodeVariables.length; i++) {
-              if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
-                this.outputNVANS(cbusMsg.nodeNumber, i, nodeVariables[i]);
+            var module = this.getModule(cbusMsg.nodeNumber)
+            if (module) {
+              var nodeVariables = module.nodeVariables;
+              // do either matching index, or all indexes if 0
+              for (var i = 1; i < nodeVariables.length; i++) {
+                if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
+                  this.outputNVANS(cbusMsg.nodeNumber, i, nodeVariables[i]);
+                }
               }
-            }
-            if (cbusMsg.nodeVariableIndex + 1 > nodeVariables.length) {
-              this.outputCMDERR(cbusMsg.nodeNumber, GRSP.InvalidNodeVariableIndex);
-              this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
+              if (cbusMsg.nodeVariableIndex + 1 > nodeVariables.length) {
+                this.outputCMDERR(cbusMsg.nodeNumber, GRSP.InvalidNodeVariableIndex);
+                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
+              }
             }
           }
           break;
