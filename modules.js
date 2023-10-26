@@ -1071,34 +1071,38 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}
-		this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 1,
+		this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 0,
 				"Diagnostics": { "1":1 }
 		}
-		this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 1,
+		this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 0,
 				"Diagnostics": { "1":1 }
 		}
-		this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 1,
+		this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 0,
 				"Diagnostics": { "1":1 }
 		}
-		this.services["7"] = {"ServiceIndex": 7, "ServiceType" : 9,	"ServiceVersion" : 1 }
+		this.services["7"] = {"ServiceIndex": 7, "ServiceType" : 7,	"ServiceVersion" : 0 }
 
-		this.services["8"] = {"ServiceIndex": 8, "ServiceType" : 10,	"ServiceVersion" : 1 }
+		this.services["8"] = {"ServiceIndex": 8, "ServiceType" : 8,	"ServiceVersion" : 0 }
 
-		this.services["9"] = {"ServiceIndex": 9, "ServiceType" : 11,	"ServiceVersion" : 1 }
+		this.services["9"] = {"ServiceIndex": 9, "ServiceType" : 9,	"ServiceVersion" : 0 }
 
-		this.services["10"] = {"ServiceIndex": 10, "ServiceType" : 12,	"ServiceVersion" : 1 }
+		this.services["10"] = {"ServiceIndex": 10, "ServiceType" : 10,	"ServiceVersion" : 0 }
 
-		this.services["11"] = {"ServiceIndex": 11, "ServiceType" : 13,	"ServiceVersion" : 1 }
+		this.services["11"] = {"ServiceIndex": 11, "ServiceType" : 11,	"ServiceVersion" : 0 }
 
-		this.services["12"] = {"ServiceIndex": 12, "ServiceType" : 14,	"ServiceVersion" : 1 }
+		this.services["12"] = {"ServiceIndex": 12, "ServiceType" : 12,	"ServiceVersion" : 0 }
 
-		this.services["13"] = {"ServiceIndex": 13, "ServiceType" : 15,	"ServiceVersion" : 1 }
+		this.services["13"] = {"ServiceIndex": 13, "ServiceType" : 13,	"ServiceVersion" : 0 }
 
-		this.services["14"] = {"ServiceIndex": 14, "ServiceType" : 16,	"ServiceVersion" : 1 }
+		this.services["14"] = {"ServiceIndex": 14, "ServiceType" : 14,	"ServiceVersion" : 0 }
 
-		this.services["15"] = {"ServiceIndex": 15, "ServiceType" : 17,	"ServiceVersion" : 1 }
+		this.services["15"] = {"ServiceIndex": 15, "ServiceType" : 15,	"ServiceVersion" : 0 }
 
-		this.services["16"] = { "ServiceIndex": 16, "ServiceType" : 3, "ServiceVersion" : 0,
+		this.services["16"] = {"ServiceIndex": 16, "ServiceType" : 16,	"ServiceVersion" : 0 }
+
+		this.services["17"] = {"ServiceIndex": 17, "ServiceType" : 17,	"ServiceVersion" : 0 }
+
+		this.services["18"] = { "ServiceIndex": 18, "ServiceType" : 3, "ServiceVersion" : 0,
 				"Diagnostics": { "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}
