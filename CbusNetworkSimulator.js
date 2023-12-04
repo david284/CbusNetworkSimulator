@@ -352,6 +352,10 @@ class cbusNetworkSimulator {
             var module = this.getModule(cbusMsg.nodeNumber)
             if (module) {
               var nodeVariables = module.nodeVariables;
+              // if index = 0, send count of indexes (not including 0)
+              if (cbusMsg.nodeVariableIndex == 0){
+                this.outputNVANS(cbusMsg.nodeNumber, 0, nodeVariables.length-1);
+              }
               // do either matching index, or all indexes if 0
               for (var i = 1; i < nodeVariables.length; i++) {
                 if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
