@@ -1034,8 +1034,8 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
 
-		this.parameters[1] = 165;								// Manufacturer Id - MERG
-		this.parameters[2] = 35;								// Minor version number (#)
+		this.parameters[1] = 250;								// Manufacturer Id - VLCB
+    this.parameters[2] = 35;								// Minor version number (#)
 		this.parameters[3] = 0;								  // Module Id
 		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
