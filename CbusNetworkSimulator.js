@@ -16,6 +16,7 @@ class cbusNetworkSimulator {
 		this.socket;
 		this.learningNode;
 		this.HEARTBenabled = false;
+    this.outDelay = 100;
         
     this.clients = [];
 		
@@ -241,12 +242,13 @@ class cbusNetworkSimulator {
 // Process incoming messages
 //-------------------------------------------------------------------------------
 
-    processStandardMessage(cbusMsg) {
+    async processStandardMessage(cbusMsg) {
         winston.info({message: 'CBUS Network Sim: <<< Received Standard ID message ' + cbusMsg.text});
         switch (cbusMsg.opCode) {
         case '0D': //QNN
             for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
-                this.outputPNN(this.modules[moduleIndex].nodeNumber);
+              await sleep(this.outDelay)
+              this.outputPNN(this.modules[moduleIndex].nodeNumber);
             }
             break;
         case '10': // RQNP
@@ -322,6 +324,7 @@ class cbusNetworkSimulator {
                 for (var i = 0; i < storedEvents.length; i++) {
                     winston.info({message: 'CBUS Network Sim: event index ' + i + ' event count ' + storedEvents.length});
                     // events need to start at 1
+                    await sleep(this.outDelay)
                     this.outputENRSP(nodeNumber, i + 1);
                 }
             }
@@ -359,6 +362,7 @@ class cbusNetworkSimulator {
               // do either matching index, or all indexes if 0
               for (var i = 1; i < nodeVariables.length; i++) {
                 if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
+                  await sleep(this.outDelay)
                   this.outputNVANS(cbusMsg.nodeNumber, i, nodeVariables[i]);
                 }
               }
@@ -1064,8 +1068,9 @@ class cbusNetworkSimulator {
 	}
 
 
-  broadcast(msgData) {
+  async broadcast(msgData) {
     winston.info({message: 'CBUS Network Sim: OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+    await sleep(this.outDelay)
     this.clients.forEach(function (client) {
       client.write(msgData);
       winston.debug({message: 'CBUS Network Sim: Transmit >>>> Port: ' + client.remotePort 
@@ -1080,6 +1085,18 @@ class cbusNetworkSimulator {
   }
 
 }
+
+function sleep(timeout) {
+	return new Promise(function (resolve, reject) {
+		//here our function should be implemented 
+		setTimeout(()=>{
+			resolve();
+			;} , timeout
+		);
+	});
+};
+	
+
 
 module.exports = {
     cbusNetworkSimulator: cbusNetworkSimulator
