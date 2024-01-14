@@ -737,7 +737,9 @@ module.exports.CANMIO = class CANMIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-    // no default events
+    for (var i=1; i< 32; i++) {
+      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
+    }
 	}
 }
 
@@ -1037,7 +1039,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[1] = 250;								// Manufacturer Id - VLCB
     this.parameters[2] = 35;								// Minor version number (#)
 		this.parameters[3] = 0;								  // Module Id
-		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[4] = 255;								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
 		this.parameters[6] = 25;								// Number of Node Variables
 		this.parameters[7] = 255;								// Major version number
@@ -1048,7 +1050,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[12] = 8;
 		this.parameters[13] = 0;
 		this.parameters[14] = 0;
-																// skip 15 to 18
+																            // skip 15 to 18
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
 		this.parameters[20] = 0;								// Beta version number - 0 if production
 		
@@ -1109,14 +1111,9 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		
 		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
 
-  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(1, 4));
-  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(2, 4));
-  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(3, 4));
-  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(4, 4));
-  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(5, 4));
-  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(6, 4));
-  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(7, 4));
-  	this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(8, 4));
+    for (var i=1; i< 255; i++) {
+      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
+    }
 	}
 }
 
