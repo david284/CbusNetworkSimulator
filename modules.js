@@ -33,7 +33,7 @@ class CbusModule {
 		this.setupMode = false;
 		this.nodeNumber = nodeNumber;
 		this.NAME = "UNINIT";
-		this.parameters = 	[];
+		this.parameters = 	[10,1,2,3,4,5,6,7,8,9,10];  // minimum of 10 parameters
 		// prefill parameters array to 21 elements to match dev guide 6c & put length in element 0 (not including 0)
 		for (var i = 0; i < 21 ; i++) {	this.parameters.push(0); }
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
