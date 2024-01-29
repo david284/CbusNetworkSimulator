@@ -1070,7 +1070,7 @@ class cbusNetworkSimulator {
 
   async broadcast(msgData) {
     winston.info({message: 'CBUS Network Sim: OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
-    await sleep(this.outDelay)
+    //await sleep(this.outDelay)
     this.clients.forEach(function (client) {
       client.write(msgData);
       winston.debug({message: 'CBUS Network Sim: Transmit >>>> Port: ' + client.remotePort 
@@ -1089,6 +1089,7 @@ class cbusNetworkSimulator {
 function sleep(timeout) {
 	return new Promise(function (resolve, reject) {
 		//here our function should be implemented 
+    timeout =0
 		setTimeout(()=>{
 			resolve();
 			;} , timeout
