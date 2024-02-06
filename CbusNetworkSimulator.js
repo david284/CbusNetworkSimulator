@@ -614,7 +614,6 @@ class cbusNetworkSimulator {
 				if (events[index].eventName == eventName) {
 					// now check if we should send a feedback response
 					if (this.modules[i].shouldFeedback(index)) {
-						var eventNumber = eventName % 0x10000;
 						winston.info({message: 'CBUS Network Sim: Feedback ' + nodeNumber + " event " + eventNumber});
 						if (opCode == "ACON") {this.outputACON(nodeNumber, eventNumber)}
 						if (opCode == "ACOF") {this.outputACOF(nodeNumber, eventNumber)}
