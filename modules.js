@@ -222,7 +222,9 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-    // no default events
+    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(1, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(101, 4));
+
 	}
 	shouldFeedback(eventIndex) { return true;}
 }
@@ -258,7 +260,8 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-    // no default events
+    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(2, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(102, 4));
 
 		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
 				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
@@ -285,13 +288,14 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 		this.parameters[5] = 3;									  // Number of event variables
 		this.parameters[6] = 8;								    // Number of Node Variables
 		this.parameters[7] = 2;									  // Major version number
-		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;
 		this.parameters[9] = 1;									  // CPU type - P18F2480
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
 			
-    // no default events
+    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(3, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(103, 4));
 	}
 }
 
@@ -360,7 +364,8 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-    // no default events
+    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(5, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(105, 4));
 	}
 }
 
@@ -634,7 +639,8 @@ module.exports.CANPAN = class CANPAN extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-    // no default events
+    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(29, 4));
+  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(129, 4));
 	}
 }
 

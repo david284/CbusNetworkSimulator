@@ -105,7 +105,11 @@ class cbusNetworkSimulator {
     for (var i = 0; i < this.modules.length; i++) {
       var event = this.modules[i].sendEvents()
       if (event) {
-        this.outputACON(this.modules[i].nodeNumber, parseInt(event.eventName.substr(4,4), 16))
+        if (parseInt(event.eventName.substr(0,4), 16) == 0) {
+          this.outputASON(this.modules[i].nodeNumber, parseInt(event.eventName.substr(4,4), 16))
+        } else {
+          this.outputACON(this.modules[i].nodeNumber, parseInt(event.eventName.substr(4,4), 16))
+        }
       }
     }
 	};
