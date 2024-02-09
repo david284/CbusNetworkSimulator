@@ -226,7 +226,7 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
   	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(101, 4));
 
 	}
-	shouldFeedback(eventIndex) { return true;}
+	shouldFeedback(eventIndex) { return false;}
 }
 
 
@@ -268,7 +268,7 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		}
 
 	}
-	shouldFeedback(eventIndex) { return true;}
+	shouldFeedback(eventIndex) { return false;}
 }
 
 //
@@ -439,7 +439,7 @@ module.exports.CANACC4_2 = class CANACC4_2 extends CbusModule{
 
     // no default events
 	}
-	shouldFeedback(eventIndex) { return true;}
+	shouldFeedback(eventIndex) { return false;}
 }
 
 
@@ -1211,10 +1211,12 @@ module.exports.CANVLCB = class CANVLCB extends CbusModule{
 		
 		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
 
-    for (var i=1; i< 2; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
+    for (var i=1; i< 4; i++) {
       this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
     }
+    // add short
+    this.addNewStoredEvent('0000' + decToHex(nodeNumber, 4));
 	}
+  shouldFeedback(eventIndex) { return true;}
+
 }
