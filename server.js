@@ -14,7 +14,8 @@ var rl = readline.createInterface({
 
 
 var modules = [
-  new cbusModules.CANVLCB (300)				      // VLCB, type 0x00
+  new cbusModules.CANLEVER (290)				    //
+  ,new cbusModules.CANVLCB (300)				      // VLCB, type 0x00
   ,new cbusModules.CANACC4 (301)			      // type 0x01
   ,new cbusModules.CANACC5 (302)				    // type 0x02
   ,new cbusModules.CANACC8 (303)				    // type 0x03
