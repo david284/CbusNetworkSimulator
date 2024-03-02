@@ -618,11 +618,13 @@ class cbusNetworkSimulator {
 				if (events[index].eventName == eventName) {
 					// now check if we should send a feedback response
 					if (this.modules[i].shouldFeedback(index)) {
+            /*
 						winston.info({message: 'CBUS Network Sim: Feedback ' + nodeNumber + " event " + eventNumber});
 						if (opCode == "ACON") {this.outputACON(nodeNumber, eventNumber)}
 						if (opCode == "ACOF") {this.outputACOF(nodeNumber, eventNumber)}
 						if (opCode == "ASON") {this.outputASON(nodeNumber, eventNumber)}
 						if (opCode == "ASOF") {this.outputASOF(nodeNumber, eventNumber)}
+            */
 					}
 				}
 			}
@@ -1021,6 +1023,28 @@ class cbusNetworkSimulator {
           this.outputGRSP(nodeNumber, '78', 1, GRSP.InvalidService);
     }
 	}
+
+
+	// E9 - DTXC
+  outputDTXC(nodeNumber, dataArray) {
+    if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+
+      /*
+      var msgData = cbusLib.encodePARAMS(
+        this.getModule(nodeNumber).getParameter(1), 
+        this.getModule(nodeNumber).getParameter(2), 
+        this.getModule(nodeNumber).getParameter(3), 
+        this.getModule(nodeNumber).getParameter(4), 
+        this.getModule(nodeNumber).getParameter(5), 
+        this.getModule(nodeNumber).getParameter(6), 
+        this.getModule(nodeNumber).getParameter(7), 
+        )
+        */
+      this.broadcast(msgData)
+    }
+	}
+	
 
 
 	// EF

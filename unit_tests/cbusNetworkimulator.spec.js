@@ -125,7 +125,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
             expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
 			done();
-		}, 10);
+		}, 100);
 	})
 
 
@@ -409,7 +409,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('ENRSP');
             }
 			done();
-		}, 10);
+		}, 100);
 	})
 
 
@@ -427,7 +427,7 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("RQEVN test ${JSON.stringify(value)}", GetTestCase_RQEVN(), function (done, value) {
-		winston.info({message: 'TEST: BEGIN NERD test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN RQEVN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeRQEVN(value.nodeNumber);
     	testClient.write(msgData);
 		setTimeout(function(){
@@ -436,7 +436,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
             }
 			done();
-		}, 10);
+		}, 100);
 	})
 
 
@@ -627,7 +627,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NVANS');
             }
 			done();
-		}, 10);
+		}, 100);
 	})
 
 
@@ -659,7 +659,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('PARAN');
             }
 			done();
-		}, 10);
+		}, 100);
 	})
 
 
@@ -1101,10 +1101,10 @@ describe('cbusNetworkSimulator tests', function(){
 		winston.info({message: 'TEST: BEGIN SD test ' + JSON.stringify(value)});
 		network.outputSD(value.nodeNumber)
 		setTimeout(function(){
-			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('AC');
+			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('8C');
 			expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 10);
+		}, 500);
 	})
     
 

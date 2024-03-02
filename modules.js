@@ -1118,7 +1118,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		
 		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
 
-    for (var i=1; i< 255; i++) {
+    for (var i=1; i< 5; i++) {
       this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
     }
 	}
@@ -1217,7 +1217,7 @@ module.exports.CANVLCB = class CANVLCB extends CbusModule{
     // add short
     this.addNewStoredEvent('0000' + decToHex(nodeNumber, 4));
 	}
-  shouldFeedback(eventIndex) { return true;}
+  shouldFeedback(eventIndex) { return false;}
 
 }
 
@@ -1274,6 +1274,46 @@ module.exports.CANLEVER = class CANLEVER extends CbusModule{
     ]
 
 
+	}
+}
+
+
+//
+// CANSLOT - ID 3
+//
+module.exports.CANSLOT = class CANSLOT extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567// 
+		this.NAME = "SLOT   ";
+
+		this.parameters[1] = 13;								// Manufacturer Id - development
+		this.parameters[2] = "a".charCodeAt(0);	// Minor version number - decimal 121 (0x79)
+		this.parameters[3] = 3;								// Module Id
+		this.parameters[4] = 6;								// Number of supported events
+		this.parameters[5] = 6;								// Number of event variables
+		this.parameters[6] = 0;								  // Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;
+		this.parameters[9] = 1;								  // CPU type
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+		this.parameters[15] = 228;              // 15-18 manufacturers chip ID
+		this.parameters[16] = 26;
+		this.parameters[17] = 0;
+		this.parameters[18] = 0;
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+    for (var i=1; i< 7; i++) {
+      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i, 4));
+    }
 	}
 }
 
