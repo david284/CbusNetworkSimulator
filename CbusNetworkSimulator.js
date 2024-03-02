@@ -1029,19 +1029,36 @@ class cbusNetworkSimulator {
   outputDTXC(nodeNumber, dataArray) {
     if (this.getModule(nodeNumber) != undefined) {
       cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+    //    <streamIdentifier>
+    //    <sequenceNumber>  <0>                 <!=0>
+    //                  <messageLen Hi>     <data 1>
+    //                  <messageLen Lo>     <data 2>
+    //                  <CRC Hi>            <data 3>
+    //                  <CRC Lo>            <data 4>
+    //                  <flags>             <data 5>
+    var sequenceNumber = 0
+    var msgData = cbusLib.encodeDTXC_Header(1, sequenceNumber, dataArray.length, 2, 3)
+    this.broadcast(msgData)      
 
-      /*
-      var msgData = cbusLib.encodePARAMS(
-        this.getModule(nodeNumber).getParameter(1), 
-        this.getModule(nodeNumber).getParameter(2), 
-        this.getModule(nodeNumber).getParameter(3), 
-        this.getModule(nodeNumber).getParameter(4), 
-        this.getModule(nodeNumber).getParameter(5), 
-        this.getModule(nodeNumber).getParameter(6), 
-        this.getModule(nodeNumber).getParameter(7), 
-        )
-        */
-      this.broadcast(msgData)
+    for (var i=0; i<dataArray.length; i+=5){
+      sequenceNumber++
+      var messageData= [0, 0, 0, 0, 0]
+      for(var j=0; j<5; j++){
+        if(i+j < dataArray.length){
+          messageData[j] = dataArray[i+j]
+        }
+      }
+      var msgData = cbusLib.encodeDTXC_Continuous(1, sequenceNumber, 
+        messageData[0],
+        messageData[1],
+        messageData[2],
+        messageData[3],
+        messageData[4]
+      )
+      this.broadcast(msgData)        
+    }
+
+
     }
 	}
 	

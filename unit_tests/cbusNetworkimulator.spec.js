@@ -1199,8 +1199,7 @@ describe('cbusNetworkSimulator tests', function(){
 		return testCases;
 	}
 
-
-	itParam("EVLRN test ${JSON.stringify(value)}", GetTestCase_EVLRN(), function (done, value) {
+  itParam("EVLRN test ${JSON.stringify(value)}", GetTestCase_EVLRN(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN EVLRN test ' + JSON.stringify(value)});
         msgData = cbusLib.encodeEVLRN(value.eventName, value.eventIndex, value.eventValue);
     	testClient.write(msgData);
@@ -1209,6 +1208,33 @@ describe('cbusNetworkSimulator tests', function(){
 			done();
 		}, 10);
 	})
+
+
+    // E9 - DTXC
+    //
+    function GetTestCase_DTXC () {
+      var testCases = [];
+      for (a1 = 1; a1 < 4; a1++) {
+        if (a1 == 1) arg1 = 0;
+        if (a1 == 2) arg1 = 1;
+        if (a1 == 3) arg1 = 65535;
+        testCases.push({'nodeNumber':arg1});
+      }
+      return testCases;
+      }
+  
+    // E9 DTXC
+  // 
+	itParam("DTXC test ${JSON.stringify(value)}", GetTestCase_DTXC(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN DTXC test ' + JSON.stringify(value)});
+    var dataArray = toUTF8Array('http://192.168.1.100/config')
+		winston.info({message: 'TEST: BEGIN DTXC test: dataArray ' + JSON.stringify(dataArray)});
+    network.outputDTXC(value.nodeNumber, dataArray)
+    setTimeout(function(){
+        expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('E9');
+        done();
+    }, 50);
+})
 
 
     // F2 ENRSP
@@ -1327,4 +1353,36 @@ describe('cbusNetworkSimulator tests', function(){
 			done();
 		}, 10);
     })
+
+
+    function toUTF8Array(str) {
+      let utf8 = [];
+      for (let i = 0; i < str.length; i++) {
+          let charcode = str.charCodeAt(i);
+          if (charcode < 0x80) utf8.push(charcode);
+          else if (charcode < 0x800) {
+              utf8.push(0xc0 | (charcode >> 6),
+                        0x80 | (charcode & 0x3f));
+          }
+          else if (charcode < 0xd800 || charcode >= 0xe000) {
+              utf8.push(0xe0 | (charcode >> 12),
+                        0x80 | ((charcode>>6) & 0x3f),
+                        0x80 | (charcode & 0x3f));
+          }
+          // surrogate pair
+          else {
+              i++;
+              // UTF-16 encodes 0x10000-0x10FFFF by
+              // subtracting 0x10000 and splitting the
+              // 20 bits of 0x0-0xFFFFF into two halves
+              charcode = 0x10000 + (((charcode & 0x3ff)<<10)
+                        | (str.charCodeAt(i) & 0x3ff));
+              utf8.push(0xf0 | (charcode >>18),
+                        0x80 | ((charcode>>12) & 0x3f),
+                        0x80 | ((charcode>>6) & 0x3f),
+                        0x80 | (charcode & 0x3f));
+          }
+      }
+      return utf8;
+  }
 })
