@@ -1227,14 +1227,40 @@ describe('cbusNetworkSimulator tests', function(){
   // 
 	itParam("DTXC test ${JSON.stringify(value)}", GetTestCase_DTXC(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN DTXC test ' + JSON.stringify(value)});
-    var dataArray = toUTF8Array('http://192.168.1.100/config')
-		winston.info({message: 'TEST: BEGIN DTXC test: dataArray ' + JSON.stringify(dataArray)});
-    network.outputDTXC(value.nodeNumber, dataArray)
+    var testString = "http://192.168.1.100/config"
+    var byteArray = testString.split('').map(c => c.charCodeAt(0))
+		winston.info({message: 'TEST: BEGIN DTXC test: byteArray ' + JSON.stringify(byteArray)});
+    network.outputDTXC(value.nodeNumber, byteArray)
     setTimeout(function(){
         expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('E9');
+        winston.info({message: 'TEST:  messagesIn.length ' + messagesIn.length});
+        var rxByteArray =[]
+        var messageLength = 0
+        for(var i=0; i<messagesIn.length; i++){
+          var decode = cbusLib.decode(messagesIn[i])
+          if (decode.opCode == 'E9'){
+            if (i==0){
+              messageLength = decode.messageLength
+            } else {
+              rxByteArray.push(decode.Data1)
+              rxByteArray.push(decode.Data2)
+              rxByteArray.push(decode.Data3)
+              rxByteArray.push(decode.Data4)
+              rxByteArray.push(decode.Data5)
+            }
+          }
+        }
+        winston.info({message: 'TEST: rxByteArray ' + JSON.stringify(rxByteArray)});
+        var result = rxByteArray.map(c => String.fromCharCode(c)).join('').substring(0,messageLength)
+        winston.info({message: 'TEST: result ' + result});
+        expect(result).to.equal(testString);
         done();
     }, 50);
 })
+
+// String to byte array: "FooBar".split('').map(c => c.charCodeAt(0));
+// Byte array to string: [102, 111, 111, 98, 97, 114].map(c => String.fromCharCode(c)).join('');
+
 
 
     // F2 ENRSP
@@ -1354,35 +1380,4 @@ describe('cbusNetworkSimulator tests', function(){
 		}, 10);
     })
 
-
-    function toUTF8Array(str) {
-      let utf8 = [];
-      for (let i = 0; i < str.length; i++) {
-          let charcode = str.charCodeAt(i);
-          if (charcode < 0x80) utf8.push(charcode);
-          else if (charcode < 0x800) {
-              utf8.push(0xc0 | (charcode >> 6),
-                        0x80 | (charcode & 0x3f));
-          }
-          else if (charcode < 0xd800 || charcode >= 0xe000) {
-              utf8.push(0xe0 | (charcode >> 12),
-                        0x80 | ((charcode>>6) & 0x3f),
-                        0x80 | (charcode & 0x3f));
-          }
-          // surrogate pair
-          else {
-              i++;
-              // UTF-16 encodes 0x10000-0x10FFFF by
-              // subtracting 0x10000 and splitting the
-              // 20 bits of 0x0-0xFFFFF into two halves
-              charcode = 0x10000 + (((charcode & 0x3ff)<<10)
-                        | (str.charCodeAt(i) & 0x3ff));
-              utf8.push(0xf0 | (charcode >>18),
-                        0x80 | ((charcode>>12) & 0x3f),
-                        0x80 | ((charcode>>6) & 0x3f),
-                        0x80 | (charcode & 0x3f));
-          }
-      }
-      return utf8;
-  }
 })

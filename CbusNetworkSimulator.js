@@ -1026,7 +1026,7 @@ class cbusNetworkSimulator {
 
 
 	// E9 - DTXC
-  outputDTXC(nodeNumber, dataArray) {
+  outputDTXC(nodeNumber, byteArray) {
     if (this.getModule(nodeNumber) != undefined) {
       cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
     //    <streamIdentifier>
@@ -1037,15 +1037,15 @@ class cbusNetworkSimulator {
     //                  <CRC Lo>            <data 4>
     //                  <flags>             <data 5>
     var sequenceNumber = 0
-    var msgData = cbusLib.encodeDTXC_Header(1, sequenceNumber, dataArray.length, 2, 3)
+    var msgData = cbusLib.encodeDTXC_Header(1, sequenceNumber, byteArray.length, 2, 3)
     this.broadcast(msgData)      
 
-    for (var i=0; i<dataArray.length; i+=5){
+    for (var i=0; i<byteArray.length; i+=5){
       sequenceNumber++
       var messageData= [0, 0, 0, 0, 0]
       for(var j=0; j<5; j++){
-        if(i+j < dataArray.length){
-          messageData[j] = dataArray[i+j]
+        if(i+j < byteArray.length){
+          messageData[j] = byteArray[i+j]
         }
       }
       var msgData = cbusLib.encodeDTXC_Continuous(1, sequenceNumber, 
