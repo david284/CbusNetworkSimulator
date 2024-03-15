@@ -146,6 +146,9 @@ class CbusModule {
   isProducer() {
     return this.parameters[8] & Flags.Producer
   }
+  isVLCB() {
+    return this.parameters[8] & Flags.VLCB
+  }
 	
 
   //-----------------------------------------------------------------------------

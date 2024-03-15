@@ -9,7 +9,7 @@ const simuator = require('./../CbusNetworkSimulator.js')
 const cbusModules = require('./../modules.js')
 
 var testModules = 	[
-                new cbusModules.CANTEST(0),
+                new cbusModules.CANVLCB(0),
                 new cbusModules.CANTEST(1),
                 new cbusModules.CANTEST(65535),
                 ]
