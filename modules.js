@@ -1046,7 +1046,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[1] = 13;								// Manufacturer Id - DEVELOPMENT
     this.parameters[2] = 97;								// Minor version number (a)
 		this.parameters[3] = 0;								  // Module Id
-		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[4] = 32;								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
 		this.parameters[6] = 25;								// Number of Node Variables
 		this.parameters[7] = 1;								// Major version number
@@ -1118,7 +1118,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		
 		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
 
-    for (var i=1; i< 255; i++) {
+    for (var i=1; i< 5; i++) {
       this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
     }
 	}

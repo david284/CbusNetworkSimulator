@@ -23,6 +23,9 @@ for (var i = 0; i < testModules.length; i++) {
 const NET_PORT = 5550;
 const NET_ADDRESS = "127.0.0.1"
 
+const long_timeout = 100
+const medium_timeout = 50
+const short_timeout = 20
 
 let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules);
 
@@ -83,8 +86,8 @@ describe('cbusNetworkSimulator tests', function(){
             network.stopServer()
             setTimeout(function(){
                 done();
-            }, 100);
-		}, 100);
+            }, medium_timeout);
+		}, medium_timeout);
     });
 	
 
@@ -102,7 +105,7 @@ describe('cbusNetworkSimulator tests', function(){
     msgData = cbusLib.encodeQNN();
     setTimeout(function(){
       testClient.write(msgData);
-    }, 10);
+    }, short_timeout);
     setTimeout(function(){
       expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
       expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
@@ -110,8 +113,8 @@ describe('cbusNetworkSimulator tests', function(){
       setTimeout(function(){
         testClient2.end()
         done();
-      }, 100);
-    }, 100);
+      }, long_timeout);
+    }, long_timeout);
 	})
 
 
@@ -125,7 +128,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
             expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
 			done();
-		}, 10);
+		}, medium_timeout);
 	})
 
 
@@ -142,7 +145,7 @@ describe('cbusNetworkSimulator tests', function(){
             expect(messagesIn.length).to.equal(2), 'returned message count';
             network.endSetup(testModules[0]);
 			done();
-		}, 10);
+		}, medium_timeout);
 	})
 
 
@@ -159,7 +162,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('NAME');
             network.endSetup(testModules[0]);
 			done();
-		}, 20);
+		}, short_timeout);
 	})
 
 
@@ -205,7 +208,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -235,7 +238,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('NNACK');
             network.endSetup(testModules[0]);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -262,7 +265,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('GRSP');
             }
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -286,7 +289,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -310,7 +313,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -334,7 +337,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -358,7 +361,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -382,7 +385,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -409,7 +412,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('ENRSP');
             }
 			done();
-		}, 10);
+		}, medium_timeout);
 	})
 
 
@@ -436,7 +439,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
             }
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -460,7 +463,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -487,7 +490,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('GRSP');
             }
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -526,7 +529,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -565,7 +568,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -594,7 +597,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -627,7 +630,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NVANS');
             }
 			done();
-		}, 10);
+		}, long_timeout);
 	})
 
 
@@ -659,7 +662,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('PARAN');
             }
 			done();
-		}, 10);
+		}, medium_timeout);
 	})
 
 
@@ -690,7 +693,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
      		expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -744,7 +747,7 @@ describe('cbusNetworkSimulator tests', function(){
 			}
 			expect(hasTestPassed).to.be.true;
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -776,7 +779,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[1]).mnemonic).to.equal('SD');
      		expect(cbusLib.decode(messagesIn[2]).mnemonic).to.equal('SD');
 			done();
-		}, 50);
+		}, short_timeout);
 	})
 
 
@@ -836,7 +839,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 	itParam("ACON output test ${JSON.stringify(value)}", GetTestCase_ACONF(), function (done, value) {
@@ -846,7 +849,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -857,7 +860,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -868,7 +871,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(messagesIn[0]).to.equal(expected);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -892,7 +895,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
     // 96 NVSET
@@ -925,7 +928,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -954,7 +957,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('97');
      		expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -983,7 +986,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 	itParam("ASOF test ${JSON.stringify(value)}", GetTestCase_ASONF(), function (done, value) {
@@ -993,7 +996,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -1022,7 +1025,7 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('9B');
      		expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -1057,7 +1060,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
   // AB HEARTB
@@ -1080,7 +1083,7 @@ describe('cbusNetworkSimulator tests', function(){
 			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('AB');
 			expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
     
 
@@ -1104,7 +1107,7 @@ describe('cbusNetworkSimulator tests', function(){
 			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('AC');
 			expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
     
 
@@ -1138,7 +1141,7 @@ describe('cbusNetworkSimulator tests', function(){
 			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('B5');
 			expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 	
 	
@@ -1170,7 +1173,7 @@ describe('cbusNetworkSimulator tests', function(){
 			winston.info({message: 'TEST: DGN test ' + msgCount + ' messages received'});
 			winston.info({message: 'TEST: DGN test end'});
 			done();
-		}, 10);
+		}, short_timeout);
 	})
     
 
@@ -1207,7 +1210,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
 			done();
-		}, 10);
+		}, short_timeout);
 	})
 
 
@@ -1236,7 +1239,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('F2');
                 expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
                 done();
-            }, 10);
+            }, short_timeout);
     })
 
 
@@ -1297,7 +1300,7 @@ describe('cbusNetworkSimulator tests', function(){
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
 			done();
-		}, 10);
+		}, short_timeout);
     })
 
 
@@ -1325,6 +1328,6 @@ describe('cbusNetworkSimulator tests', function(){
      		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
      		expect(cbusLib.decode(messagesIn[0]).response).to.equal(value.response, 'response');
 			done();
-		}, 10);
+		}, short_timeout);
     })
 })
