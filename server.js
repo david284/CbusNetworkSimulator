@@ -14,33 +14,34 @@ var rl = readline.createInterface({
 
 
 var modules = [
-  new cbusModules.CANLEVER (290)				    //
-  ,new cbusModules.CANVLCB (300)				      // VLCB, type 0x00
-  ,new cbusModules.CANACC4 (301)			      // type 0x01
-  ,new cbusModules.CANACC5 (302)				    // type 0x02
-  ,new cbusModules.CANACC8 (303)				    // type 0x03
-	,new cbusModules.CANACE3 (304)  			    // type 0x04
-	,new cbusModules.CANACE8C (305)				    // type 0x05
-	,new cbusModules.CANLED64 (307)				    // type 0x07
-  ,new cbusModules.CANACC4_2 (308)			    // type 0x08
-  ,new cbusModules.CANCAB (309)   			    // type 0x09
-  ,new cbusModules.CANCMD (310)		    	    // type 0x0A
-	,new cbusModules.CANSERVO (311)				    // type 0x0B
-	,new cbusModules.CANTOTI (317)				    // type 0x11
-	,new cbusModules.CANSERVO8C (319)				  // type 0x13
-	,new cbusModules.CANPAN (329)				      // type 0x1D
-	,new cbusModules.CANACE3C (330)				    // type 0x1E
-	,new cbusModules.CANPanel (331)				    // type 0x1F
-	,new cbusModules.CANMIO (332)		          // type 0x20
-	,new cbusModules.CANACE8MIO (333)		      // type 0x21
-	,new cbusModules.CANSOL (334)				      // type 0x22
-	,new cbusModules.CANMIO_SVO (350)		      // type 0x32
-	,new cbusModules.CANMIO_INP (351)		      // type 0x33
-	,new cbusModules.CANMIO_OUT (352)		      // type 0x34
-	,new cbusModules.CANBIP_OUT (353)		      // type 0x35
-	,new cbusModules.CANPiNODE (358)		      // type 0x3A
-	,new cbusModules.CANINP (362)				      // type 0x3E
-  ,new cbusModules.CANTEST (1000)				    // type 0x0
+  new cbusModules.CANTEST (200)				    // DEVELOPMENT
+  ,new cbusModules.CANVLCB (201)				    // DEVELOPMENT
+  ,new cbusModules.CANACC4 (301)			      // type 01
+  ,new cbusModules.CANACC5 (302)				    // type 02
+  ,new cbusModules.CANACC8 (303)				    // type 03
+	,new cbusModules.CANACE3 (304)  			    // type 04
+	,new cbusModules.CANACE8C (305)				    // type 05
+	,new cbusModules.CANLED64 (307)				    // type 07
+  ,new cbusModules.CANACC4_2 (308)			    // type 08
+  ,new cbusModules.CANCAB (309)   			    // type 09
+  ,new cbusModules.CANCMD (310)		    	    // type 10
+	,new cbusModules.CANSERVO (311)				    // type 11
+	,new cbusModules.CANTOTI (317)				    // type 17
+	,new cbusModules.CANSERVO8C (319)				  // type 19
+	,new cbusModules.CANPAN (329)				      // type 29
+	,new cbusModules.CANACE3C (330)				    // type 30
+	,new cbusModules.CANPanel (331)				    // type 31
+	,new cbusModules.CANMIO (332)		          // type 32
+	,new cbusModules.CANACE8MIO (333)		      // type 33
+	,new cbusModules.CANSOL (334)				      // type 34
+	,new cbusModules.CANMIO_SVO (350)		      // type 50
+	,new cbusModules.CANMIO_INP (351)		      // type 51
+	,new cbusModules.CANMIO_OUT (352)		      // type 52
+	,new cbusModules.CANBIP_OUT (353)		      // type 53
+	,new cbusModules.CANPiNODE (358)		      // type 58
+	,new cbusModules.CANINP (362)				      // type 62
+	,new cbusModules.CANXIO (364)		          // type 64
+  ,new cbusModules.CANLEVER (380)				    // type 80
 ]
  
 for (var i = 0; i < modules.length; i++) {

@@ -1033,6 +1033,106 @@ module.exports.CANINP = class CANINP extends CbusModule{
 	}
 }
 
+//
+// CANXIO - type 64
+//
+module.exports.CANXIO = class CANXIO extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "XIO    ";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 64;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 20;								// Number of event variables
+		this.parameters[6] = 183;								// Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = 31;								// Flags - producer/consumer
+		this.parameters[9] = 13;								// CPU type - P18F25K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+    for (var i=1; i< 32; i++) {
+      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
+    }
+	}
+}
+
+
+//
+// CANLEVER - type 80
+//
+module.exports.CANLEVER = class CANLEVER extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "LEVER  ";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								// Manufacturer Id - DEVELOPMENT
+		this.parameters[2] = "a".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 80;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 20;								// Number of event variables
+		this.parameters[6] = 127;								// Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = 31;								// Flags - producer/consumer
+		this.parameters[9] = 13;								// CPU type - P18F25K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																            // skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+    this.nodeVariables = [
+      0, 0, 0, 234, 0, 10, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      7, 0, 2, 1, 0, 0, 0,            // lever 1
+      7, 0, 2, 1, 0, 0, 0,            // lever 2
+      7, 0, 2, 1, 0, 0, 0,            // lever 3
+      7, 0, 2, 1, 0, 0, 0,            // lever 4
+      8, 128, 5, 15, 0, 15, 0,        // lock 1
+      8, 128, 5, 15, 0, 15, 0,        // lock 2
+      8, 128, 5, 15, 0, 15, 0,        // lock 3
+      8, 128, 5, 15, 0, 15, 0,        // lock 4
+      2, 20, 128, 128, 235, 235, 0,   // servo 1
+      2, 20, 128, 128, 235, 235, 0,   // servo 2
+      2, 20, 128, 128, 235, 235, 0,   // servo 3
+      2, 20, 128, 128, 235, 235, 0,   // servo 4
+      10, 0, 0, 0, 0, 0, 0,           // private
+      10, 0, 0, 0, 0, 0, 0,           // private
+      9, 0, 0, 0, 0, 0, 0,            // lock control
+      10, 0, 0, 0, 0, 0, 0             // private
+    ]
+	}
+}
+
+//***************************************************************************************************************************
+//
+// DEVELOPMENT modules
+//
+//***************************************************************************************************************************
 
 //
 // Unregistered test module
@@ -1043,8 +1143,8 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		
 		this.NAME = "TESTDAE";
 
-		// increase parameters array to 31 (plus zero)
-		while(this.parameters.length < 32) {this.parameters.push(0);}
+		// increase parameters array to 32 (plus zero)
+		while(this.parameters.length < 33) {this.parameters.push(0);}
 
 		this.parameters[1] = 13;								// Manufacturer Id - DEVELOPMENT
     this.parameters[2] = 97;								// Minor version number (a)
@@ -1053,7 +1153,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[5] = 20;								// Number of event variables
 		this.parameters[6] = 25;								// Number of Node Variables
 		this.parameters[7] = 1;								// Major version number
-		this.parameters[8] = 31;								// Flags - producer/consumer
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.VLCB;	// Flags
 		this.parameters[9] = 13;								// CPU type - P18F25K80
 		this.parameters[10] = 1;								// interface type
 		this.parameters[11] = 0;                                // 11-14 load address
@@ -1128,20 +1228,20 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 }
 
 //
-// Unregistered VLCB test module
+// Development VLCB test module
 //
 module.exports.CANVLCB = class CANVLCB extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
 		
-		this.NAME = "VLCBDAE";
+		this.NAME = "VLCBTEST";
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
 
-		this.parameters[1] = 250;								// Manufacturer Id - VLCB
+		this.parameters[1] = 13;								// Manufacturer Id - DEVELOPMENT
     this.parameters[2] = 97;								// Minor version number (a)
-		this.parameters[3] = 0;								  // Module Id
+		this.parameters[3] = 10;							  // Module Id
 		this.parameters[4] = 5; 								// Number of supported events
 		this.parameters[5] = 20;								// Number of event variables
 		this.parameters[6] = 25;								// Number of Node Variables
@@ -1222,62 +1322,6 @@ module.exports.CANVLCB = class CANVLCB extends CbusModule{
 	}
   shouldFeedback(eventIndex) { return true;}
 
-}
-
-//
-// CANLEVER
-//
-module.exports.CANLEVER = class CANLEVER extends CbusModule{
-	constructor(nodeNumber) {
-		super(nodeNumber);			// Call parent class constructor
-               //1234567//
-		this.NAME = "LEVER  ";
-
-		// increase parameters array to 31 (plus zero)
-		while(this.parameters.length < 32) {this.parameters.push(0);}
-
-		this.parameters[1] = 13;								// Manufacturer Id - DEVELOPMENT
-		this.parameters[2] = "a".charCodeAt(0);					// Minor version number
-		this.parameters[3] = 32;								// Module Id
-		this.parameters[4] = 255;								// Number of supported events
-		this.parameters[5] = 20;								// Number of event variables
-		this.parameters[6] = 127;								// Number of Node Variables
-		this.parameters[7] = 1;									// Major version number
-		this.parameters[8] = 31;								// Flags - producer/consumer
-		this.parameters[9] = 13;								// CPU type - P18F25K80
-		this.parameters[10] = 1;								// interface type
-		this.parameters[11] = 0;                // 11-14 load address
-		this.parameters[12] = 8;
-		this.parameters[13] = 0;
-		this.parameters[14] = 0;
-																            // skip 15 to 18
-		this.parameters[19] = 1;								// Code for CPU manufacturer 
-		this.parameters[20] = 0;								// Beta version number - 0 if production
-		
-		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
-
-    this.nodeVariables = [
-      0, 0, 0, 234, 0, 10, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      7, 0, 2, 1, 0, 0, 0,            // lever 1
-      7, 0, 2, 1, 0, 0, 0,            // lever 2
-      7, 0, 2, 1, 0, 0, 0,            // lever 3
-      7, 0, 2, 1, 0, 0, 0,            // lever 4
-      8, 128, 5, 15, 0, 15, 0,        // lock 1
-      8, 128, 5, 15, 0, 15, 0,        // lock 2
-      8, 128, 5, 15, 0, 15, 0,        // lock 3
-      8, 128, 5, 15, 0, 15, 0,        // lock 4
-      2, 20, 128, 128, 235, 235, 0,   // servo 1
-      2, 20, 128, 128, 235, 235, 0,   // servo 2
-      2, 20, 128, 128, 235, 235, 0,   // servo 3
-      2, 20, 128, 128, 235, 235, 0,   // servo 4
-      10, 0, 0, 0, 0, 0, 0,           // private
-      10, 0, 0, 0, 0, 0, 0,           // private
-      9, 0, 0, 0, 0, 0, 0,            // lock control
-      10, 0, 0, 0, 0, 0, 0             // private
-    ]
-
-
-	}
 }
 
 
