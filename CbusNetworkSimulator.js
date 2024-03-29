@@ -798,14 +798,28 @@ class cbusNetworkSimulator {
 	 outputPARAN(nodeNumber, parameterIndex) {
     if (this.getModule(nodeNumber) != undefined) {
       cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
-        var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
-        var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
+      // now, if parameter index is 0, the response should be the number of parameters
+      // and if VLCB, followed by futher PARAN messages for all the parameters
+      if(parameterIndex==0){
+        var numberOfParameters = this.getModule(nodeNumber).getParameter(0);
+        var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, numberOfParameters)
         this.broadcast(msgData)
+        for (var i; i <= numberOfParameters; i++ ){
+          var parameterValue = this.getModule(nodeNumber).getParameter(i);
+          msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
+          this.broadcast(msgData)
+        }
       } else {
-        winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
-        this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)
-        this.outputGRSP(nodeNumber, '73', 1, GRSP.InvalidParameterIndex);
+        // single parameter requested
+        if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
+          var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
+          var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
+          this.broadcast(msgData)
+        } else {
+          winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
+          this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)
+          this.outputGRSP(nodeNumber, '73', 1, GRSP.InvalidParameterIndex);
+        }
       }
     }
 	}

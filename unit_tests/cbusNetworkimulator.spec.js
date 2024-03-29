@@ -1101,7 +1101,7 @@ describe('cbusNetworkSimulator tests', function(){
 		winston.info({message: 'TEST: BEGIN SD test ' + JSON.stringify(value)});
 		network.outputSD(value.nodeNumber)
 		setTimeout(function(){
-			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('8C');
+			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('AC');
 			expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
 			done();
 		}, 500);
