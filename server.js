@@ -71,8 +71,17 @@ rl.on('line', function (cmd) {
 						console.log("events: no node number found");
 					}
           break;
-      case "heartb":
-          network.toggleHEARTB()
+      case "heartbeat":
+					if (msgArray.length > 1) {
+						var nodeNumber = parseInt(msgArray[1]);
+						if (nodeNumber) {
+							network.toggleHEARTBEAT(nodeNumber);
+						}	else {
+							console.log("heartbeat: argument not a number");
+						}
+					}	else {
+						console.log("heartbeat: no node number found");
+					}
           break;
 			case "help":
         showHelp();
@@ -109,13 +118,13 @@ rl.on('line', function (cmd) {
 function showHelp() {
   console.log("");
   console.log("=== Cbus Network Simulator Help ===");
-  console.log("CTRL-C twice         - terminates running");
-  console.log("help                 - shows this text");
-  console.log("events <node number> - toggles transmitting of events on/off for specific node");
-  console.log("heartb               - toggles the sending of heartb messages on/off for all modules");
-  console.log("list events          - list all events");
-  console.log("list modules         - list all modules");
-  console.log("setup <node number>  - forces specific node into setup mode");
+  console.log("CTRL-C twice             - terminates running");
+  console.log("help                     - shows this text");
+  console.log("events <node number>     - toggles transmitting of events on/off for specific node");
+  console.log("heartbeat <node number>  - toggles the sending of heartb messages on/off for specific module");
+  console.log("list events              - list all events");
+  console.log("list modules             - list all modules");
+  console.log("setup <node number>      - forces specific node into setup mode");
   console.log("");
 }
 

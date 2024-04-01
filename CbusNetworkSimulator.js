@@ -15,7 +15,6 @@ class cbusNetworkSimulator {
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
-		this.HEARTBenabled = false;
     this.outDelay = 100;
         
     this.clients = [];
@@ -92,11 +91,12 @@ class cbusNetworkSimulator {
 
 	
 	heartbIntervalFunc() {
-		if (this.HEARTBenabled) {
-      winston.debug({message: 'CBUS Network Sim: HEARTB Interval - node ' + this.modules[this.interval_counter].nodeNumber});
-      this.outputHEARTB(this.modules[this.interval_counter].nodeNumber);
-      if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
+    var nodeNumber = this.modules[this.interval_counter].nodeNumber
+    if (this.getModule(nodeNumber).getHeartBeatenabled()){
+      winston.debug({message: 'CBUS Network Sim: HEARTB Interval - node ' + nodeNumber});
+      this.outputHEARTB(nodeNumber);
     }
+    if (this.interval_counter+1 >= this.modules.length) {this.interval_counter = 0} else (this.interval_counter++);
 	};
 
 
@@ -115,15 +115,15 @@ class cbusNetworkSimulator {
 	};
 
 
-	toggleHEARTB(){
-		if (this.HEARTBenabled) {
-			this.HEARTBenabled = false;
-      winston.info({message: 'CBUS Network Sim: heartb disabled'});
+	toggleHEARTBEAT(nodeNumber){
+		if (this.getModule(nodeNumber).getHeartBeatenabled()) {
+			this.getModule(nodeNumber).setHeartBeatEnabled(false);
+      winston.info({message: 'CBUS Network Sim: heartbeat disabled for node ' + nodeNumber});
 		} else {
-			this.HEARTBenabled = true;
-      winston.info({message: 'CBUS Network Sim: heartb enabled'});
+			this.getModule(nodeNumber).setHeartBeatEnabled(true);
+      winston.info({message: 'CBUS Network Sim: heartb enabled for node ' + nodeNumber});
 		}
-		return this.HEARTBenabled;
+		return this.getModule(nodeNumber).getHeartBeatenabled();
 	}
 
 
@@ -404,18 +404,23 @@ class cbusNetworkSimulator {
           var module = this.getModule(cbusMsg.nodeNumber);
                 if (module != undefined) {
             switch (cbusMsg.ModeNumber){
-              case 0:		// setup mode
+              case 0x0:		// setup mode
                 this.startSetup(cbusMsg.nodeNumber);
                 this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
                 break;
-              case 1:
+              case 0x1:   // normal 'run' mode
                 this.endSetup(module);
                 this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
                 break;
-              case 2:
+              case 0xC:
+                // turn on heartbeat
                 this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
                 break;
-              default:
+                case 0xD:
+                  // turn off heartbeat
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                  break;
+                default:
                 winston.info({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
             }
           } else {

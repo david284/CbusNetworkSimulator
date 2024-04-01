@@ -41,6 +41,7 @@ class CbusModule {
 		this.nodeVariables = [];
 		this.services = {};
     this.NVsetNeedsLearnMode = false;
+		this.HeartBeatEnabled = false;
 		winston.info({message: 'modules: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
 	} // end constructor
 	
@@ -191,7 +192,8 @@ class CbusModule {
 		this.setupMode=false;
 		winston.info({message: 'modules: Module exiting setup mode'});
 	}
-  
+  getHeartBeatenabled(){ return this.HeartBeatEnabled;}
+	setHeartBeatEnabled(HeartBeatEnabled){this.HeartBeatEnabled = HeartBeatEnabled;}
 }
 
 
