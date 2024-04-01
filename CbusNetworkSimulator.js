@@ -414,14 +414,16 @@ class cbusNetworkSimulator {
                 break;
               case 0xC:
                 // turn on heartbeat
+                this.getModule(cbusMsg.nodeNumber).setHeartBeatEnabled(true);
                 this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
                 break;
-                case 0xD:
-                  // turn off heartbeat
-                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
-                  break;
-                default:
-                winston.info({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
+              case 0xD:
+                // turn off heartbeat
+                this.getModule(cbusMsg.nodeNumber).setHeartBeatEnabled(false);
+                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                break;
+              default:
+              winston.info({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
             }
           } else {
             winston.info({message: 'CBUS Network Sim: No module found for Node Number ' + cbusMsg.nodeNumber});
