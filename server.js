@@ -16,6 +16,8 @@ var rl = readline.createInterface({
 var modules = [
   new cbusModules.CANTEST (200)				    // DEVELOPMENT
   ,new cbusModules.CANVLCB (201)				    // DEVELOPMENT
+	,new cbusModules.CANMIO_3d (232)		          // type 32
+	,new cbusModules.CANMIO_3e (233)		          // type 32
   ,new cbusModules.CANACC4 (301)			      // type 01
   ,new cbusModules.CANACC5 (302)				    // type 02
   ,new cbusModules.CANACC8 (303)				    // type 03
