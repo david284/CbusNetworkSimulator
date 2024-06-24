@@ -589,7 +589,8 @@ class cbusNetworkSimulator {
                 }
               } else {
                 if ( module.getStoredEventsCount() < module.parameters[4] ) {
-                  module.addNewStoredEvent(cbusMsg.eventIdentifier) // addEvent
+                  event = module.addNewStoredEvent(cbusMsg.eventIdentifier) // addEvent
+                  event.variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue;
                   this.outputWRACK(this.learningNode);
                 } else {
                   // out of space
