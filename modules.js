@@ -61,8 +61,9 @@ class CbusModule {
 	addNewStoredEvent(eventName) {
 		winston.debug({message: 'modules: add new stored event: node ' + this.nodeNumber + ' eventName ' + eventName});
 		var variables = [];
+    variables[0] = this.parameters[5]
 		// create variable array of correct length for specific module
-		for (var index = 0; index <= this.parameters[5]; index++) {variables.push(0)};
+		for (var index = 1; index <= this.parameters[5]; index++) {variables.push(0)};
 		this.storedEvents.push({'eventName': eventName, "variables": variables});
 		winston.debug({message: 'modules: events: ' + JSON.stringify(this.storedEvents)});
 		return this.storedEvents[this.storedEvents.length - 1];		// adjust as array is zero based	    
