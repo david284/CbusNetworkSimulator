@@ -31,7 +31,8 @@ class CbusModule {
     this.defaultEventsEnabled = false;
     this.sendEventIndex = 0;
 		this.CanId = 0;
-		this.setupMode = false;
+		this.setupMode = false
+    this.sendZeroEV = true          // only certain modules don't respond if EV is zero
 		this.nodeNumber = nodeNumber;
 		this.NAME = "UNINIT";
 		this.parameters = 	[10,1,2,3,4,5,6,7,8,9,10];  // minimum of 10 parameters
@@ -724,6 +725,7 @@ module.exports.CANMIO_3a = class CANMIO extends CbusModule{
 		super(nodeNumber);			// Call parent class constructor
                //1234567//
 		this.NAME = "MIO    ";
+    this.sendZeroEV = false     // don't send zero EV's
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
@@ -765,6 +767,7 @@ module.exports.CANMIO_3c = class CANMIO extends CbusModule{
 		super(nodeNumber);			// Call parent class constructor
                //1234567//
 		this.NAME = "MIO    ";
+    this.sendZeroEV = false     // don't send zero EV's
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
@@ -806,6 +809,7 @@ module.exports.CANMIO_3d = class CANMIO extends CbusModule{
 		super(nodeNumber);			// Call parent class constructor
                //1234567//
 		this.NAME = "MIO    ";
+    this.sendZeroEV = false     // don't send zero EV's
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
@@ -847,6 +851,7 @@ module.exports.CANMIO_3e = class CANMIO extends CbusModule{
 		super(nodeNumber);			// Call parent class constructor
                //1234567//
 		this.NAME = "MIO    ";
+    this.sendZeroEV = false     // don't send zero EV's
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
