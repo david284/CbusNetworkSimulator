@@ -1004,15 +1004,69 @@ module.exports.CANMIO_test_adapter = class CANMIO extends CbusModule{
 
   actionOffEvent(simulator, eventNumber){
     winston.info({message: 'CBUS Network Sim: modules: test_adapter OFF event'})
-		cbusLib.setCanHeader(2, simulator.getModule(326).CanId);
-		var msgData = cbusLib.encodeACOF(326, eventNumber);
+		cbusLib.setCanHeader(2, simulator.getModule(65000).CanId);
+		var msgData = cbusLib.encodeACOF(65000, eventNumber);
     simulator.broadcast(msgData)
   }
 
   actionOnEvent(simulator, eventNumber){
     winston.info({message: 'CBUS Network Sim: modules: test_adapter ON event'})
-		cbusLib.setCanHeader(2, simulator.getModule(326).CanId);
-		var msgData = cbusLib.encodeACON(326, eventNumber);
+		cbusLib.setCanHeader(2, simulator.getModule(65000).CanId);
+		var msgData = cbusLib.encodeACON(65000, eventNumber);
+    simulator.broadcast(msgData)
+  }
+
+}
+
+
+//
+// CANMIO - type 32 - UUT - V4a
+//
+module.exports.CANMIO_UUT = class CANMIO extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "MIO    ";
+    this.sendZeroEV = false     // don't send zero EV's
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								  // Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);		// Minor version number
+		this.parameters[3] = 32;								  // Module Id
+		this.parameters[4] = 255;								  // Number of supported events
+		this.parameters[5] = 20;								  // Number of event variables
+		this.parameters[6] = 127;								  // Number of Node Variables
+		this.parameters[7] = 4;									  // Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.VLCB;	// Flags
+		this.parameters[9] = 13;								  // CPU type - P18F25K80
+		this.parameters[10] = 1;								  // interface type
+		this.parameters[11] = 0;                  // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								  // Code for CPU manufacturer 
+		this.parameters[20] = 0;								  // Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+  }
+
+  actionOffEvent(simulator, eventNumber){
+    winston.info({message: 'CBUS Network Sim: modules: UUT OFF event'})
+		cbusLib.setCanHeader(2, simulator.getModule(65535).CanId);
+		var msgData = cbusLib.encodeACOF(65535, eventNumber);
+    simulator.broadcast(msgData)
+  }
+
+  actionOnEvent(simulator, eventNumber){
+    winston.info({message: 'CBUS Network Sim: modules: UUT ON event'})
+		cbusLib.setCanHeader(2, simulator.getModule(65535).CanId);
+		var msgData = cbusLib.encodeACON(65535, eventNumber);
     simulator.broadcast(msgData)
   }
 
