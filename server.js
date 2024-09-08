@@ -46,6 +46,7 @@ var modules = [
 	,new cbusModules.CANINP (620)				      // type 62
 	,new cbusModules.CANXIO (640)		          // type 64
   ,new cbusModules.CANLEVER (800)				    // type 80
+	,new cbusModules.CANMIO_test_adapter (65535)  // type 32
 ]
  
 for (var i = 0; i < modules.length; i++) {

@@ -614,8 +614,18 @@ class cbusNetworkSimulator {
     }
 	
 	processAccessoryEvent(opCode, nodeNumber, eventNumber) {
-        // turn the input node & event numbers into an event name
-        var eventName = decToHex(nodeNumber, 4) + decToHex(eventNumber,4)
+    var module = this.getModule(nodeNumber);
+    if (module){
+      if (opCode == "ACOF"){
+        module.actionOffEvent(this, eventNumber)
+      }
+      if (opCode == "ACON"){
+        module.actionOnEvent(this, eventNumber)        
+      }
+    }
+
+    // turn the input node & event numbers into an event name
+    var eventName = decToHex(nodeNumber, 4) + decToHex(eventNumber,4)
 		winston.info({message: 'CBUS Network Sim: Processing accessory Event ' + opCode + " Event Name " + eventName });
 		// check each module to see if they have a matching event
 		for (var i = 0; i < this.modules.length; i++) {
