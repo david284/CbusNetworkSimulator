@@ -1011,6 +1011,9 @@ module.exports.CANMIO_test_adapter = class CANMIO extends CbusModule{
 
   actionOnEvent(simulator, eventNumber){
     winston.info({message: 'CBUS Network Sim: modules: test_adapter ON event'})
+		cbusLib.setCanHeader(2, simulator.getModule(326).CanId);
+		var msgData = cbusLib.encodeACON(326, eventNumber);
+    simulator.broadcast(msgData)
   }
 
 }
