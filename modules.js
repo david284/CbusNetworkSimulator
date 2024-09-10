@@ -24,6 +24,13 @@ const Flags = {
   VLCB: 64
 };
 
+function addBulkEvents(module, numberOfEvents){
+  for (var i=1; i< numberOfEvents+1; i++) {
+    module.addNewStoredEvent(module.getNodeNumberHex() + decToHex(i, 4));
+  }
+}
+
+
 
 class CbusModule {
 	constructor(nodeNumber) {
@@ -376,9 +383,7 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(5, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(105, 4));
+    addBulkEvents(this, 8)
 	}
 }
 
@@ -758,9 +763,7 @@ module.exports.CANMIO_3a = class CANMIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-    for (var i=1; i< 32; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkEvents(this, 31)
 	}
 }
 
@@ -800,9 +803,7 @@ module.exports.CANMIO_3c = class CANMIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-    for (var i=1; i< 32; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkEvents(this, 31)
 	}
 }
 
@@ -842,9 +843,7 @@ module.exports.CANMIO_3d = class CANMIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-    for (var i=1; i< 32; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkEvents(this, 31)
 	}
 }
 
@@ -884,9 +883,7 @@ module.exports.CANMIO_3e = class CANMIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-    for (var i=1; i< 32; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkEvents(this, 31)
 	}
 }
 
@@ -926,9 +923,7 @@ module.exports.CANMIO_4a = class CANMIO extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 
-    for (var i=1; i< 32; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkEvents(this, 31)
 
     this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 0,
       "Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
@@ -999,6 +994,7 @@ module.exports.CANMIO_test_adapter = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
+    addBulkEvents(this, 8)
 
   }
 
@@ -1053,6 +1049,8 @@ module.exports.CANMIO_UUT = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
+
+    addBulkEvents(this, 8)
 
   }
 
