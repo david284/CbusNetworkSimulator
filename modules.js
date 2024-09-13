@@ -283,9 +283,6 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
     this.addNewDefaultEvent(decToHex(0, 4) + decToHex(2, 4));
   	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(102, 4));
 
-		this.services["0"] = {"ServiceIndex": 1, "ServiceType" : 1,	"ServiceVersion" : 1,
-				"Diagnostics": { "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7 }
-		}
 
 	}
 	shouldFeedback(eventIndex) { return false;}
@@ -925,36 +922,25 @@ module.exports.CANMIO_4a = class CANMIO extends CbusModule{
 
     addBulkEvents(this, 31)
 
-    this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 0,
+    this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 1,
       "Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
     } 
-    this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 0,
+    this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 1,
         "Diagnostics": { "0": 2, "1": 254, "2": 126 }
     }
-    this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 0,
+    this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 2,
         "Diagnostics": { "0": 16, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
-                "9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
+                "9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16, 17:17, 18:18}
     }
-    this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 0,
+    this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 1,
         "Diagnostics": { "0": 1, "1":1 }
     }
-    this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 0,
+    this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 1,
         "Diagnostics": { "0": 1, "1":1 }
     }
-    this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 0,
+    this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 1,
         "Diagnostics": { "0": 1, "1":1 }
     }
-    this.services["7"] = {"ServiceIndex": 7, "ServiceType" : 7,	"ServiceVersion" : 0 }
-    this.services["8"] = {"ServiceIndex": 8, "ServiceType" : 8,	"ServiceVersion" : 0 }
-    this.services["9"] = {"ServiceIndex": 9, "ServiceType" : 9,	"ServiceVersion" : 0 }
-    this.services["10"] = {"ServiceIndex": 10, "ServiceType" : 10,	"ServiceVersion" : 0 }
-    this.services["11"] = {"ServiceIndex": 11, "ServiceType" : 11,	"ServiceVersion" : 0 }
-    this.services["12"] = {"ServiceIndex": 12, "ServiceType" : 12,	"ServiceVersion" : 0 }
-    this.services["13"] = {"ServiceIndex": 13, "ServiceType" : 13,	"ServiceVersion" : 0 }
-    this.services["14"] = {"ServiceIndex": 14, "ServiceType" : 14,	"ServiceVersion" : 0 }
-    this.services["15"] = {"ServiceIndex": 15, "ServiceType" : 15,	"ServiceVersion" : 0 }
-    this.services["16"] = {"ServiceIndex": 16, "ServiceType" : 16,	"ServiceVersion" : 0 }
-    this.services["17"] = {"ServiceIndex": 17, "ServiceType" : 17,	"ServiceVersion" : 0 }
 
   }
 }
@@ -1052,6 +1038,25 @@ module.exports.CANMIO_UUT = class CANMIO extends CbusModule{
 
     addBulkEvents(this, 8)
 
+    this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 1,
+      "Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
+    } 
+    this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 1,
+        "Diagnostics": { "0": 2, "1": 254, "2": 126 }
+    }
+    this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 2,
+        "Diagnostics": { "0": 16, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
+                "9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16, 17:17, 18:18}
+    }
+    this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
+    this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
+    this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
   }
 
   actionOffEvent(simulator, eventNumber){
@@ -1489,7 +1494,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
     this.nodeVariables[this.parameters[6]] = this.parameters[6];
 
 		
-		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 0,
+		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
 				"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
 		}
 		
@@ -1582,16 +1587,16 @@ module.exports.CANVLCB = class CANVLCB extends CbusModule{
     this.nodeVariables[this.parameters[6]] = this.parameters[6];
 
 		
-		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 0,
+		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
 				"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
 		}
 		
 		this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 0,
 				"Diagnostics": { "0": 2, "1": 254, "2": 126 }
 		};
-		this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 0,
+		this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 2,
 				"Diagnostics": { "0": 17, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
-								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
+								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16, 17:17, 18:18}
 		}
 		this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 0,
 				"Diagnostics": { "0": 1, "1":1 }
