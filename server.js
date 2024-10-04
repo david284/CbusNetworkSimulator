@@ -1,3 +1,9 @@
+const fs = require('fs');
+// lets ensure the logs folder is empty
+if (fs.existsSync("logs")) {
+  fs.rmSync("logs", { recursive: true }) 
+}
+
 var winston = require('./config/winston.js');
 
 const simuator = require('./CbusNetworkSimulator.js')

@@ -6,6 +6,15 @@ const GRSP = require('./Definitions/GRSP_definitions.js');
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
 
+// bit weights
+const CTLBT_WRITE_UNLOCK = 0
+const CTLBT_ERASE_ONLY = 1
+const CTLBT_AUTO_ERASE = 2
+const CTLBT_AUTO_INC = 3
+const CTLBT_ACK = 4
+
+
+
 //
 //
 //
@@ -31,7 +40,8 @@ class cbusNetworkSimulator {
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
-    this.outDelay = 100;
+    this.outDelay = 20;
+    this.ackRequested = false
         
     this.clients = [];
 		
@@ -701,7 +711,11 @@ class cbusNetworkSimulator {
                     winston.info({message: 'CBUS Network Sim: <<< Received control message UNKNOWN COMMAND ' + cbusMsg.text});
                     break
             }
-        }
+            if(cbusMsg.CTLBT & (2**CTLBT_ACK))  {
+              winston.info({message: 'mock_jsonServer: ACK requested : CTLBT ' + cbusMsg.CTLBT + ' ' + (2**CTLBT_ACK)});
+              this.ackRequested = true
+            }
+          }
         if (cbusMsg.type == 'DATA') {
           for (var i = 0; i < 8; i++) {this.firmware.push(cbusMsg.data[i])}
           winston.debug({message: 'mock_jsonServer: <<< Received DATA - new length ' + this.firmware.length});
