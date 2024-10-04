@@ -6,6 +6,22 @@ const GRSP = require('./Definitions/GRSP_definitions.js');
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
 
+//
+//
+//
+function  arrayChecksum(array, start) {
+  var checksum = 0;
+  if ( start != undefined) {
+      checksum = (parseInt(start, 16) ^ 0xFFFF) + 1;
+  }
+  for (var i = 0; i <array.length; i++) {
+      checksum += array[i]
+      checksum = checksum & 0xFFFF        // trim to 16 bits
+  }
+  var checksum2C = decToHex((checksum ^ 0xFFFF) + 1, 4)    // checksum as two's complement in hexadecimal
+  return checksum2C
+}
+
 class cbusNetworkSimulator {
     constructor(NET_PORT, suppliedModules) {
 		winston.info({message: '\nCBUS Network Sim: Starting on Port Number : ' + NET_PORT + '\n'});
@@ -396,8 +412,13 @@ class cbusNetworkSimulator {
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_parameter);  
             this.outputCMDERR(cbusMsg.nodeNumber, GRSP.InvalidEvent);
           } else {
-            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);  
-            this.outputWRACK(cbusMsg.nodeNumber);                
+            // valid command, so process (but only if module exists)
+            if (this.getModule(cbusMsg.nodeNumber) != undefined) {
+              this.getModule(cbusMsg.nodeNumber).CanId = cbusMsg.CAN_ID
+              this.outputENRSP(cbusMsg.nodeNumber, cbusMsg.eventIndex);
+              this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);  
+              this.outputWRACK(cbusMsg.nodeNumber);                
+            }
           }
           break;
         case '76': // MODE Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ModeNumber>
@@ -656,23 +677,39 @@ class cbusNetworkSimulator {
                     break;
                 case 1:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_RESET  <<< '});
+                    this.firmware = []
                     break;
                 case 2:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_RST_CHKSM <<< '});
                     break;
                 case 3:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_CHK_RUN <<< '});
-                    this.outputExtResponse(1)   // 1 = ok ( 0 = not ok)
-                    break;
+                    this.firmwareChecksum = arrayChecksum(this.firmware)
+                    winston.info({message: 'mock_jsonServer: CMD_CHK_RUN: calculated checksum: ' + this.firmwareChecksum + ' received checksum: ' + decToHex(cbusMsg.CPDTH, 2) + decToHex(cbusMsg.CPDTL, 2)});
+                    if (this.firmwareChecksum == decToHex(cbusMsg.CPDTH, 2) + decToHex(cbusMsg.CPDTL, 2)) {
+                        this.outputExtResponse(1)   // 1 = ok
+                    } else {
+                        this.outputExtResponse(0)   // 0 = not ok
+                    }
+                        break;
                 case 4:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message CMD_BOOT_TEST <<< '});
                     this.outputExtResponse(2)   // 2 = confirm boot load
+                    this.firmware = []
                     break;
                 default:
                     winston.info({message: 'CBUS Network Sim: <<< Received control message UNKNOWN COMMAND ' + cbusMsg.text});
                     break
             }
         }
+        if (cbusMsg.type == 'DATA') {
+          for (var i = 0; i < 8; i++) {this.firmware.push(cbusMsg.data[i])}
+          winston.debug({message: 'mock_jsonServer: <<< Received DATA - new length ' + this.firmware.length});
+            if(this.ackRequested){
+              this.outputExtResponse(1)   // 1 = ok          
+            }
+        }
+  
     }
     
 
