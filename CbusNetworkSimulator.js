@@ -28,6 +28,7 @@ function  arrayChecksum(array, start) {
       checksum = checksum & 0xFFFF        // trim to 16 bits
   }
   var checksum2C = decToHex((checksum ^ 0xFFFF) + 1, 4)    // checksum as two's complement in hexadecimal
+  winston.debug({message: 'arrayChecksum: ' + checksum2C});
   return checksum2C
 }
 
@@ -42,6 +43,7 @@ class cbusNetworkSimulator {
 		this.learningNode;
     this.outDelay = 20;
     this.ackRequested = false
+    this.runningChecksum = 0
         
     this.clients = [];
 		
@@ -717,7 +719,10 @@ class cbusNetworkSimulator {
             }
           }
         if (cbusMsg.type == 'DATA') {
-          for (var i = 0; i < 8; i++) {this.firmware.push(cbusMsg.data[i])}
+          for (var i = 0; i < 8; i++) {
+            this.firmware.push(cbusMsg.data[i])
+          }
+          this.runningChecksum = arrayChecksum(cbusMsg.data, this.runningChecksum)
           winston.debug({message: 'mock_jsonServer: <<< Received DATA - new length ' + this.firmware.length});
             if(this.ackRequested){
               this.outputExtResponse(1)   // 1 = ok          

@@ -1330,6 +1330,46 @@ module.exports.CANPiNODE = class CANPiNODE extends CbusModule{
 
 
 //
+// CANCOMPUTE - ID 60
+//
+module.exports.CANCOMPUTE = class CANCOMPUTE extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "COMPUTE";
+
+		this.parameters[1] = 0xA5;								// Manufacturer Id - MERG
+		this.parameters[2] = "b".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 60;								// Module Id - 0x3C
+		this.parameters[4] = 50;								// Number of supported events
+		this.parameters[5] = 1;									// Number of event variables
+		this.parameters[6] = 255;								// Number of Node Variables
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = 0xF;								// Flags - not a producer
+		this.parameters[9] = 13;								// CPU type - P18F25K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 2;								// Beta version number - 0 if production
+    //                      
+    this.parameters[25] = 0x20;             // Number of parameters
+    //
+    this.parameters[30] = 0;                // padding
+    this.parameters[31] = 0;                // checksum
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+    // no default events
+	}
+}
+
+
+//
 // CANINP - type 62
 //
 module.exports.CANINP = class CANINP extends CbusModule{

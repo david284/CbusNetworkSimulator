@@ -49,6 +49,7 @@ var modules = [
 	,new cbusModules.CANMIO_OUT (520)		          // type 52
 	,new cbusModules.CANBIP_OUT (530)		          // type 53
 	,new cbusModules.CANPiNODE (580)		          // type 58
+	,new cbusModules.CANCOMPUTE (600)		          // type 60
 	,new cbusModules.CANINP (620)				          // type 62
 	,new cbusModules.CANXIO (640)		              // type 64
   ,new cbusModules.CANLEVER (800)				        // type 80
