@@ -44,6 +44,7 @@ var modules = [
 	,new cbusModules.CANMIO_4a (326)		          // type 32
 	,new cbusModules.CANACE8MIO (330)		          // type 33
 	,new cbusModules.CANSOL (340)				          // type 34
+	,new cbusModules.CANSCAN (490)				        // type 49
 	,new cbusModules.CANMIO_SVO (500)		          // type 50
 	,new cbusModules.CANMIO_INP (510)		          // type 51
 	,new cbusModules.CANMIO_OUT (520)		          // type 52
