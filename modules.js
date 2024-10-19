@@ -1438,7 +1438,7 @@ module.exports.CANINP = class CANINP extends CbusModule{
 //
 // CANXIO - type 64
 //
-module.exports.CANXIO = class CANXIO extends CbusModule{
+module.exports.CANXIO_46K80_3e = class CANXIO_46K80 extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
                //1234567//
@@ -1455,7 +1455,89 @@ module.exports.CANXIO = class CANXIO extends CbusModule{
 		this.parameters[6] = 183;								// Number of Node Variables
 		this.parameters[7] = 3;									// Major version number
 		this.parameters[8] = 31;								// Flags - producer/consumer
-		this.parameters[9] = 13;								// CPU type - P18F25K80
+		this.parameters[9] = 16;								// CPU type - P18F46K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+    for (var i=1; i< 32; i++) {
+      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
+    }
+	}
+}
+
+
+//
+// CANXIO - type 64
+//
+module.exports.CANXIO_46K80_4a = class CANXIO_46K80 extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "XIO    ";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 64;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 20;								// Number of event variables
+		this.parameters[6] = 183;								// Number of Node Variables
+		this.parameters[7] = 4;									// Major version number
+		this.parameters[8] = 31;								// Flags - producer/consumer
+		this.parameters[9] = 16;								// CPU type - P18F46K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+    for (var i=1; i< 32; i++) {
+      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
+    }
+	}
+}
+
+
+//
+// CANXIO - type 64
+//
+module.exports.CANXIO_27Q84_4a = class CANXIO_27Q84 extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "XIO    ";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);					// Minor version number
+		this.parameters[3] = 64;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 20;								// Number of event variables
+		this.parameters[6] = 183;								// Number of Node Variables
+		this.parameters[7] = 4;									// Major version number
+		this.parameters[8] = 31;								// Flags - producer/consumer
+		this.parameters[9] = 21;								// CPU type - P18F27Q84
 		this.parameters[10] = 1;								// interface type
 		this.parameters[11] = 0;                // 11-14 load address
 		this.parameters[12] = 8;
