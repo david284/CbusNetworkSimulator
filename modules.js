@@ -143,8 +143,13 @@ class CbusModule {
 	// nodeVariables
   //-----------------------------------------------------------------------------
 	fillNodeVariables(variableCount) {
+    if (variableCount > 255){variableCount == 255}
 		for (var i = 0; i <= variableCount ; i++) {
-			this.nodeVariables.push(0);
+      if ( i == 0 ){
+			  this.nodeVariables.push(variableCount);
+      } else {
+			  this.nodeVariables.push(0);
+      }
 		}
 	}
 	
@@ -479,6 +484,7 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 		this.parameters[8] = Flags.Producer + Flags.Bootloading;	// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+		super.fillNodeVariables(this.parameters[6])
     // no default events
 	}
 }
@@ -502,6 +508,7 @@ module.exports.CANCMD = class CANCMD extends CbusModule{
 		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+		super.fillNodeVariables(this.parameters[6])
     // no default events
 	}
 }
