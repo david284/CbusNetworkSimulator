@@ -492,7 +492,7 @@ module.exports.CANCAB = class CANCAB extends CbusModule{
 //
 // CANCMD - ID 10
 //
-module.exports.CANCMD = class CANCMD extends CbusModule{
+module.exports.CANCMD_4d = class CANCMD_4d extends CbusModule{
 	constructor(nodeNumber) {
 		super(nodeNumber);			// Call parent class constructor
                //1234567//
@@ -505,7 +505,42 @@ module.exports.CANCMD = class CANCMD extends CbusModule{
 		this.parameters[5] = 10;								// Number of event variables
 		this.parameters[6] = 144;								// Number of Node Variables
 		this.parameters[7] = 4;									// Major version number
-		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
+		this.parameters[8] = 14;								// Flags
+		this.parameters[9] = 3									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    // no default events
+	}
+}
+
+
+//
+// CANCMD - ID 10
+//
+module.exports.CANCMD_4f = class CANCMD_4f extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "CMD    ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "f".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
+		this.parameters[3] = 10;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 10;								// Number of event variables
+		this.parameters[6] = 216;								// Number of Node Variables
+		this.parameters[7] = 4;									// Major version number
+		this.parameters[8] = 14;								// Flags
+		this.parameters[9] = 3									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
@@ -1348,6 +1383,68 @@ module.exports.CANBIP_OUT = class CANBIP_OUT extends CbusModule{
     // no default events
 	}
 }
+
+
+//
+// CANCSB - ID 55
+//
+module.exports.CANCSB_4d = class CANCSB_4d extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "CSB    ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "d".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
+		this.parameters[3] = 55;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 10;								// Number of event variables
+		this.parameters[6] = 144;								// Number of Node Variables
+		this.parameters[7] = 4;									// Major version number
+		this.parameters[8] = 14;								// Flags
+		this.parameters[9] = 3									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    // no default events
+	}
+}
+
+
+//
+// CANCSB - ID 55
+//
+module.exports.CANCSB_4f = class CANCSB_4f extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "CSB    ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "f".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
+		this.parameters[3] = 55;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 10;								// Number of event variables
+		this.parameters[6] = 216;								// Number of Node Variables
+		this.parameters[7] = 4;									// Major version number
+		this.parameters[8] = 14;								// Flags
+		this.parameters[9] = 3									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    // no default events
+	}
+}
+
+
 
 
 //
