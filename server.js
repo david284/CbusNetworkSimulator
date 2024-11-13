@@ -30,7 +30,8 @@ var modules = [
 	,new cbusModules.CANLED64 (70)				        // type 07
   ,new cbusModules.CANACC4_2 (80)				        // type 08
   ,new cbusModules.CANCAB (90)   				        // type 09
-  ,new cbusModules.CANCMD (100)		    	        // type 10
+  ,new cbusModules.CANCMD_4d (100)    	        // type 10
+  ,new cbusModules.CANCMD_4f (101)    	        // type 10
 	,new cbusModules.CANSERVO (110)				        // type 11
 	,new cbusModules.CANTOTI (170)				        // type 17
 	,new cbusModules.CANSERVO8C (190)				      // type 19
@@ -49,6 +50,8 @@ var modules = [
 	,new cbusModules.CANMIO_INP (510)		          // type 51
 	,new cbusModules.CANMIO_OUT (520)		          // type 52
 	,new cbusModules.CANBIP_OUT (530)		          // type 53
+	,new cbusModules.CANCSB_4d (550)		          // type 55
+	,new cbusModules.CANCSB_4f (551)		          // type 55
 	,new cbusModules.CANPiNODE (580)		          // type 58
 	,new cbusModules.CANCOMPUTE (600)		          // type 60
 	,new cbusModules.CANINP (620)				          // type 62
