@@ -1,6 +1,8 @@
 'use strict';
 var winston = require('winston');		// use config from root instance
 const net = require('net');
+const fs = require('fs');
+var path = require('path');
 var cbusLib = require('cbuslibrary')
 const GRSP = require('./Definitions/GRSP_definitions.js');
 
@@ -32,12 +34,14 @@ function  arrayChecksum(array, start) {
   return checksum2C
 }
 
+const busTrafficPath = path.join(__dirname, "./", "logs", "busTraffic.txt")
+
+
 class cbusNetworkSimulator {
     constructor(NET_PORT, suppliedModules) {
 		winston.info({message: '\nCBUS Network Sim: Starting on Port Number : ' + NET_PORT + '\n'});
-        
+    this.busTrafficLogStream = fs.createWriteStream(busTrafficPath, {flags: 'a+'});        
     this.modules = suppliedModules;
-
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
@@ -73,6 +77,7 @@ class cbusNetworkSimulator {
 					this.sendArray.push(message);					// store the incoming messages so the test can inspect them
                     winston.info({message: 'CBUS Network Sim: <<< Received message [' + msgIndex + '] ' +  message + " <<< "});
                     var cbusMsg = cbusLib.decode(message)      // decode into cbus message
+                    this.writeBusTraffic('<<<IN ' + cbusMsg.text)
                     if ( cbusMsg.ID_TYPE == 'S' ) {
                         this.processStandardMessage(cbusMsg)
                     } else if ( cbusMsg.ID_TYPE == 'X' ) {
@@ -1169,12 +1174,14 @@ class cbusNetworkSimulator {
 
 
   async broadcast(msgData) {
-    winston.info({message: 'CBUS Network Sim: OUT >>> ' + msgData + " >>> " + cbusLib.decode(msgData).text});
+    let outMsg = cbusLib.decode(msgData)
+    this.writeBusTraffic('OUT>> ' + outMsg.text)
+    winston.info({message: 'CBUS Network Sim: OUT >>> ' + msgData + " >>> " + outMsg.text});
     //await sleep(this.outDelay)
     this.clients.forEach(function (client) {
       client.write(msgData);
       winston.debug({message: 'CBUS Network Sim: Transmit >>>> Port: ' + client.remotePort 
-        + ' Data: ' + msgData + " " + cbusLib.decode(msgData).text});
+        + ' Data: ' + msgData + " " + outMsg.text});
     });
   }
 
@@ -1183,6 +1190,17 @@ class cbusNetworkSimulator {
     var msgData = cbusLib.encode_EXT_RESPONSE(value)
     this.broadcast(msgData)
   }
+
+  writeBusTraffic(data){
+    // use {flags: 'a'} to append and {flags: 'w'} to erase and write a new file
+    var time = new Date()
+    var timeStamp = String(time.getMinutes()).padStart(2, '0') + ':' 
+      + String(time.getSeconds()).padStart(2, '0') + '.' 
+      + String(time.getMilliseconds()).padStart(3, '0')
+    this.busTrafficLogStream.write(timeStamp + ' ' + data + "\r\n");
+  }
+
+
 
 }
 
