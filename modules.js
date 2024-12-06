@@ -265,7 +265,7 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		this.NAME = "ACC5   ";
 		
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
-		this.parameters[2] = "u".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
+		this.parameters[2] = "v".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
 		this.parameters[3] = 2;									// Module Id
 		this.parameters[4] = 128;								// Number of supported events
 		this.parameters[5] = 3;									// Number of event variables
