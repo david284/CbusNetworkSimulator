@@ -367,7 +367,7 @@ class cbusNetworkSimulator {
             }
             break;
         case '58': // RQEVN
-            this.outputNUMEV(cbusMsg.nodeNumber);
+            this.processRQEVN(cbusMsg.nodeNumber);
             break;
         case '59': // WRACK - sent by node
             break;
@@ -632,6 +632,24 @@ class cbusNetworkSimulator {
             break;
         }        
     }
+
+
+  //  
+	// RQEVN (0x58)
+  //
+	processRQEVN(nodeNumber) {
+    if (this.getModule(nodeNumber) != undefined) {
+      // certain modules don't support this
+      if (this.getModule(nodeNumber).parameters[3] == 10){ return }
+      //
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+      var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
+      var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
+      this.broadcast(msgData)
+    } else {
+      winston.info({message: 'CBUS Network Sim:  module undefined for nodeNumber : ' + nodeNumber});
+    }
+	}
 
 
   //
@@ -910,20 +928,6 @@ class cbusNetworkSimulator {
       var msgData = cbusLib.encodeEVNLF(nodeNumber, this.getModule(nodeNumber).getFreeSpace())
       this.broadcast(msgData)
     }
-	}
-
-
-	// 74
-	outputNUMEV(nodeNumber) {
-    if (this.getModule(nodeNumber) != undefined) {
-		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
-      var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
-      this.broadcast(msgData)
-    }
-		else{
-      winston.info({message: 'CBUS Network Sim:  module undefined for nodeNumber : ' + nodeNumber});
-		}
 	}
 
 	// 90
