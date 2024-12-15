@@ -387,6 +387,7 @@ class cbusNetworkSimulator {
             break;
         case '71': // NVRD
           if (cbusMsg.encoded.length != 16) {
+            winston.error({message: 'CBUS Network Sim: received NVRD - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.Invalid_Command);
           } else {
             var module = this.getModule(cbusMsg.nodeNumber)
@@ -417,6 +418,7 @@ class cbusNetworkSimulator {
           break;
         case '73': // RQNPN
           if (cbusMsg.encoded.length != 16) {
+            winston.error({message: 'CBUS Network Sim: received RQNPN - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_Command);
           } else {
             this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
@@ -424,6 +426,7 @@ class cbusNetworkSimulator {
           break;
           case '75': // CANID
           if (cbusMsg.encoded.length < 16) {
+            winston.error({message: 'CBUS Network Sim: received CANID - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_Command);
           } else if ((cbusMsg.CAN_ID < 1) || (cbusMsg.CAN_ID > 99)){
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_parameter);  
@@ -469,6 +472,7 @@ class cbusNetworkSimulator {
           break;
         case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
           if (cbusMsg.encoded.length != 16) {
+            winston.error({message: 'CBUS Network Sim: received RQSD - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, cbusMsg.ServiceIndex, GRSP.Invalid_Command);
           } else {
             if (cbusMsg.ServiceIndex == 0){
@@ -480,6 +484,7 @@ class cbusNetworkSimulator {
           break;
         case '87': // RDGN Format: [<MjPri><MinPri=3><CANID>]<87><NN hi><NN lo><ServiceIndex><DiagnosticeCode>
           if (cbusMsg.encoded.length != 18) {
+            winston.error({message: 'CBUS Network Sim: received RDGN - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.Invalid_Command);
           } else {
             this.outputDGN(cbusMsg.nodeNumber, cbusMsg.ServiceIndex, cbusMsg.DiagnosticCode);
@@ -487,6 +492,7 @@ class cbusNetworkSimulator {
           break;
         case '8E': // NVSETRD
           if (cbusMsg.encoded.length != 18) {
+            winston.error({message: 'CBUS Network Sim: received NVSETRD - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 0, GRSP.Invalid_Command);
           } else {
             var module = this.getModule(cbusMsg.nodeNumber);
@@ -517,6 +523,7 @@ class cbusNetworkSimulator {
         case '95': // EVULN
             if (this.learningNode != undefined) {
               if (cbusMsg.encoded.length != 18) {
+                winston.error({message: 'CBUS Network Sim: received EVULN - length wrong'});
                 this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
               } else {
                 // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
@@ -535,6 +542,7 @@ class cbusNetworkSimulator {
             break;
         case '96': // NVSET
           if (cbusMsg.encoded.length != 18) {
+            winston.error({message: 'CBUS Network Sim: received NVSET - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 0, GRSP.Invalid_Command);
           } else {
             var module = this.getModule(cbusMsg.nodeNumber);
@@ -568,6 +576,7 @@ class cbusNetworkSimulator {
           // Format: [<MjPri><MinPri=3><CANID>]<9A><NN hi><NN lo><EN hi><EN lo>
           winston.debug({message: 'CBUS Network Sim: received ASRQ'});
           if (cbusMsg.encoded.length != 18) {
+            winston.error({message: 'CBUS Network Sim: received ASRQ - length wrong'});
             this.outputGRSP(this.learningNode, cbusMsg.opCode, 1, GRSP.Invalid_Command);
           } else {
             if (cbusMsg.deviceNumber > 0 ) {
@@ -578,11 +587,18 @@ class cbusNetworkSimulator {
           }
           break;
         case '9C': // REVAL
-            this.outputNEVAL(cbusMsg.nodeNumber, cbusMsg.eventIndex, cbusMsg.eventVariableIndex)
-            break;
+          winston.debug({message: 'CBUS Network Sim: received REVAL'});
+          if (cbusMsg.encoded.length != 18) {
+            winston.error({message: 'CBUS Network Sim: received REVAL - length wrong'});
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_Command);
+          } else {
+            this.processREVAL(cbusMsg.nodeNumber, cbusMsg.eventIndex, cbusMsg.eventVariableIndex)
+          }
+          break;
         case 'B2': // REQEV
           winston.info({message: 'CBUS Network Sim: received REQEV'});
           if (cbusMsg.encoded.length != 20) {
+            winston.error({message: 'CBUS Network Sim: received REQEV - length wrong'});
             this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
           } else {
             // ok, message looks valid, go & process it
@@ -592,6 +608,7 @@ class cbusNetworkSimulator {
         case 'D2': // EVLRN
           winston.debug({message: 'CBUS Network Sim: EVLRN ' +  JSON.stringify(cbusMsg) });
           if (cbusMsg.encoded.length != 22) {
+            winston.error({message: 'CBUS Network Sim: received EVLRN - length wrong'});
             this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
           } else {
             if (this.learningNode != undefined) {
@@ -634,7 +651,34 @@ class cbusNetworkSimulator {
         }        
     }
 
+	
+	// REVAL (0x9C)
+  // eventIndex starts from 1
+  // storedEvents array starts at 0, so subtract 1
+	processREVAL(nodeNumber, eventIndex, eventVariableIndex) {
+    if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+      var storedEvents = this.getModule(nodeNumber).storedEvents;
+      if (eventIndex > 0) {
+        if (eventIndex <= storedEvents.length) {
+          if (eventVariableIndex < storedEvents[eventIndex-1].variables.length) {
+            var eventVariableValue = storedEvents[eventIndex-1].variables[eventVariableIndex];
+            var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
+            if ((eventVariableValue > 0) || (this.getModule(nodeNumber).sendZeroEV)){            
+              this.broadcast(msgData)
+            }
+          } else {
+            winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+            this.outputCMDERR(nodeNumber, 6)                    
+          }
+        } else {
+          winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
+        }
+      }
+    }
+	}
 
+  
   //
   // REQEV (0xB2)
   //
@@ -978,33 +1022,6 @@ class cbusNetworkSimulator {
 //		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
 		var msgData = cbusLib.encodeGRSP(nodeNumber, requestOpCode, serviceType, result);
 		this.broadcast(msgData)
-	}
-	
-	
-	// B5
-  // eventIndex starts from 1
-  // storedEvents array starts at 0, so subtract 1
-	outputNEVAL(nodeNumber, eventIndex, eventVariableIndex) {
-    if (this.getModule(nodeNumber) != undefined) {
-      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      var storedEvents = this.getModule(nodeNumber).storedEvents;
-      if (eventIndex > 0) {
-        if (eventIndex <= storedEvents.length) {
-          if (eventVariableIndex < storedEvents[eventIndex-1].variables.length) {
-            var eventVariableValue = storedEvents[eventIndex-1].variables[eventVariableIndex];
-            var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
-            if ((eventVariableValue > 0) || (this.getModule(nodeNumber).sendZeroEV)){            
-              this.broadcast(msgData)
-            }
-          } else {
-            winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
-            this.outputCMDERR(nodeNumber, 6)                    
-          }
-        } else {
-          winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
-        }
-      }
-    }
 	}
 	
 	// B6
