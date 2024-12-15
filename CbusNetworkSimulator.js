@@ -45,7 +45,7 @@ class cbusNetworkSimulator {
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
-    this.outDelay = 20;
+    this.outDelay = 10;
     this.ackRequested = false
     this.runningChecksum = 0
         
@@ -390,25 +390,7 @@ class cbusNetworkSimulator {
             winston.error({message: 'CBUS Network Sim: received NVRD - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.Invalid_Command);
           } else {
-            var module = this.getModule(cbusMsg.nodeNumber)
-            if (module) {
-              var nodeVariables = module.nodeVariables;
-              // if index = 0, send count of indexes (not including 0)
-              if (cbusMsg.nodeVariableIndex == 0){
-                this.outputNVANS(cbusMsg.nodeNumber, 0, nodeVariables.length-1);
-              }
-              // do either matching index, or all indexes if 0
-              for (var i = 1; i < nodeVariables.length; i++) {
-                if ((cbusMsg.nodeVariableIndex == 0) || (cbusMsg.nodeVariableIndex == i)) {
-                  await sleep(this.outDelay)
-                  this.outputNVANS(cbusMsg.nodeNumber, i, nodeVariables[i]);
-                }
-              }
-              if (cbusMsg.nodeVariableIndex + 1 > nodeVariables.length) {
-                this.outputCMDERR(cbusMsg.nodeNumber, GRSP.InvalidNodeVariableIndex);
-                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
-              }
-            }
+            this.processNVRD(cbusMsg.nodeNumber, cbusMsg.nodeVariableIndex)
           }
           break;
         case '72': // NENRD
@@ -650,6 +632,32 @@ class cbusNetworkSimulator {
             break;
         }        
     }
+
+
+  //
+	// NVRD (0x71)
+  //
+  async processNVRD(nodeNumber, nodeVariableIndex) {
+    var module = this.getModule(nodeNumber)
+    if (module) {
+      var nodeVariables = module.nodeVariables;
+      // if index = 0, send count of indexes (not including 0)
+      if (nodeVariableIndex == 0){
+        this.outputNVANS(nodeNumber, 0, nodeVariables.length-1);
+      }
+      // do either matching index, or all indexes if 0
+      for (var i = 1; i < nodeVariables.length; i++) {
+        if ((nodeVariableIndex == 0) || (nodeVariableIndex == i)) {
+          await sleep(this.outDelay)
+          this.outputNVANS(nodeNumber, i, nodeVariables[i]);
+        }
+      }
+      if (nodeVariableIndex + 1 > nodeVariables.length) {
+        this.outputCMDERR(nodeNumber, GRSP.InvalidNodeVariableIndex);
+        this.outputGRSP(nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
+      }
+    }
+  }
 
 	
   //
