@@ -640,7 +640,9 @@ class cbusNetworkSimulator {
 	processRQEVN(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
       // certain modules don't support this
-      if (this.getModule(nodeNumber).parameters[3] == 10){ return }
+      if (this.getModule(nodeNumber).parameters[1] == 165){
+        if (this.getModule(nodeNumber).parameters[3] == 10){ return }
+      }
       //
       cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
       var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
