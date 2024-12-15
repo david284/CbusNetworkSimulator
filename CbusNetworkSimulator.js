@@ -421,7 +421,7 @@ class cbusNetworkSimulator {
             winston.error({message: 'CBUS Network Sim: received RQNPN - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.Invalid_Command);
           } else {
-            this.outputPARAN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
+            this.processRQNPN(cbusMsg.nodeNumber, cbusMsg.parameterIndex);
           }
           break;
           case '75': // CANID
@@ -652,7 +652,45 @@ class cbusNetworkSimulator {
     }
 
 	
-	// REVAL (0x9C)
+  //
+	// RQNPN (0x73)
+  //
+  processRQNPN(nodeNumber, parameterIndex) {
+    if (this.getModule(nodeNumber) != undefined) {
+      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+      // now, if parameter index is 0, the response should be the number of parameters
+      // and if VLCB, followed by futher PARAN messages for all the parameters
+      if(parameterIndex==0){
+        winston.info({message: 'CBUS Network Sim:  RQNPN zero parameter '});
+        var numberOfParameters = this.getModule(nodeNumber).getParameter(0);
+        var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, numberOfParameters)
+        this.broadcast(msgData)
+        // now check if VLCB
+        if (this.getModule(nodeNumber).isVLCB()) {
+          for (var i = 1; i <= numberOfParameters; i++ ){
+            var parameterValue = this.getModule(nodeNumber).getParameter(i);
+            var msgData1 = cbusLib.encodePARAN(nodeNumber, i, parameterValue)
+            this.broadcast(msgData1)
+          }
+        }
+      } else {
+        // single parameter requested
+        winston.info({message: 'CBUS Network Sim:  RQNPN single parameter ' + parameterIndex});
+        if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
+          var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
+          var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
+          this.broadcast(msgData)
+        } else {
+          winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
+          this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)
+          this.outputGRSP(nodeNumber, '73', 1, GRSP.InvalidParameterIndex);
+        }
+      }
+    }
+	}
+	
+
+  // REVAL (0x9C)
   // eventIndex starts from 1
   // storedEvents array starts at 0, so subtract 1
 	processREVAL(nodeNumber, eventIndex, eventVariableIndex) {
@@ -930,42 +968,6 @@ class cbusNetworkSimulator {
     this.broadcast(msgData)
 	}
 
-
-	// 9B
-	 outputPARAN(nodeNumber, parameterIndex) {
-    if (this.getModule(nodeNumber) != undefined) {
-      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      // now, if parameter index is 0, the response should be the number of parameters
-      // and if VLCB, followed by futher PARAN messages for all the parameters
-      if(parameterIndex==0){
-        winston.info({message: 'CBUS Network Sim:  RQNPN zero parameter '});
-        var numberOfParameters = this.getModule(nodeNumber).getParameter(0);
-        var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, numberOfParameters)
-        this.broadcast(msgData)
-        // now check if VLCB
-        if (this.getModule(nodeNumber).isVLCB()) {
-          for (var i = 1; i <= numberOfParameters; i++ ){
-            var parameterValue = this.getModule(nodeNumber).getParameter(i);
-            var msgData1 = cbusLib.encodePARAN(nodeNumber, i, parameterValue)
-            this.broadcast(msgData1)
-          }
-        }
-      } else {
-        // single parameter requested
-        winston.info({message: 'CBUS Network Sim:  RQNPN single parameter ' + parameterIndex});
-        if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
-          var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
-          var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
-          this.broadcast(msgData)
-        } else {
-          winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
-          this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)
-          this.outputGRSP(nodeNumber, '73', 1, GRSP.InvalidParameterIndex);
-        }
-      }
-    }
-	}
-	
   // 9D
   outputARSON(nodeNumber, eventNumber) {
     // Format: [<MjPri><MinPri=3><CANID>]<9D><NN hi><NN lo><EN hi><EN lo>
