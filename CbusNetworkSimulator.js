@@ -585,25 +585,8 @@ class cbusNetworkSimulator {
           if (cbusMsg.encoded.length != 20) {
             this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
           } else {
-            var module = this.getModule(this.learningNode);
-            if (module){
-              var event = this.getEventByName2(this.learningNode, cbusMsg.eventIdentifier);
-              if (event != undefined) {
-                if (cbusMsg.eventVariableIndex <= module.parameters[5]){
-                    this.outputEVANS(this.learningNode, cbusMsg.eventIdentifier, cbusMsg.eventVariableIndex)
-                } else {
-                  winston.info({message: 'CBUS Network Sim:  ************ event variable index not valid ' + cbusMsg.eventVariableIndex + ' ************'});
-                  this.outputCMDERR(this.learningNode, GRSP.InvalidEventVariableIndex);
-                  this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.InvalidEventVariableIndex);
-                }
-              } else {
-                winston.info({message: 'CBUS Network Sim:  ************ event number not valid ' + cbusMsg.eventIdentifier + ' ************'});
-                this.outputCMDERR(this.learningNode, GRSP.InvalidEvent)
-                this.outputGRSP(this.learningNode, cbusMsg.opCode, 1, GRSP.InvalidEvent);          
-              }
-            } else {
-              winston.error({message: 'CBUS Network Sim: REQEV: ***** ERROR ***** no module found for nodeNumber ' + this.learningNode  });
-            }
+            // ok, message looks valid, go & process it
+            this.processREQEV(cbusMsg.eventIdentifier, cbusMsg.eventVariableIndex)
           }
           break;
         case 'D2': // EVLRN
@@ -650,6 +633,39 @@ class cbusNetworkSimulator {
             break;
         }        
     }
+
+
+  //
+  // REQEV (0xB2)
+  //
+  processREQEV(eventIdentifier, eventVariableIndex){
+    var module = this.getModule(this.learningNode);
+    if (module){
+      var event = this.getEventByName2(this.learningNode, eventIdentifier);
+      if (event != undefined) {
+        if (eventVariableIndex == 0){
+          // special case
+          for (let i = 0; i < module.parameters[5]; i++){
+            this.outputEVANS(this.learningNode, eventIdentifier, i)
+          }
+        }
+        if (eventVariableIndex <= module.parameters[5]){
+            this.outputEVANS(this.learningNode, eventIdentifier, eventVariableIndex)
+        } else {
+          winston.info({message: 'CBUS Network Sim:  ************ event variable index not valid ' + eventVariableIndex + ' ************'});
+          this.outputCMDERR(this.learningNode, GRSP.InvalidEventVariableIndex);
+          this.outputGRSP(this.learningNode, 'B2', 0, GRSP.InvalidEventVariableIndex);
+        }
+      } else {
+        winston.info({message: 'CBUS Network Sim:  ************ event number not valid ' + eventIdentifier + ' ************'});
+        this.outputCMDERR(this.learningNode, GRSP.InvalidEvent)
+        this.outputGRSP(this.learningNode, 'B2', 1, GRSP.InvalidEvent);          
+      }
+    } else {
+      winston.error({message: 'CBUS Network Sim: REQEV: ***** ERROR ***** no module found for nodeNumber ' + this.learningNode  });
+    }
+
+  }  
 	
 	processAccessoryEvent(opCode, nodeNumber, eventNumber) {
     var module = this.getModule(nodeNumber);
