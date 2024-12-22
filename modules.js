@@ -529,7 +529,7 @@ module.exports.CANCMD_4f = class CANCMD_4f extends CbusModule{
 		this.NAME = "CMD    ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
-		this.parameters[2] = "f".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
+		this.parameters[2] = "f".charCodeAt(0);	// Minor version number - decimal 102 (0x66)
 		this.parameters[3] = 10;								// Module Id
 		this.parameters[4] = 255;								// Number of supported events
 		this.parameters[5] = 10;								// Number of event variables
@@ -1727,10 +1727,10 @@ module.exports.CANCMDB_4f = class CANCMDB_4f extends CbusModule{
 		this.NAME = "CMDB   ";
 
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
-		this.parameters[2] = "f".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
+		this.parameters[2] = "f".charCodeAt(0);	// Minor version number - decimal 102 (0x66)
 		this.parameters[3] = 83;								// Module Id
-		this.parameters[4] = 0;								// Number of supported events
-		this.parameters[5] = 0;								// Number of event variables
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 10;								// Number of event variables
 		this.parameters[6] = 216;								// Number of Node Variables
 		this.parameters[7] = 4;									// Major version number
 		this.parameters[8] = 14;								// Flags
