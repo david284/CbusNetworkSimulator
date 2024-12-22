@@ -501,8 +501,8 @@ module.exports.CANCMD_4d = class CANCMD_4d extends CbusModule{
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "d".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
 		this.parameters[3] = 10;								// Module Id
-		this.parameters[4] = 255;								// Number of supported events
-		this.parameters[5] = 10;								// Number of event variables
+		this.parameters[4] = 0;								// Number of supported events
+		this.parameters[5] = 0;								// Number of event variables
 		this.parameters[6] = 144;								// Number of Node Variables
 		this.parameters[7] = 4;									// Major version number
 		this.parameters[8] = 14;								// Flags
@@ -1715,6 +1715,38 @@ module.exports.CANLEVER = class CANLEVER extends CbusModule{
     ]
 	}
 }
+
+
+//
+// CANCMDB - ID 83
+//
+module.exports.CANCMDB_4f = class CANCMDB_4f extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "CMDB   ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "f".charCodeAt(0);	// Minor version number - decimal 117 (0x75)
+		this.parameters[3] = 83;								// Module Id
+		this.parameters[4] = 0;								// Number of supported events
+		this.parameters[5] = 0;								// Number of event variables
+		this.parameters[6] = 216;								// Number of Node Variables
+		this.parameters[7] = 4;									// Major version number
+		this.parameters[8] = 14;								// Flags
+		this.parameters[9] = 3									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    // no default events
+	}
+}
+
+
 
 //***************************************************************************************************************************
 //

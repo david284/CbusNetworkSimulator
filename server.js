@@ -59,6 +59,7 @@ var modules = [
 	,new cbusModules.CANXIO_46K80_4a (641)        // type 64
 	,new cbusModules.CANXIO_27Q84_4a (642)        // type 64
   ,new cbusModules.CANLEVER (800)				        // type 80
+  ,new cbusModules.CANCMDB_4f (830)			        // type 83
 	,new cbusModules.CANMIO_UUT (65000)           // type 32
 	,new cbusModules.CANMIO_test_adapter (65535)  // type 32
 ]
