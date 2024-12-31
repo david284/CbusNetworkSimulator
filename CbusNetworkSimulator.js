@@ -285,7 +285,7 @@ class cbusNetworkSimulator {
         case '0D': //QNN
             for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
               await sleep(this.outDelay)
-              this.outputPNN(this.modules[moduleIndex].nodeNumber);
+              this.outputPNN(this.modules[moduleIndex]);
             }
             break;
         case '10': // RQNP
@@ -684,34 +684,37 @@ class cbusNetworkSimulator {
 	// RQNPN (0x73)
   //
   processRQNPN(nodeNumber, parameterIndex) {
-    if (this.getModule(nodeNumber) != undefined) {
-      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      // now, if parameter index is 0, the response should be the number of parameters
-      // and if VLCB, followed by futher PARAN messages for all the parameters
-      if(parameterIndex==0){
-        winston.info({message: 'CBUS Network Sim:  RQNPN zero parameter '});
-        var numberOfParameters = this.getModule(nodeNumber).getParameter(0);
-        var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, numberOfParameters)
-        this.broadcast(msgData)
-        // now check if VLCB
-        if (this.getModule(nodeNumber).isVLCB()) {
-          for (var i = 1; i <= numberOfParameters; i++ ){
-            var parameterValue = this.getModule(nodeNumber).getParameter(i);
-            var msgData1 = cbusLib.encodePARAN(nodeNumber, i, parameterValue)
-            this.broadcast(msgData1)
-          }
-        }
-      } else {
-        // single parameter requested
-        winston.info({message: 'CBUS Network Sim:  RQNPN single parameter ' + parameterIndex});
-        if (parameterIndex <= this.getModule(nodeNumber).getParameter(0)) {
-          var parameterValue = this.getModule(nodeNumber).getParameter(parameterIndex);
-          var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
+    for (var moduleIndex = 0; moduleIndex < this.modules.length; moduleIndex++) {
+      let module = this.modules[moduleIndex]
+      if (module.nodeNumber == nodeNumber) {
+        cbusLib.setCanHeader(2, module.CanId);
+        // now, if parameter index is 0, the response should be the number of parameters
+        // and if VLCB, followed by futher PARAN messages for all the parameters
+        if(parameterIndex==0){
+          winston.info({message: 'CBUS Network Sim:  RQNPN zero parameter '});
+          var numberOfParameters = module.getParameter(0);
+          var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, numberOfParameters)
           this.broadcast(msgData)
+          // now check if VLCB
+          if (module.isVLCB()) {
+            for (var i = 1; i <= numberOfParameters; i++ ){
+              var parameterValue = module.getParameter(i);
+              var msgData1 = cbusLib.encodePARAN(nodeNumber, i, parameterValue)
+              this.broadcast(msgData1)
+            }
+          }
         } else {
-          winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
-          this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)
-          this.outputGRSP(nodeNumber, '73', 1, GRSP.InvalidParameterIndex);
+          // single parameter requested
+          winston.info({message: 'CBUS Network Sim:  RQNPN single parameter ' + parameterIndex});
+          if (parameterIndex <= module.getParameter(0)) {
+            var parameterValue = module.getParameter(parameterIndex);
+            var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, parameterValue)
+            this.broadcast(msgData)
+          } else {
+            winston.info({message: 'CBUS Network Sim:  ************ parameter index exceeded ' + parameterIndex + ' ************'});
+            this.outputCMDERR(nodeNumber, GRSP.InvalidParameterIndex)
+            this.outputGRSP(nodeNumber, '73', 1, GRSP.InvalidParameterIndex);
+          }
         }
       }
     }
@@ -1041,12 +1044,12 @@ class cbusNetworkSimulator {
 	}
 	
 	// B6
-	 outputPNN(nodeNumber) {
-		cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      var msgData = cbusLib.encodePNN(nodeNumber, 
-          this.getModule(nodeNumber).getManufacturerId(),
-          this.getModule(nodeNumber).getModuleId(),
-          this.getModule(nodeNumber).getFlags())
+	 outputPNN(module) {
+		cbusLib.setCanHeader(2, module.CanId);
+      var msgData = cbusLib.encodePNN(module.nodeNumber, 
+        module.getManufacturerId(),
+        module.getModuleId(),
+        module.getFlags())
       this.broadcast(msgData)
 	}
 	

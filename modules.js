@@ -83,7 +83,12 @@ class CbusModule {
     for (var key in this.storedEvents) { count++;};
 		return count
   }
-  getFreeSpace() { return 100; }
+  getFreeSpace() { 
+		// param 4 is number of supported events
+		var value = this.parameters[4] - this.getStoredEventsCount()
+		value = (value > 0) ? value : 0
+		return value; 
+	}
   toggleSendEvents(value){
       if(this.isProducer()) { 
         if (this.defaultEventsEnabled) {

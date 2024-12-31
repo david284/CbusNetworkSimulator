@@ -20,7 +20,10 @@ var rl = readline.createInterface({
 
 
 var modules = [
-  new cbusModules.CANTEST (1)				    	      // DEVELOPMENT
+  new cbusModules.CANACC5 (0)				  	      	// type 02 - un-initialised
+  ,new cbusModules.CANACC8 (0)					        // type 03 - un-initialised
+  ,new cbusModules.CANACC8 (0)					        // type 03 - un-initialised
+  ,new cbusModules.CANTEST (1)				    	    // DEVELOPMENT
   ,new cbusModules.CANVLCB (2)				          // DEVELOPMENT
   ,new cbusModules.CANACC4 (10)			      	    // type 01
   ,new cbusModules.CANACC5 (20)				  	      // type 02
@@ -29,9 +32,8 @@ var modules = [
 	,new cbusModules.CANACE8C (50)				        // type 05
 	,new cbusModules.CANLED64 (70)				        // type 07
   ,new cbusModules.CANACC4_2 (80)				        // type 08
-  ,new cbusModules.CANCAB (90)   				        // type 09
   ,new cbusModules.CANCMD_4d (100)    	        // type 10
-  ,new cbusModules.CANCMD_4f (101)    	        // type 10
+  ,new cbusModules.CANCMD_4f (101)   	          // type 10
 	,new cbusModules.CANSERVO (110)				        // type 11
 	,new cbusModules.CANTOTI (170)				        // type 17
 	,new cbusModules.CANSERVO8C (190)				      // type 19
@@ -60,8 +62,13 @@ var modules = [
 	,new cbusModules.CANXIO_27Q84_4a (642)        // type 64
   ,new cbusModules.CANLEVER (800)				        // type 80
   ,new cbusModules.CANCMDB_4f (830)			        // type 83
-	,new cbusModules.CANMIO_UUT (65000)           // type 32
-	,new cbusModules.CANMIO_test_adapter (65535)  // type 32
+	,new cbusModules.CANMIO_test_adapter (65000)  // type 32
+	,new cbusModules.CANMIO_UUT (65001)           // type 32
+	,new cbusModules.CANMIO_UUT (65001)           // type 32
+  ,new cbusModules.CANCMD_4f (65534)   	        // type 10
+  ,new cbusModules.CANCMD_4f (65534)   	        // type 10
+  ,new cbusModules.CANCAB (65535)   		        // type 09
+  ,new cbusModules.CANCAB (65535)   		        // type 09
 ]
  
 for (var i = 0; i < modules.length; i++) {
