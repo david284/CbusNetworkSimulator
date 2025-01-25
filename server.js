@@ -38,6 +38,7 @@ var modules = [
 	,new cbusModules.CANTOTI (170)				        // type 17
 	,new cbusModules.CANSERVO8C (190)				      // type 19
 	,new cbusModules.CANPAN (290)				          // type 29
+	,new cbusModules.CANPAN_4c (291)		          // type 29
 	,new cbusModules.CANACE3C (300)				        // type 30
 	,new cbusModules.CANPanel (310)				        // type 31
 	,new cbusModules.CANMIO_3a (321)		          // type 32
