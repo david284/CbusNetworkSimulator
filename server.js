@@ -65,10 +65,7 @@ var modules = [
   ,new cbusModules.CANCMDB_4f (830)			        // type 83
 	,new cbusModules.CANMIO_test_adapter (65000)  // type 32
 	,new cbusModules.CANMIO_UUT (65001)           // type 32
-	,new cbusModules.CANMIO_UUT (65001)           // type 32
   ,new cbusModules.CANCMD_4f (65534)   	        // type 10
-  ,new cbusModules.CANCMD_4f (65534)   	        // type 10
-  ,new cbusModules.CANCAB (65535)   		        // type 09
   ,new cbusModules.CANCAB (65535)   		        // type 09
 ]
  
