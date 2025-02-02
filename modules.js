@@ -24,9 +24,15 @@ const Flags = {
   VLCB: 64
 };
 
-function addBulkEvents(module, numberOfEvents){
+function addBulkLongEvents(module, numberOfEvents, numberOfVariables){
   for (var i=1; i< numberOfEvents+1; i++) {
-    module.addNewStoredEvent(module.getNodeNumberHex() + decToHex(i, 4));
+    module.addNewStoredEvent(module.getNodeNumberHex() + decToHex(i, 4), numberOfVariables);
+  }
+}
+
+function addBulkShortEvents(module, numberOfEvents, numberOfVariables){
+  for (var i=1; i< numberOfEvents+1; i++) {
+    module.addNewStoredEvent('0000' + decToHex(i, 4), numberOfVariables);
   }
 }
 
@@ -67,13 +73,15 @@ class CbusModule {
 		winston.debug({message: 'modules: events: ' + JSON.stringify(this.defaultEvents)});
 		return this.defaultEvents[this.defaultEvents.length - 1];		// adjust as array is zero based	    
 	}
-	addNewStoredEvent(eventName) {
+	addNewStoredEvent(eventName, numberOfVariables) {
 		winston.debug({message: 'modules: add new stored event: node ' + this.nodeNumber + ' eventName ' + eventName});
 		var variables = [];
-    variables[0] = this.parameters[5]
+    variables[0] = numberOfVariables
 		// create variable array of correct length for specific module
-		for (var index = 1; index <= this.parameters[5]; index++) {variables.push(0)};
-		this.storedEvents.push({'eventName': eventName, "variables": variables});
+		for (var index = 1; index <= numberOfVariables; index++) {
+			variables.push(index)};
+			this.storedEvents.push({'eventName': eventName, "variables": variables}
+		);
 		winston.debug({message: 'modules: events: ' + JSON.stringify(this.storedEvents)});
 		return this.storedEvents[this.storedEvents.length - 1];		// adjust as array is zero based	    
 	}
@@ -252,8 +260,8 @@ module.exports.CANACC4 = class CANACC4 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(1, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(101, 4));
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 
 	}
 	shouldFeedback(eventIndex) { return false;}
@@ -290,8 +298,8 @@ module.exports.CANACC5 = class CANACC5 extends CbusModule{
 		
 		super.fillNodeVariables(this.parameters[6])
 
-    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(2, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(102, 4));
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 
 
 	}
@@ -321,8 +329,8 @@ module.exports.CANACC8 = class CANACC8 extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
 			
-    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(3, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(103, 4));
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -355,6 +363,7 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
   	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(6, 4));
   	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(7, 4));
   	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(8, 4));
+
 	}
 }
 
@@ -390,7 +399,8 @@ module.exports.CANACE8C = class CANACE8C extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    addBulkEvents(this, 8)
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -426,8 +436,8 @@ module.exports.CANLED64 = class CANLED64 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -461,8 +471,8 @@ module.exports.CANACC4_2 = class CANACC4_2 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 		
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 	shouldFeedback(eventIndex) { return false;}
 }
@@ -549,7 +559,8 @@ module.exports.CANCMD_4f = class CANCMD_4f extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    // no default events
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -586,8 +597,8 @@ module.exports.CANSERVO = class CANSERVO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -624,8 +635,8 @@ module.exports.CANTOTI = class CANTOTI extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -662,8 +673,8 @@ module.exports.CANSERVO8C = class CANSERVO8C extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    
-    // no default events
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -700,9 +711,8 @@ module.exports.CANPAN = class CANPAN extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(29, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(129, 4));
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -739,9 +749,8 @@ module.exports.CANPAN_4c = class CANPAN extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    this.addNewDefaultEvent(decToHex(0, 4) + decToHex(29, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(129, 4));
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -767,8 +776,8 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-			
-    // no default events
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -805,8 +814,8 @@ module.exports.CANPanel = class CANPanel extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -845,8 +854,8 @@ module.exports.CANMIO_3a = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    addBulkEvents(this, 31)
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -885,8 +894,8 @@ module.exports.CANMIO_3c = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    addBulkEvents(this, 31)
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -925,8 +934,8 @@ module.exports.CANMIO_3d = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    addBulkEvents(this, 31)
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -965,8 +974,8 @@ module.exports.CANMIO_3e = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    addBulkEvents(this, 31)
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1005,8 +1014,8 @@ module.exports.CANMIO_4a = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    addBulkEvents(this, 31)
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 
     this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 1,
       "Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
@@ -1066,8 +1075,8 @@ module.exports.CANMIO_test_adapter = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    addBulkEvents(this, 8)
-
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
   }
 
   actionOffEvent(simulator, eventNumber){
@@ -1121,8 +1130,8 @@ module.exports.CANMIO_UUT = class CANMIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    addBulkEvents(this, 8)
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 
     this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 1,
       "Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
@@ -1194,8 +1203,8 @@ module.exports.CANACE8MIO = class CANACE8MIO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 30, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1229,8 +1238,8 @@ module.exports.CANSOL = class CANSOL extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 		
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1267,8 +1276,8 @@ module.exports.CANSCAN = class CANSCAN extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    
-    // no default events
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
     this.NVsetNeedsLearnMode = true;
 
 	}
@@ -1307,8 +1316,8 @@ module.exports.CANMIO_SVO = class CANMIO_SVO extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    
-    // no default events
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
     this.NVsetNeedsLearnMode = true;
 
 	}
@@ -1347,8 +1356,8 @@ module.exports.CANMIO_INP = class CANMIO_INP extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    
-    // no default events
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1385,8 +1394,8 @@ module.exports.CANMIO_OUT = class CANMIO_OUT extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 30, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1423,8 +1432,8 @@ module.exports.CANBIP_OUT = class CANBIP_OUT extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 30, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1454,7 +1463,8 @@ module.exports.CANCSB_4d = class CANCSB_4d extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    // no default events
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1484,7 +1494,8 @@ module.exports.CANCSB_4f = class CANCSB_4f extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    // no default events
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1511,8 +1522,8 @@ module.exports.CANPiNODE = class CANPiNODE extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 30, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1551,8 +1562,8 @@ module.exports.CANCOMPUTE = class CANCOMPUTE extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1578,8 +1589,8 @@ module.exports.CANINP = class CANINP extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    // no default events
+    addBulkLongEvents(this, 30, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1616,10 +1627,8 @@ module.exports.CANXIO_46K80_3e = class CANXIO_46K80 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    for (var i=1; i< 32; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1657,10 +1666,8 @@ module.exports.CANXIO_46K80_4a = class CANXIO_46K80 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    for (var i=1; i< 32; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1698,10 +1705,8 @@ module.exports.CANXIO_27Q84_4a = class CANXIO_27Q84 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-
-    for (var i=1; i< 32; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1757,6 +1762,9 @@ module.exports.CANLEVER = class CANLEVER extends CbusModule{
       9, 0, 0, 0, 0, 0, 0,            // lock control
       10, 0, 0, 0, 0, 0, 0             // private
     ]
+
+		addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1786,7 +1794,8 @@ module.exports.CANCMDB_4f = class CANCMDB_4f extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
 		super.fillNodeVariables(this.parameters[6])
-    // no default events
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1884,10 +1893,8 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		}
 		
 		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
-
-    for (var i=1; i< 5; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
+    addBulkLongEvents(this, 6, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }
 
@@ -1977,12 +1984,8 @@ module.exports.CANVLCB = class CANVLCB extends CbusModule{
 		}
 		
 		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
-
-    for (var i=1; i< 4; i++) {
-      this.addNewStoredEvent(decToHex(nodeNumber, 4) + decToHex(i+600, 4));
-    }
-    // add short
-    this.addNewStoredEvent('0000' + decToHex(nodeNumber, 4));
+    addBulkLongEvents(this, 30, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
 	}
   shouldFeedback(eventIndex) { return true;}
 
