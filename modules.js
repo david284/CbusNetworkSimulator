@@ -1991,5 +1991,92 @@ module.exports.CANVLCB = class CANVLCB extends CbusModule{
 
 }
 
+//
+// Development 4IN4OUT module
+//
+module.exports.CAN4IN4OUT = class CAN4IN4OUT extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+		//           1234567
+		this.NAME = "4IN4OUT";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 13;								// Manufacturer Id - DEVELOPMENT
+    this.parameters[2] = 97;								// Minor version number (a)
+		this.parameters[3] = 82;							  // Module Id
+		this.parameters[4] = 64; 								// Number of supported events
+		this.parameters[5] = 5;								// Number of event variables
+		this.parameters[6] = 4;								// Number of Node Variables
+		this.parameters[7] = 1;								// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.VLCB;	// Flags
+		this.parameters[9] = 13;								// CPU type - P18F25K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																            // skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
+		this.parameters[0] = 20;								// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+		
+		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
+				"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
+		}
+		
+		this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 0,
+				"Diagnostics": { "0": 2, "1": 254, "2": 126 }
+		};
+		this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 2,
+				"Diagnostics": { "0": 17, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
+								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16, 17:17, 18:18}
+		}
+		this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 0,
+				"Diagnostics": { "0": 1, "1":1 }
+		}
+		this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 0,
+				"Diagnostics": { "0": 1, "1":1 }
+		}
+		this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 0,
+				"Diagnostics": { "0": 1, "1":1 }
+		}
+		this.services["7"] = {"ServiceIndex": 7, "ServiceType" : 7,	"ServiceVersion" : 0 }
+
+		this.services["8"] = {"ServiceIndex": 8, "ServiceType" : 8,	"ServiceVersion" : 0 }
+
+		this.services["9"] = {"ServiceIndex": 9, "ServiceType" : 9,	"ServiceVersion" : 0 }
+
+		this.services["10"] = {"ServiceIndex": 10, "ServiceType" : 10,	"ServiceVersion" : 0 }
+
+		this.services["11"] = {"ServiceIndex": 11, "ServiceType" : 11,	"ServiceVersion" : 0 }
+
+		this.services["12"] = {"ServiceIndex": 12, "ServiceType" : 12,	"ServiceVersion" : 0 }
+
+		this.services["13"] = {"ServiceIndex": 13, "ServiceType" : 13,	"ServiceVersion" : 0 }
+
+		this.services["14"] = {"ServiceIndex": 14, "ServiceType" : 14,	"ServiceVersion" : 0 }
+
+		this.services["15"] = {"ServiceIndex": 15, "ServiceType" : 15,	"ServiceVersion" : 0 }
+
+		this.services["16"] = {"ServiceIndex": 16, "ServiceType" : 16,	"ServiceVersion" : 0 }
+
+		this.services["17"] = {"ServiceIndex": 17, "ServiceType" : 17,	"ServiceVersion" : 0 }
+
+		this.services["18"] = { "ServiceIndex": 18, "ServiceType" : 3, "ServiceVersion" : 0,
+				"Diagnostics": { "0": 16, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
+								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
+		}
+		
+		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
+	}
+  //shouldFeedback(eventIndex) { return true;}
+
+}
+
 
 
