@@ -435,6 +435,9 @@ class cbusNetworkSimulator {
                 this.endSetup(module);
                 this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
                 break;
+                case 0x2:   // normal 'learn' mode
+                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                break;
               case 0xC:
                 // turn on heartbeat
                 this.getModule(cbusMsg.nodeNumber).setHeartBeatEnabled(true);
@@ -661,10 +664,19 @@ class cbusNetworkSimulator {
     var module = this.getModule(nodeNumber)
     if (module) {
       var nodeVariables = module.nodeVariables;
-      // if index = 0, send count of indexes (not including 0)
-      if (nodeVariableIndex == 0){
-        this.outputNVANS(nodeNumber, 0, nodeVariables.length-1);
+      if (nodeVariableIndex + 1 > nodeVariables.length) {
+        this.outputCMDERR(nodeNumber, GRSP.InvalidNodeVariableIndex);
+        this.outputGRSP(nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
+      } else {
+        // if index = 0, send count of indexes (not including 0)
+        if (nodeVariableIndex == 0){
+          this.outputNVANS(nodeNumber, 0, nodeVariables.length-1);
+        } else {
+          this.outputNVANS(nodeNumber, nodeVariableIndex, nodeVariables[nodeVariableIndex]);
+        }
       }
+
+      /*
       // do either matching index, or all indexes if 0
       for (var i = 1; i < nodeVariables.length; i++) {
         if ((nodeVariableIndex == 0) || (nodeVariableIndex == i)) {
@@ -672,10 +684,8 @@ class cbusNetworkSimulator {
           this.outputNVANS(nodeNumber, i, nodeVariables[i]);
         }
       }
-      if (nodeVariableIndex + 1 > nodeVariables.length) {
-        this.outputCMDERR(nodeNumber, GRSP.InvalidNodeVariableIndex);
-        this.outputGRSP(nodeNumber, cbusMsg.opCode, 1, GRSP.InvalidNodeVariableIndex);
-      }
+      */
+
     }
   }
 
@@ -757,10 +767,13 @@ class cbusNetworkSimulator {
       var event = this.getEventByName2(this.learningNode, eventIdentifier);
       if (event != undefined) {
         if (eventVariableIndex == 0){
+          /*
           // special case
           for (let i = 0; i < module.parameters[5]; i++){
             this.outputEVANS(this.learningNode, eventIdentifier, i)
           }
+          */
+          this.outputEVANS(this.learningNode, eventIdentifier, 0)
         }
         if (eventVariableIndex <= module.parameters[5]){
             this.outputEVANS(this.learningNode, eventIdentifier, eventVariableIndex)

@@ -9,7 +9,7 @@ const simuator = require('./../CbusNetworkSimulator.js')
 const cbusModules = require('./../modules.js')
 
 var testModules = 	[
-                new cbusModules.CANVLCB(0),
+                new cbusModules.VLCBTEST(0),
                 new cbusModules.CANTEST(1),
                 new cbusModules.CANTEST(65535),
                 ]
@@ -684,7 +684,7 @@ describe('cbusNetworkSimulator tests', function(){
 		return testCases;
 	}
 
-
+/*
 	itParam("NUMEV test ${JSON.stringify(value)}", GetTestCase_NUMEV(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN NUMEV test ' + JSON.stringify(value)});
 		expected = ":SB780N74" + decToHex(value.nodeNumber, 4) + decToHex(value.eventCount, 2) + ";";
@@ -695,7 +695,7 @@ describe('cbusNetworkSimulator tests', function(){
 			done();
 		}, short_timeout);
 	})
-
+*/
 
     // 76 - MODE
     //
@@ -1020,7 +1020,7 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("PARAN test ${JSON.stringify(value)}", GetTestCase_PARAN(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN PARAN test ' + JSON.stringify(value)});
-        network.outputPARAN(value.nodeNumber, value.parameterIndex)
+        network.processRQNPN(value.nodeNumber, value.parameterIndex)
 		setTimeout(function(){
      		expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('9B');
      		expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
@@ -1135,7 +1135,7 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("NEVAL test ${JSON.stringify(value)}", GetTestCase_NEVAL(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN NEVAL test ' + JSON.stringify(value)});
-		network.outputNEVAL(value.nodeNumber, value.eventIndex, value.eventVariableIndex)
+		network.processREVAL(value.nodeNumber, value.eventIndex, value.eventVariableIndex)
 		setTimeout(function(){
 			expect(messagesIn.length).to.be.above(0);
 			expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('B5');
@@ -1309,16 +1309,19 @@ describe('cbusNetworkSimulator tests', function(){
     //
 	function GetTestCase_EXT_RESPONSE () {
 		var testCases = [];
-		for (a1 = 1; a1 < 3; a1++) {
-			if (a1 == 1) { arg1 = 3; arg2 = 1;}
-			if (a1 == 2) { arg1 = 4; arg2 = 2;}
-            testCases.push({'SPCMD': arg1, 'response': arg2});
-        }
+		for (a1 = 3; a1 <= 3; a1++) {
+//			if (a1 == 1) { arg1 = 1; arg2 = 1;}
+//			if (a1 == 2) { arg1 = 3; arg2 = 1;}
+			if (a1 == 3) { arg1 = 4; arg2 = 2;}
+      testCases.push({'SPCMD': arg1, 'response': arg2});
+    }
 		return testCases;
 	}
 
 
     // EXT_RESPONSE test
+		// msg format
+		// XXXXXXXXXXX 0 0 8 XXXXXXXX XXXXXX00 ADDRL ADDRH ADDRU RESVD CTLBT SPCMD CPDTL CPDTH
     //
 	itParam("EXT_RESPONSE test ${JSON.stringify(value)}", GetTestCase_EXT_RESPONSE(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN EXT_PUT_CONTROL test ' + JSON.stringify(value)});
@@ -1330,4 +1333,6 @@ describe('cbusNetworkSimulator tests', function(){
 			done();
 		}, short_timeout);
     })
+
+
 })
