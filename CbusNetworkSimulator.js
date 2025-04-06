@@ -775,7 +775,7 @@ class cbusNetworkSimulator {
           */
           this.outputEVANS(this.learningNode, eventIdentifier, 0)
         }
-        if (eventVariableIndex <= module.parameters[5]){
+        else if (eventVariableIndex <= module.parameters[5]){
             this.outputEVANS(this.learningNode, eventIdentifier, eventVariableIndex)
         } else {
           winston.info({message: 'CBUS Network Sim:  ************ event variable index not valid ' + eventVariableIndex + ' ************'});
