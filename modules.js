@@ -1800,6 +1800,35 @@ module.exports.CANCMDB_4f = class CANCMDB_4f extends CbusModule{
 }
 
 
+//
+// CANARGB - ID 87
+//
+module.exports.CANARGB_1a = class CANARGB_1a extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "ARGB   ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);	// Minor version number - decimal 102 (0x66)
+		this.parameters[3] = 87;								// Module Id (0x57)
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 248;								// Number of event variables
+		this.parameters[6] = 49;								// Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.VLCB + Flags.Bootloading;	// Flags
+		this.parameters[9] = 23									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+	}
+}
+
+
 
 //***************************************************************************************************************************
 //
