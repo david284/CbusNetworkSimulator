@@ -1710,6 +1710,15 @@ module.exports.CANXIO_27Q84_4a = class CANXIO_27Q84 extends CbusModule{
 	}
 }
 
+// 71 - CANTEXT - insufficient information
+// 72 - CANASIGNAL - insufficient information
+// 73 - CANSLIDER - insufficient information
+// 74 - CANDCATC - no documents available
+// 75 - CANGATE - insufficient information
+// 76 - CANSINP - no firmware?
+// 77 - CANSOUT - no firmware?
+// 78 - CANSBIP - no firmware?
+// 79 - CANBUFFER - no documents available
 
 //
 // CANLEVER - type 80
@@ -1768,6 +1777,8 @@ module.exports.CANLEVER = class CANLEVER extends CbusModule{
 	}
 }
 
+// 81 - CANSHIELD - arduino
+// 82 - CAN4IN4OUT - arduino
 
 //
 // CANCMDB - ID 83
@@ -1799,6 +1810,9 @@ module.exports.CANCMDB_4f = class CANCMDB_4f extends CbusModule{
 	}
 }
 
+// 84 - CANPIXEL - no documents available
+// 85 - CANCABPE - no documents available
+// 86 - CANSMARTTD - no documents available
 
 //
 // CANARGB - ID 87
