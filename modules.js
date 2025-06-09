@@ -40,6 +40,7 @@ function addBulkShortEvents(module, numberOfEvents, numberOfVariables){
 
 class CbusModule {
 	constructor(nodeNumber) {
+    this.bootloaderVersion = 1
 		this.defaultEvents = []
 		this.storedEvents = []
     this.defaultEventsEnabled = false;
@@ -989,6 +990,7 @@ module.exports.CANMIO_4a = class CANMIO extends CbusModule{
                //1234567//
 		this.NAME = "MIO    ";
     this.sendZeroEV = false     // don't send zero EV's
+    this.bootloaderVersion = 3
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}

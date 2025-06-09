@@ -45,6 +45,7 @@ class cbusNetworkSimulator {
 		this.sendArray = [];
 		this.socket;
 		this.learningNode;
+    this.bootNode;
     this.outDelay = 10;
     this.ackRequested = false
     this.runningChecksum = 0
@@ -373,6 +374,7 @@ class cbusNetworkSimulator {
             break;
         case '5C': // BOOTM
             winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + " BOOT MODE command" });
+            this.bootNode = cbusMsg.nodeNumber
             this.outputNNACK(cbusMsg.nodeNumber);
             break;
         case '5D': // ENUM
@@ -829,6 +831,7 @@ class cbusNetworkSimulator {
 
     processExtendedMessage(cbusMsg) {
         winston.info({message: 'CBUS Network Sim: <<< Received EXTENDED ID message ' + cbusMsg.text });
+        var module = this.getModule(this.bootNode);
         if (cbusMsg.type == 'CONTROL') {
             switch (cbusMsg.SPCMD) {
                 case 0:
@@ -872,10 +875,13 @@ class cbusNetworkSimulator {
           this.runningChecksum = arrayChecksum(cbusMsg.data, this.runningChecksum)
           winston.debug({message: 'mock_jsonServer: <<< Received DATA - new length ' + this.firmware.length});
             if(this.ackRequested){
-              this.outputExtResponse(1)   // 1 = ok          
+              if (module.bootloaderVersion == 3){
+                this.outputExtResponse(5)   // 5 = data ack
+              } else {
+                this.outputExtResponse(1)   // 1 = ok
+              }         
             }
-        }
-  
+        } 
     }
     
 
