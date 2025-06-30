@@ -990,7 +990,7 @@ module.exports.CANMIO_4a = class CANMIO extends CbusModule{
                //1234567//
 		this.NAME = "MIO    ";
     this.sendZeroEV = false     // don't send zero EV's
-    this.bootloaderVersion = 3
+    this.bootloaderVersion = 2
 
 		// increase parameters array to 31 (plus zero)
 		while(this.parameters.length < 32) {this.parameters.push(0);}
@@ -1038,7 +1038,143 @@ module.exports.CANMIO_4a = class CANMIO extends CbusModule{
     this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 1,
         "Diagnostics": { "0": 1, "1":1 }
     }
+    // PIC bootloader service
+		this.services["18"] = {"ServiceIndex": 18, "ServiceType" : 10,	"ServiceVersion" : 3,
+      // ESD: [0] = type (3), [1] = version (2), [2] = unused (0)
+      "ESD": [3,2,0]
+     }
+  }
+}
 
+
+//
+// CANMIO - type 32 - v4b
+//
+module.exports.CANMIO_4b = class CANMIO extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "MIO    ";
+    this.sendZeroEV = false     // don't send zero EV's
+    this.bootloaderVersion = 2
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								  // Manufacturer Id - MERG
+		this.parameters[2] = "b".charCodeAt(0);		// Minor version number
+		this.parameters[3] = 32;								  // Module Id
+		this.parameters[4] = 255;								  // Number of supported events
+		this.parameters[5] = 20;								  // Number of event variables
+		this.parameters[6] = 127;								  // Number of Node Variables
+		this.parameters[7] = 4;									  // Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.VLCB + Flags.Bootloading;	// Flags
+		this.parameters[9] = 23;								  // CPU type - P18F27Q83
+		this.parameters[10] = 1;								  // interface type
+		this.parameters[11] = 0;                  // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								  // Code for CPU manufacturer 
+		this.parameters[20] = 0;								  // Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+
+    this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 1,
+      "Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
+    } 
+    this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 1,
+        "Diagnostics": { "0": 2, "1": 254, "2": 126 }
+    }
+    this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 2,
+        "Diagnostics": { "0": 16, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
+                "9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16, 17:17, 18:18}
+    }
+    this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
+    this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
+    this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
+    // PIC bootloader service
+		this.services["18"] = {"ServiceIndex": 18, "ServiceType" : 10,	"ServiceVersion" : 3,
+      // ESD: [0] = type (3), [1] = version (2), [2] = unused (0)
+      "ESD": [3,2,0]
+     }
+  }
+}
+
+
+//
+// CANMIO - type 32 - v4c
+//
+module.exports.CANMIO_4c = class CANMIO extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "MIO    ";
+    this.sendZeroEV = false       // don't send zero EV's
+    this.bootloaderVersion = 3    // - see also ESD in service 10
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								  // Manufacturer Id - MERG
+		this.parameters[2] = "c".charCodeAt(0);		// Minor version number
+		this.parameters[3] = 32;								  // Module Id
+		this.parameters[4] = 255;								  // Number of supported events
+		this.parameters[5] = 20;								  // Number of event variables
+		this.parameters[6] = 127;								  // Number of Node Variables
+		this.parameters[7] = 4;									  // Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.VLCB + Flags.Bootloading;	// Flags
+		this.parameters[9] = 23;								  // CPU type - P18F27Q83
+		this.parameters[10] = 1;								  // interface type
+		this.parameters[11] = 0;                  // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								  // Code for CPU manufacturer 
+		this.parameters[20] = 0;								  // Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+
+    this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 1,
+      "Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
+    } 
+    this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 1,
+        "Diagnostics": { "0": 2, "1": 254, "2": 126 }
+    }
+    this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 2,
+        "Diagnostics": { "0": 16, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
+                "9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16, 17:17, 18:18}
+    }
+    this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
+    this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
+    this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 1,
+        "Diagnostics": { "0": 1, "1":1 }
+    }
+    // PIC bootloader service
+		this.services["10"] = {"ServiceIndex": 10, "ServiceType" : 10,	"ServiceVersion" : 3,
+      // ESD: [0] = type (3), [1] = version (3), [2] = unused (0)
+      "ESD": [3,3,0]
+     }
   }
 }
 

@@ -15,7 +15,7 @@ const CTLBT_AUTO_ERASE = 2
 const CTLBT_AUTO_INC = 3
 const CTLBT_ACK = 4
 
-
+const name = "cbusNetworkSimulator"
 
 //
 //
@@ -1181,7 +1181,17 @@ class cbusNetworkSimulator {
 			var services = module.services;
 			for (var key in services) {
         if (ServiceIndex == services[key].ServiceIndex) {
-          var msgData = cbusLib.encodeESD(nodeNumber, services[key].ServiceIndex, 1, 2, 3, 4);
+          winston.info({message: name + `: ESD: ServiceIndex ${ServiceIndex} ServiceType ${services[key].ServiceType}`});
+          if (services[key].ESD != undefined){
+            var msgData = cbusLib.encodeESD(nodeNumber,
+              services[key].ServiceIndex,
+              services[key].ServiceType,
+              services[key].ESD[0],
+              services[key].ESD[1],
+              services[key].ESD[2]);
+          } else {
+            var msgData = cbusLib.encodeESD(nodeNumber, services[key].ServiceIndex, 1, 255, 255, 255);
+          }
         }
       }
     }

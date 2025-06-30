@@ -430,15 +430,16 @@ describe('cbusNetworkSimulator tests', function(){
 	}
 
 	itParam("RQEVN test ${JSON.stringify(value)}", GetTestCase_RQEVN(), function (done, value) {
-		winston.info({message: 'TEST: BEGIN NERD test ' + JSON.stringify(value)});
-        msgData = cbusLib.encodeRQEVN(value.nodeNumber);
-    	testClient.write(msgData);
+		winston.info({message: 'TEST: BEGIN RQEVN test ' + JSON.stringify(value)});
+    msgData = cbusLib.encodeRQEVN(value.nodeNumber);
+    testClient.write(msgData);
 		setTimeout(function(){
-     		expect(network.getSendArray()[0]).to.equal(msgData);
-            if (messagesIn.length > 0) {
-                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
-            }
+      expect(network.getSendArray()[0]).to.equal(msgData);
+        if (messagesIn.length > 0) {
+          expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
+        }
 			done();
+  		winston.info({message: 'TEST: END RQEVN test'});
 		}, short_timeout);
 	})
 
