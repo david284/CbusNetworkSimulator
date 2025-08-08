@@ -769,13 +769,13 @@ class cbusNetworkSimulator {
       var event = this.getEventByName2(this.learningNode, eventIdentifier);
       if (event != undefined) {
         if (eventVariableIndex == 0){
-          /*
-          // special case
-          for (let i = 0; i < module.parameters[5]; i++){
-            this.outputEVANS(this.learningNode, eventIdentifier, i)
+          if (module.isVLCB()){
+            for (let i = 0; i < module.parameters[5]; i++){
+              this.outputEVANS(this.learningNode, eventIdentifier, i)
+            }
+          } else if (module.sendZeroEV) {
+            this.outputEVANS(this.learningNode, eventIdentifier, 0)
           }
-          */
-          this.outputEVANS(this.learningNode, eventIdentifier, 0)
         }
         else if (eventVariableIndex <= module.parameters[5]){
             this.outputEVANS(this.learningNode, eventIdentifier, eventVariableIndex)
