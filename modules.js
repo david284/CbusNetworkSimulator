@@ -418,7 +418,7 @@ module.exports.CANLED64 = class CANLED64 extends CbusModule{
 		this.parameters[2] = "g".charCodeAt(0);	// Minor version number - decimal 103 (0x67)
 		this.parameters[3] = 7;									// Module Id
 		this.parameters[4] = 248;								// Number of supported events
-		this.parameters[5] = 17;									// Number of event variables
+		this.parameters[5] = 1;									// Number of event variables
 		this.parameters[6] = 0;									// Number of Node Variables
 		this.parameters[7] = 2;									// Major version number
 		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
@@ -436,7 +436,6 @@ module.exports.CANLED64 = class CANLED64 extends CbusModule{
 		this.parameters[20] = 0;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
-		super.fillNodeVariables(this.parameters[6])
     addBulkLongEvents(this, 5, this.parameters[5])
     addBulkShortEvents(this, 2, this.parameters[5])
 	}
