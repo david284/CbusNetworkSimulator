@@ -79,10 +79,14 @@ class CbusModule {
 		var variables = [];
     variables[0] = numberOfVariables
 		// create variable array of correct length for specific module
-		for (var index = 1; index <= numberOfVariables; index++) {
-			variables.push(0)};
-			this.storedEvents.push({'eventName': eventName, "variables": variables}
-		);
+		for (var index = 1; index <= numberOfVariables; index++) { 
+      if (index == 1){
+        variables.push(1)
+      } else {
+        variables.push(0) 
+      }
+    }
+		this.storedEvents.push( {'eventName': eventName, "variables": variables} );
 		winston.debug({message: 'modules: events: ' + JSON.stringify(this.storedEvents)});
 		return this.storedEvents[this.storedEvents.length - 1];		// adjust as array is zero based	    
 	}
