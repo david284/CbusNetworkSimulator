@@ -2199,7 +2199,7 @@ module.exports.CANTEST = class CANTEST extends CbusModule{
 		this.parameters[14] = 0;
 																            // skip 15 to 18
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
-		this.parameters[20] = 0;								// Beta version number - 0 if production
+		this.parameters[20] = 1;								// Beta version number - 0 if production
 		
 		this.parameters[0] = 20;								// Number of parameters (not including 0)
 
@@ -2290,7 +2290,7 @@ module.exports.MMCTEST = class MMCTEST extends CbusModule{
 		this.parameters[14] = 0;
 																            // skip 15 to 18
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
-		this.parameters[20] = 0;								// Beta version number - 0 if production
+		this.parameters[20] = 3;								// Beta version number - 0 if production
 		
 		this.parameters[0] = 20;								// Number of parameters (not including 0)
 
@@ -2381,7 +2381,7 @@ module.exports.VLCBTEST = class VLCBTEST extends CbusModule{
 		this.parameters[14] = 0;
 																            // skip 15 to 18
 		this.parameters[19] = 1;								// Code for CPU manufacturer 
-		this.parameters[20] = 0;								// Beta version number - 0 if production
+		this.parameters[20] = 5;								// Beta version number - 0 if production
 		
 		this.parameters[0] = 20;								// Number of parameters (not including 0)
 
