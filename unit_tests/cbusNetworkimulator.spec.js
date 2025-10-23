@@ -638,6 +638,40 @@ describe('cbusNetworkSimulator tests', function(){
 	})
 
 
+    // 72 NENRD
+    //
+	function GetTestCase_NENRD () {
+		var testCases = [];
+		for (NN = 1; NN < 4; NN++) {
+			if (NN == 1) nodeId = 0;
+			if (NN == 2) nodeId = 1;
+			if (NN == 3) nodeId = 65535;
+			for (NVindex = 1; NVindex < 4; NVindex++) {
+				if (NVindex == 1) nvIndex = 0;
+				if (NVindex == 2) nvIndex = 1;
+				if (NVindex == 3) nvIndex = 7;  // will get an error if it's too high for a module
+				testCases.push({'nodeId':nodeId, 'nvIndex':nvIndex});
+			}
+		}
+		return testCases;
+	}
+
+
+	itParam("NENRD test ${JSON.stringify(value)}", GetTestCase_NVRD(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN NENRD test ' + JSON.stringify(value)});
+        msgData = cbusLib.encodeNENRD(value.nodeNumber, value.nvIndex);
+    	testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+            if (messagesIn.length > 0) {
+                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('ENRSP');
+            }
+			done();
+  		winston.info({message: 'TEST: END NENRD test '});
+		}, long_timeout);
+	})
+
+
     // 73 RQNPN
     //
 	function GetTestCase_RQNPN () {
