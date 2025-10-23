@@ -10,13 +10,15 @@
   "author": "David Ellis",
   "license": "MIT",
   "dependencies": {
-    "cbuslibrary": "^2.0.0",
-    "chai": "^4.2.0",
+    "cbuslibrary": "^2.11.2",
     "jsonfile": "^6.0.1",
-    "mocha": "^8.2.1",
-    "mocha-param": "2.0.1",
     "openurl": "^1.1.1",
     "socket.io": "^2.4.1",
     "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^11.7.4",
+    "mocha-param": "2.0.1"
   }
 }

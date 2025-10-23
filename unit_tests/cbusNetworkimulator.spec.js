@@ -435,9 +435,12 @@ describe('cbusNetworkSimulator tests', function(){
     testClient.write(msgData);
 		setTimeout(function(){
       expect(network.getSendArray()[0]).to.equal(msgData);
-        if (messagesIn.length > 0) {
-          expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
-        }
+			messagesIn.forEach(msg => {
+        winston.info({message: `TEST: messagesIn: ${msg.text}` })
+			});
+      if (messagesIn.length > 0) {
+        expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NUMEV');
+      }
 			done();
   		winston.info({message: 'TEST: END RQEVN test'});
 		}, short_timeout);
