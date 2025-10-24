@@ -58,6 +58,7 @@ class CbusModule {
 		this.services = {};
     this.NVsetNeedsLearnMode = false;
 		this.HeartBeatEnabled = false;
+    this.supportsNERD = true;
 		winston.info({message: 'modules: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
 	} // end constructor
 	
@@ -358,6 +359,8 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 		this.parameters[8] = Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags - not a consumer
 		this.parameters[9] = 1;									  // CPU type - P18F2480
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+    this.supportsNERD = false;
 
 		super.fillNodeVariables(this.parameters[6])			
   	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(1, 4));
@@ -778,6 +781,8 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
 		this.parameters[9] = 1;								  // CPU type - P18F2480
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+    this.supportsNERD = false;
 
 		super.fillNodeVariables(this.parameters[6])
     addBulkLongEvents(this, 5, this.parameters[5])
@@ -2299,6 +2304,7 @@ module.exports.MMCTEST = class MMCTEST extends CbusModule{
     this.nodeVariables[1] = 1;
     this.nodeVariables[this.parameters[6]] = this.parameters[6];
 
+    this.supportsNERD = false;
 		
 		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
 				"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }

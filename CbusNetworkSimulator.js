@@ -358,13 +358,17 @@ class cbusNetworkSimulator {
         case '57': // NERD
             var nodeNumber = cbusMsg.nodeNumber
             if (this.getModule(nodeNumber) != undefined) {
+              if (this.getModule(nodeNumber).supportsNERD){
                 var storedEvents = this.getModule(nodeNumber).storedEvents;
                 for (var i = 0; i < storedEvents.length; i++) {
                     winston.info({message: 'CBUS Network Sim: event index ' + i + ' event count ' + storedEvents.length});
                     // events need to start at 1
                     await sleep(this.outDelay)
                     this.outputENRSP(nodeNumber, i + 1);
-                }
+                } 
+              } else {
+                winston.info({message: `CBUS Network Sim: Node ${cbusMsg.nodeNumber} NERD not supported `});
+              }
             }
             break;
         case '58': // RQEVN
