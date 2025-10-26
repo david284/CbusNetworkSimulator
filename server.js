@@ -66,6 +66,7 @@ var modules = [
 	,new cbusModules.CANXIO_46K80_3e (640)        // type 64
 	,new cbusModules.CANXIO_46K80_4a (641)        // type 64
 	,new cbusModules.CANXIO_27Q84_4a (642)        // type 64
+	,new cbusModules.CANGATE_1c (750)             // type 75
   ,new cbusModules.CANLEVER (800)				        // type 80
   ,new cbusModules.CANCMDB_4f (830)			        // type 83
   ,new cbusModules.CANARGB_1a (870)			        // type 87

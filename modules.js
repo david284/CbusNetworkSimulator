@@ -1860,7 +1860,37 @@ module.exports.CANXIO_27Q84_4a = class CANXIO_27Q84 extends CbusModule{
 // 72 - CANASIGNAL - insufficient information
 // 73 - CANSLIDER - insufficient information
 // 74 - CANDCATC - no documents available
-// 75 - CANGATE - insufficient information
+
+//
+// CANGATE - ID 75
+//
+module.exports.CANGATE_1c = class CANGATE_1c extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "GATE   ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "c".charCodeAt(0);	// Minor version number - decimal 102 (0x66)
+		this.parameters[3] = 75;								// Module Id
+		this.parameters[4] = 32;								// Number of supported events
+		this.parameters[5] = 3;								  // Number of event variables
+		this.parameters[6] = 0;								  // Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM;	// Flags
+		this.parameters[9] = 0									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 2;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+	}
+}
+
 // 76 - CANSINP - no firmware?
 // 77 - CANSOUT - no firmware?
 // 78 - CANSBIP - no firmware?
