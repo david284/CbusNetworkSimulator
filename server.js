@@ -24,6 +24,7 @@ var rl = readline.createInterface({
 if (fs.existsSync(path.join(__dirname, "layout.js"))) {
   const layout = require('./layout.js')
   var modules = layout.modules
+  var NET_PORT = layout.NET_PORT
 } else {
   var modules = [
     new cbusModules.CANACC5 (0)				  	      	// type 02 - un-initialised
@@ -81,6 +82,8 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     ,new cbusModules.CANCMD_4f (65534)   	        // type 10
     ,new cbusModules.CANCAB (65535)   		        // type 09
   ]
+
+  const NET_PORT = 5550;
 }
 
 
@@ -88,7 +91,6 @@ for (var i = 0; i < modules.length; i++) {
     modules[i].CanId = i+10;
 }
 
-const NET_PORT = 5550;
 
 let network = new simuator.cbusNetworkSimulator(NET_PORT, modules);
 

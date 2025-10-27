@@ -1,5 +1,7 @@
 const cbusModules = require('./modules.js')
 
+exports.NET_PORT = 5551
+
 exports.modules = [
     /*
     new cbusModules.CANACC5 (0)				  	      	// type 02 - un-initialised
@@ -62,3 +64,4 @@ exports.modules = [
     ,new cbusModules.CANCAB (65535)   		        // type 09
     */
 ]
+
