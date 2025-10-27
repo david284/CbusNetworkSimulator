@@ -2,3 +2,4 @@ node_modules
 logs
 unit_tests/logs
 
+layout.js
