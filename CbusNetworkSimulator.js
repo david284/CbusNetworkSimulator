@@ -634,7 +634,7 @@ class cbusNetworkSimulator {
           }
           break;
         case 'F5': // EVLRNI
-          winston.info({message: name + `: EVLRNI ${JSON.stringify(cbusMsg)}` });
+          winston.debug({message: name + `: EVLRNI ${JSON.stringify(cbusMsg)}` });
           if (cbusMsg.encoded.length != 24) {
             winston.error({message: 'CBUS Network Sim: received EVLRNI - length wrong'});
             this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
