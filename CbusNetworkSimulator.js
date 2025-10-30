@@ -633,6 +633,28 @@ class cbusNetworkSimulator {
             }
           }
           break;
+        case 'F5': // EVLRNI
+          winston.info({message: name + `: EVLRNI ${JSON.stringify(cbusMsg)}` });
+          if (cbusMsg.encoded.length != 24) {
+            winston.error({message: 'CBUS Network Sim: received EVLRNI - length wrong'});
+            this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
+          } else {
+            if (this.learningNode != undefined) {
+              // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
+              var module = this.getModule(this.learningNode);
+              var storedEvents = this.getModule(cbusMsg.nodeNumber).storedEvents;
+              if (cbusMsg.eventNumberIndex > 0) {
+                storedEvents[cbusMsg.eventNumberIndex-1].variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue
+                storedEvents[cbusMsg.eventNumberIndex-1].eventIdentifier = cbusMsg.eventIdentifier
+                storedEvents[cbusMsg.eventNumberIndex-1].eventIndex = cbusMsg.eventNumberIndex
+                winston.info({message: name + `: EVLRNI: event ${JSON.stringify(storedEvents[cbusMsg.eventNumberIndex-1])}` });
+              }
+            } else {
+              winston.info({message: 'CBUS Network Sim: EVLRNI - not in learn mode'});
+              this.outputCMDERR(0, 2); // not striclty correct, as we don't know which module ought to be in learn mode, hence zero
+            }
+          }
+          break;
         default:
             winston.info({message: 'CBUS Network Sim: *************************** received unknown opcode ' + JSON.stringify(cbusMsg)});
             if (cbusMsg.nodeNumber) {
