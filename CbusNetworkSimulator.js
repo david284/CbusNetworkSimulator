@@ -644,10 +644,16 @@ class cbusNetworkSimulator {
               var module = this.getModule(this.learningNode);
               var storedEvents = this.getModule(cbusMsg.nodeNumber).storedEvents;
               if (cbusMsg.eventNumberIndex > 0) {
-                storedEvents[cbusMsg.eventNumberIndex-1].variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue
-                storedEvents[cbusMsg.eventNumberIndex-1].eventIdentifier = cbusMsg.eventIdentifier
-                storedEvents[cbusMsg.eventNumberIndex-1].eventIndex = cbusMsg.eventNumberIndex
-                winston.info({message: name + `: EVLRNI: event ${JSON.stringify(storedEvents[cbusMsg.eventNumberIndex-1])}` });
+                if (module.storedEvents[cbusMsg.eventNumberIndex-1] == undefined){
+                  module.storedEvents[cbusMsg.eventNumberIndex-1] = {"variables":[]}  
+                }
+                module.storedEvents[cbusMsg.eventNumberIndex-1].variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue
+                module.storedEvents[cbusMsg.eventNumberIndex-1].eventIdentifier = cbusMsg.eventIdentifier
+                module.storedEvents[cbusMsg.eventNumberIndex-1].eventName = cbusMsg.eventIdentifier
+                module.storedEvents[cbusMsg.eventNumberIndex-1].eventIndex = cbusMsg.eventNumberIndex
+                winston.info({message: name + `: EVLRNI: stored event ${JSON.stringify(module.storedEvents[cbusMsg.eventNumberIndex-1])}` });
+                winston.info({message: name + `: EVLRNI: stored event count ${module.getStoredEventsCount()}` });
+                winston.info({message: name + `: EVLRNI: stored events ${JSON.stringify(module.storedEvents, null, " ")}` });
               }
             } else {
               winston.info({message: 'CBUS Network Sim: EVLRNI - not in learn mode'});
@@ -1259,19 +1265,28 @@ class cbusNetworkSimulator {
   // eventIndex starts at 1
   // but events array is zero based, so subtract 1
 	outputENRSP(nodeNumber, eventIndex) {
-    if (this.getModule(nodeNumber) != undefined) {
-      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      if (eventIndex > 0) {
-        if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
-          var events = this.getModule(nodeNumber).storedEvents;
-          var eventName = events[eventIndex - 1].eventName
-          var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
-          this.broadcast(msgData)
-        } else {
-          winston.info({message: 'CBUS Network Sim:  ************ EVENT index exceeded ************'});
-          this.outputCMDERR(nodeNumber, 7);
+    try{
+      if (this.getModule(nodeNumber) != undefined) {
+        cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+        if (eventIndex > 0) {
+          if (eventIndex <= this.getModule(nodeNumber).parameters[4]){
+            if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
+              var events = this.getModule(nodeNumber).storedEvents;
+              var eventName = events[eventIndex - 1].eventName
+              var msgData = cbusLib.encodeENRSP(nodeNumber, eventName, eventIndex)
+            } else {
+              // inactive index
+              var msgData = cbusLib.encodeENRSP(nodeNumber, '00000000', eventIndex)
+            }
+            this.broadcast(msgData)
+          } else {
+            winston.info({message: 'CBUS Network Sim:  ************ EVENT index exceeded ************'});
+            this.outputCMDERR(nodeNumber, 7);
+          }
         }
       }
+    } catch(err){
+      winston.error({message: name + `: outputENRSP ${err}`});
     }
 	}
 
