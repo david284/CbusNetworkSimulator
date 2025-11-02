@@ -26,6 +26,7 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
   var modules = layout.modules
   var NET_PORT = layout.NET_PORT
 } else {
+  var NET_PORT = 5550;
   var modules = [
     new cbusModules.CANACC5 (0)				  	      	// type 02 - un-initialised
     ,new cbusModules.CANACC8 (0)					        // type 03 - un-initialised
@@ -83,7 +84,6 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     ,new cbusModules.CANCAB (65535)   		        // type 09
   ]
 
-  const NET_PORT = 5550;
 }
 
 

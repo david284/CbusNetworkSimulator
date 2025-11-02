@@ -2384,7 +2384,7 @@ module.exports.MMCTEST = class MMCTEST extends CbusModule{
 		}
 		
 		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
-    addBulkLongEvents(this, 6, this.parameters[5])
+    addBulkLongEvents(this, 3, this.parameters[5])
     addBulkShortEvents(this, 2, this.parameters[5])
 	}
 }

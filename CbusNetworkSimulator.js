@@ -643,8 +643,9 @@ class cbusNetworkSimulator {
             if (this.learningNode != undefined) {
               // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
               var module = this.getModule(this.learningNode);
+              winston.info({message: name + `: EVLRNI: learning node ${this.learningNode}` });
               if (module){
-                var storedEvents = this.getModule(cbusMsg.nodeNumber).storedEvents;
+                var storedEvents = this.getModule(this.learningNode).storedEvents;
                 if (cbusMsg.eventNumberIndex > 0) {
                   if (module.storedEvents[cbusMsg.eventNumberIndex-1] == undefined){
                     module.storedEvents[cbusMsg.eventNumberIndex-1] = {"variables":[]}  
@@ -795,8 +796,14 @@ class cbusNetworkSimulator {
               this.broadcast(msgData)
             }
           } else {
-            winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
-            this.outputCMDERR(nodeNumber, 6)                    
+            this.getModule(nodeNumber).storedEvents[eventIndex-1] = {
+              'eventName': "00000000", 
+              'eventIndex': eventIndex, 
+              "variables": []
+            }
+            var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, 0)
+//            winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+//            this.outputCMDERR(nodeNumber, 6)                    
           }
         } else {
           winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
