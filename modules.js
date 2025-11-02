@@ -2333,8 +2333,6 @@ module.exports.MMCTEST = class MMCTEST extends CbusModule{
 
     this.nodeVariables[1] = 1;
     this.nodeVariables[this.parameters[6]] = this.parameters[6];
-
-    this.supportsNERD = false;
 		
 		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
 				"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
