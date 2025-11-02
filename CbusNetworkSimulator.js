@@ -635,6 +635,7 @@ class cbusNetworkSimulator {
           break;
         case 'F5': // EVLRNI
           winston.debug({message: name + `: EVLRNI ${JSON.stringify(cbusMsg)}` });
+          try{
           if (cbusMsg.encoded.length != 24) {
             winston.error({message: 'CBUS Network Sim: received EVLRNI - length wrong'});
             this.outputGRSP(this.learningNode, cbusMsg.opCode, 0, GRSP.Invalid_Command);
@@ -642,23 +643,30 @@ class cbusNetworkSimulator {
             if (this.learningNode != undefined) {
               // Uses the single node already put into learn mode - the node number in the message is part of the event identifier, not the node being taught
               var module = this.getModule(this.learningNode);
-              var storedEvents = this.getModule(cbusMsg.nodeNumber).storedEvents;
-              if (cbusMsg.eventNumberIndex > 0) {
-                if (module.storedEvents[cbusMsg.eventNumberIndex-1] == undefined){
-                  module.storedEvents[cbusMsg.eventNumberIndex-1] = {"variables":[]}  
+              if (module){
+                var storedEvents = this.getModule(cbusMsg.nodeNumber).storedEvents;
+                if (cbusMsg.eventNumberIndex > 0) {
+                  if (module.storedEvents[cbusMsg.eventNumberIndex-1] == undefined){
+                    module.storedEvents[cbusMsg.eventNumberIndex-1] = {"variables":[]}  
+                  }
+                  module.storedEvents[cbusMsg.eventNumberIndex-1].variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue
+                  module.storedEvents[cbusMsg.eventNumberIndex-1].eventIdentifier = cbusMsg.eventIdentifier
+                  module.storedEvents[cbusMsg.eventNumberIndex-1].eventName = cbusMsg.eventIdentifier
+                  module.storedEvents[cbusMsg.eventNumberIndex-1].eventIndex = cbusMsg.eventNumberIndex
+                  winston.info({message: name + `: EVLRNI: stored event ${JSON.stringify(module.storedEvents[cbusMsg.eventNumberIndex-1])}` });
+                  winston.info({message: name + `: EVLRNI: stored event count ${module.getStoredEventsCount()}` });
+                  winston.info({message: name + `: EVLRNI: stored events ${JSON.stringify(module.storedEvents, null, " ")}` });
                 }
-                module.storedEvents[cbusMsg.eventNumberIndex-1].variables[cbusMsg.eventVariableIndex] = cbusMsg.eventVariableValue
-                module.storedEvents[cbusMsg.eventNumberIndex-1].eventIdentifier = cbusMsg.eventIdentifier
-                module.storedEvents[cbusMsg.eventNumberIndex-1].eventName = cbusMsg.eventIdentifier
-                module.storedEvents[cbusMsg.eventNumberIndex-1].eventIndex = cbusMsg.eventNumberIndex
-                winston.info({message: name + `: EVLRNI: stored event ${JSON.stringify(module.storedEvents[cbusMsg.eventNumberIndex-1])}` });
-                winston.info({message: name + `: EVLRNI: stored event count ${module.getStoredEventsCount()}` });
-                winston.info({message: name + `: EVLRNI: stored events ${JSON.stringify(module.storedEvents, null, " ")}` });
+              } else {
+                winston.info({message: name + `: EVLRNI - no module found for node ${this.learningNode}` });
               }
             } else {
               winston.info({message: 'CBUS Network Sim: EVLRNI - not in learn mode'});
               this.outputCMDERR(0, 2); // not striclty correct, as we don't know which module ought to be in learn mode, hence zero
             }
+          }
+          } catch (err){
+            winston.info({message: name + `: EVLRNI: ${err}` });
           }
           break;
         default:
