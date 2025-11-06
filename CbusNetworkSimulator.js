@@ -181,7 +181,7 @@ class cbusNetworkSimulator {
 		module.endSetupMode();
 	}
 
-  
+
  toggleSendEvents(nodeNumber){
     if (nodeNumber) {
       var module = this.getModule(nodeNumber)
@@ -1114,7 +1114,20 @@ class cbusNetworkSimulator {
 		var msgData = cbusLib.encodeGRSP(nodeNumber, requestOpCode, serviceType, result);
 		this.broadcast(msgData)
 	}
-	
+
+  // BO
+  //
+	outputACON1(nodeNumber, eventNumber, data) {
+    try{
+        var msgData = cbusLib.encodeACON1(nodeNumber, eventNumber, data)
+        this.broadcast(msgData)
+    } catch(err){
+      winston.error({message: name + `: outputACON1 ${err}`});
+    }
+	}
+
+
+
 	// B6
 	 outputPNN(module) {
 		cbusLib.setCanHeader(2, module.CanId);

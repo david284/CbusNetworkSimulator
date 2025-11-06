@@ -101,6 +101,23 @@ rl.on('line', function (cmd) {
 	const msgArray = cmd.toString().split(" ");
 	if (msgArray.length > 0) {
 		switch(msgArray[0].toLowerCase()) {
+			case "acon1":
+					if (msgArray.length > 2) {
+						var nodeNumber = parseInt(msgArray[1]);
+						if (nodeNumber) {
+  						var switchNumber = parseInt(msgArray[2]);
+              if (switchNumber) {
+                network.outputACON1(nodeNumber, switchNumber, switchNumber);
+              }	else {
+                console.log("acon1: argument2 not a number");
+              }
+						}	else {
+							console.log("acon1: argument1 not a number");
+						}
+					}	else {
+						console.log("events: no node number found");
+					}
+          break;
 			case "events":
 					if (msgArray.length > 1) {
 						var nodeNumber = parseInt(msgArray[1]);
@@ -160,13 +177,15 @@ rl.on('line', function (cmd) {
 function showHelp() {
   console.log("");
   console.log("=== Cbus Network Simulator Help ===");
-  console.log("CTRL-C twice             - terminates running");
-  console.log("help                     - shows this text");
-  console.log("events <node number>     - toggles transmitting of events on/off for specific node");
-  console.log("heartbeat <node number>  - toggles the sending of heartb messages on/off for specific module");
-  console.log("list events              - list all events");
-  console.log("list modules             - list all modules");
-  console.log("setup <node number>      - forces specific node into setup mode");
+  console.log("CTRL-C twice                         - terminates running");
+  console.log("");
+  console.log("acon1 <node number> <switch number>  - simulates CANACE3 switch");
+  console.log("events <node number>                 - toggles transmitting of events on/off for specific node");
+  console.log("heartbeat <node number>              - toggles the sending of heartb messages on/off for specific module");
+  console.log("help                                 - shows this text");
+  console.log("list events                          - list all events");
+  console.log("list modules                         - list all modules");
+  console.log("setup <node number>                  - forces specific node into setup mode");
   console.log("");
 }
 
