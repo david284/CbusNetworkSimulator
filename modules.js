@@ -372,6 +372,9 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
   	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(7, 4));
   	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(8, 4));
 
+    addBulkLongEvents(this, 4, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+
 	}
 }
 

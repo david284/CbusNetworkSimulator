@@ -1297,7 +1297,7 @@ class cbusNetworkSimulator {
       if (this.getModule(nodeNumber) != undefined) {
         cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
         if (eventIndex > 0) {
-          if (eventIndex <= this.getModule(nodeNumber).parameters[4]){
+          if (eventIndex <= this.getModule(nodeNumber).storedEvents.length){
             if (eventIndex <= this.getModule(nodeNumber).getStoredEventsCount()) {
               var events = this.getModule(nodeNumber).storedEvents;
               var eventName = events[eventIndex - 1].eventName
