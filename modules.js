@@ -2481,6 +2481,49 @@ module.exports.SLOTTEST = class SLOTTEST extends CbusModule{
 }
 
 //
+// 3 - index test module INDEXTEST CBUS module
+//
+module.exports.INDEXTEST = class INDEXTEST extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+		
+               //1234567//
+		this.NAME = "INDEX  ";
+
+		// increase parameters array to 32 (plus zero)
+		while(this.parameters.length < 33) {this.parameters.push(0);}
+
+		this.parameters[1] = 0;								// Manufacturer Id - TEST
+    this.parameters[2] = 97;								// Minor version number (a)
+		this.parameters[3] = 3;								  // Module Id
+		this.parameters[4] = 0;								// Number of supported events
+		this.parameters[5] = 0;								// Number of event variables
+		this.parameters[6] = 64;								// Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
+		this.parameters[9] = 13;								// CPU type - P18F25K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																            // skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 3;								// Beta version number - 0 if production
+		
+		this.parameters[0] = 20;								// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+
+    this.nodeVariables[1] = 1;
+    this.nodeVariables[this.parameters[6]] = this.parameters[6];
+
+		addBulkLongEvents(this, 3, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+	}
+}
+
+//
 // 10 - Test VLCB module
 //
 module.exports.VLCBTEST = class VLCBTEST extends CbusModule{

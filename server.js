@@ -34,8 +34,9 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     ,new cbusModules.CANTEST (1)				    	    // TEST
     ,new cbusModules.MMCTEST (2)				    	    // TEST
     ,new cbusModules.SLOTTEST (3)				    	    // TEST
-    ,new cbusModules.CAN4IN4OUT (4)				        // DEVELOPMENT
-    ,new cbusModules.CAN1IN1OUT (5)				        // DEVELOPMENT
+    ,new cbusModules.INDEXTEST (4)				    	  // TEST
+    //
+    ,new cbusModules.CAN1IN1OUT (8)				        // DEVELOPMENT
     ,new cbusModules.VLCBTEST (9)				          // DEVELOPMENT
     ,new cbusModules.CANACC4 (10)			      	    // type 01
     ,new cbusModules.CANACC5 (20)				  	      // type 02
@@ -77,8 +78,10 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     ,new cbusModules.CANXIO_27Q84_4a (642)        // type 64
     ,new cbusModules.CANGATE_1c (750)             // type 75
     ,new cbusModules.CANLEVER (800)				        // type 80
+    ,new cbusModules.CAN4IN4OUT (820)				      // type 82
     ,new cbusModules.CANCMDB_4f (830)			        // type 83
     ,new cbusModules.CANARGB_1a (870)			        // type 87
+    //
     ,new cbusModules.CANMIO_test_adapter (65000)  // type 32
     ,new cbusModules.CANMIO_UUT (65001)           // type 32
     ,new cbusModules.CANCMD_4f (65534)   	        // type 10

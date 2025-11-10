@@ -3,23 +3,22 @@ const cbusModules = require('./modules.js')
 exports.NET_PORT = 5551
 
 exports.modules = [
-    /*
     new cbusModules.CANACC5 (0)				  	      	// type 02 - un-initialised
     ,new cbusModules.CANACC8 (0)					        // type 03 - un-initialised
     ,new cbusModules.CANACC8 (0)					        // type 03 - un-initialised
-    ,*/
-    new cbusModules.CANTEST (1)				    	    // TEST
+    ,new cbusModules.CANTEST (1)				    	    // TEST
     ,new cbusModules.MMCTEST (2)				    	    // TEST
     ,new cbusModules.SLOTTEST (3)				    	    // TEST
-    ,new cbusModules.CAN4IN4OUT (4)				        // DEVELOPMENT
-    ,new cbusModules.CAN1IN1OUT (5)				        // DEVELOPMENT
+    ,new cbusModules.INDEXTEST (4)				    	    // TEST
+    /*
+    //
+    ,new cbusModules.CAN1IN1OUT (8)				        // DEVELOPMENT
     ,new cbusModules.VLCBTEST (9)				          // DEVELOPMENT
     ,new cbusModules.CANACC4 (10)			      	    // type 01
     ,new cbusModules.CANACC5 (20)				  	      // type 02
     ,new cbusModules.CANACC8 (30)					        // type 03
     ,new cbusModules.CANACE3 (40)  				        // type 04
     ,new cbusModules.CANACE8C (50)				        // type 05
-    /*
     ,new cbusModules.CANLED64 (70)				        // type 07
     ,new cbusModules.CANACC4_2 (80)				        // type 08
     ,new cbusModules.CANCMD_4d (100)    	        // type 10
@@ -37,9 +36,7 @@ exports.modules = [
     ,new cbusModules.CANMIO_3e (325)		          // type 32
     ,new cbusModules.CANMIO_4a (326)		          // type 32
     ,new cbusModules.CANMIO_4b (327)		          // type 32
-    */
     ,new cbusModules.CANMIO_4c (328)		          // type 32
-    /*
     ,new cbusModules.CANACE8MIO (330)		          // type 33
     ,new cbusModules.CANSOL (340)				          // type 34
     ,new cbusModules.CANSCAN (490)				        // type 49
@@ -57,8 +54,10 @@ exports.modules = [
     ,new cbusModules.CANXIO_27Q84_4a (642)        // type 64
     ,new cbusModules.CANGATE_1c (750)             // type 75
     ,new cbusModules.CANLEVER (800)				        // type 80
+    ,new cbusModules.CAN4IN4OUT (820)				      // type 82
     ,new cbusModules.CANCMDB_4f (830)			        // type 83
     ,new cbusModules.CANARGB_1a (870)			        // type 87
+    //
     ,new cbusModules.CANMIO_test_adapter (65000)  // type 32
     ,new cbusModules.CANMIO_UUT (65001)           // type 32
     ,new cbusModules.CANCMD_4f (65534)   	        // type 10
