@@ -686,14 +686,13 @@ class cbusNetworkSimulator {
 	processRQEVN(nodeNumber) {
     if (this.getModule(nodeNumber) != undefined) {
       // certain modules don't support this
-      if (this.getModule(nodeNumber).parameters[1] == 165){
-        if (this.getModule(nodeNumber).parameters[3] == 10){ return }
+      if(this.getModule(nodeNumber).supportsRQEVN) {
+        //
+        cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
+        var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
+        var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
+        this.broadcast(msgData)
       }
-      //
-      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      var storedEventsCount = this.getModule(nodeNumber).getStoredEventsCount();
-      var msgData = cbusLib.encodeNUMEV(nodeNumber, storedEventsCount)
-      this.broadcast(msgData)
     } else {
       winston.info({message: 'CBUS Network Sim:  module undefined for nodeNumber : ' + nodeNumber});
     }

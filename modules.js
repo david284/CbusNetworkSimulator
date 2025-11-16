@@ -58,8 +58,11 @@ class CbusModule {
 		this.services = {};
     this.NVsetNeedsLearnMode = false;
 		this.HeartBeatEnabled = false;
-    this.supportsNERD = true;
 		winston.info({message: 'modules: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
+
+    this.supportsNERD = true;
+    this.supportsRQEVN = true;
+
 	} // end constructor
 	
 
@@ -361,19 +364,11 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
     this.supportsNERD = false;
+		this.supportsRQEVN = false;
 
 		super.fillNodeVariables(this.parameters[6])			
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(1, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(2, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(3, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(4, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(5, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(6, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(7, 4));
-  	this.addNewDefaultEvent(decToHex(nodeNumber, 4) + decToHex(8, 4));
 
-    addBulkLongEvents(this, 4, this.parameters[5])
-    addBulkShortEvents(this, 2, this.parameters[5])
+    addBulkLongEvents(this, 128, this.parameters[5])
 
 	}
 }
@@ -540,6 +535,8 @@ module.exports.CANCMD_4d = class CANCMD_4d extends CbusModule{
 
 		super.fillNodeVariables(this.parameters[6])
     // no default events
+		this.supportsRQEVN = false;
+
 	}
 }
 
@@ -777,8 +774,8 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 		this.parameters[1] = 165;								// Manufacturer Id - MERG
 		this.parameters[2] = "a".charCodeAt(0);	// Minor version number - 97 (0x61)
 		this.parameters[3] = 30;							  // Module Id
-		this.parameters[4] = 32;								// Number of supported events
-		this.parameters[5] = 3;									// Number of event variables
+		this.parameters[4] = 0;								// Number of supported events
+		this.parameters[5] = 0;									// Number of event variables
 		this.parameters[6] = 9;									// Number of Node Variables
 		this.parameters[7] = 3;									// Major version number
 		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
@@ -786,10 +783,10 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
     this.supportsNERD = false;
+		this.supportsRQEVN = false;
 
 		super.fillNodeVariables(this.parameters[6])
-    addBulkLongEvents(this, 5, this.parameters[5])
-    addBulkShortEvents(this, 2, this.parameters[5])
+    addBulkLongEvents(this, 130, this.parameters[5])
 	}
 }
 
