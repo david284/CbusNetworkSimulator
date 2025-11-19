@@ -62,6 +62,8 @@ class CbusModule {
 
     this.supportsNERD = true;
     this.supportsRQEVN = true;
+		this.useIndexedEvents = false;
+		
 
 	} // end constructor
 	
@@ -78,6 +80,7 @@ class CbusModule {
 		winston.debug({message: 'modules: events: ' + JSON.stringify(this.defaultEvents)});
 		return this.defaultEvents[this.defaultEvents.length - 1];		// adjust as array is zero based	    
 	}
+
 	addNewStoredEvent(eventName, numberOfVariables) {
 		winston.debug({message: 'modules: add new stored event: node ' + this.nodeNumber + ' eventName ' + eventName});
 		var variables = [];
@@ -365,12 +368,18 @@ module.exports.CANACE3 = class CANACE3 extends CbusModule{
 
     this.supportsNERD = false;
 		this.supportsRQEVN = false;
+		this.useIndexedEvents = true;
 
 		super.fillNodeVariables(this.parameters[6])			
 
     addBulkLongEvents(this, 128, this.parameters[5])
-
 	}
+
+	clearStoredEvents() {
+		super.clearStoredEvents()
+		addBulkLongEvents(this, 128, this.parameters[5])
+	}
+
 }
 
 //
@@ -784,10 +793,17 @@ module.exports.CANACE3C = class CANACE3C extends CbusModule{
 
     this.supportsNERD = false;
 		this.supportsRQEVN = false;
+		this.useIndexedEvents = true;
 
 		super.fillNodeVariables(this.parameters[6])
     addBulkLongEvents(this, 130, this.parameters[5])
 	}
+
+	clearStoredEvents() {
+		super.clearStoredEvents()
+		addBulkLongEvents(this, 130, this.parameters[5])
+	}
+
 }
 
 

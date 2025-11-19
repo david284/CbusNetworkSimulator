@@ -343,15 +343,15 @@ class cbusNetworkSimulator {
             winston.info({message: 'CBUS Network Sim: Node ' + cbusMsg.nodeNumber + ' learn mode cancelled' });
             break;
         case '55': // NNCLR
-            var nodeNumber = cbusMsg.nodeNumber
-            if (this.getModule(nodeNumber) != undefined) {
-                if ( nodeNumber == this.learningNode) {
-                    this.getModule(nodeNumber).clearStoredEvents();
-                    winston.info({message: 'CBUS Network Sim: Node ' + nodeNumber + " events cleared"});
-                    this.outputWRACK(cbusMsg.nodeNumber);
-                }
+          var nodeNumber = cbusMsg.nodeNumber
+          if (this.getModule(nodeNumber) != undefined) {
+            if ( nodeNumber == this.learningNode) {
+              this.getModule(nodeNumber).clearStoredEvents();
+              winston.info({message: 'CBUS Network Sim: Node ' + nodeNumber + " events cleared"});
+              this.outputWRACK(cbusMsg.nodeNumber);
             }
-            break;
+          }
+          break;
         case '56': // NNEVN
             this.outputEVNLF(cbusMsg.nodeNumber);                
             break;
