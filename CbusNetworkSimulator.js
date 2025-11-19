@@ -1126,6 +1126,17 @@ class cbusNetworkSimulator {
 	}
 
 
+  // B3
+  //
+	outputARON1(nodeNumber, eventNumber, data) {
+    try{
+        var msgData = cbusLib.encodeARON1(nodeNumber, eventNumber, data)
+        this.broadcast(msgData)
+    } catch(err){
+      winston.error({message: name + `: outputARON1 ${err}`});
+    }
+	}
+
 
 	// B6
 	 outputPNN(module) {

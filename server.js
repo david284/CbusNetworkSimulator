@@ -106,18 +106,45 @@ rl.on('line', function (cmd) {
 	if (msgArray.length > 0) {
 		switch(msgArray[0].toLowerCase()) {
 			case "acon1":
-					if (msgArray.length > 2) {
+					if (msgArray.length > 3) {
 						var nodeNumber = parseInt(msgArray[1]);
 						if (nodeNumber) {
-  						var switchNumber = parseInt(msgArray[2]);
-              if (switchNumber) {
-                network.outputACON1(nodeNumber, switchNumber, switchNumber);
+              var eventNumber = parseInt(msgArray[2]);
+              if (eventNumber) {
+                var switchNumber = parseInt(msgArray[3]);
+                if (switchNumber) {
+                  network.outputACON1(nodeNumber, eventNumber, switchNumber);
+                }	else {
+                  console.log("aron1: argument3 not a number");
+                }
               }	else {
-                console.log("acon1: argument2 not a number");
+                console.log("aron1: argument2 not a number");
               }
-						}	else {
-							console.log("acon1: argument1 not a number");
-						}
+            }	else {
+              console.log("aron1: argument1 not a number");
+            }
+					}	else {
+						console.log("events: no node number found");
+					}
+          break;
+			case "aron1":
+					if (msgArray.length > 3) {
+						var nodeNumber = parseInt(msgArray[1]);
+						if (nodeNumber) {
+              var eventNumber = parseInt(msgArray[2]);
+              if (eventNumber) {
+                var switchNumber = parseInt(msgArray[3]);
+                if (switchNumber) {
+                  network.outputARON1(nodeNumber, eventNumber, switchNumber);
+                }	else {
+                  console.log("aron1: argument3 not a number");
+                }
+              }	else {
+                console.log("aron1: argument2 not a number");
+              }
+            }	else {
+              console.log("aron1: argument1 not a number");
+            }
 					}	else {
 						console.log("events: no node number found");
 					}
@@ -183,7 +210,9 @@ function showHelp() {
   console.log("=== Cbus Network Simulator Help ===");
   console.log("CTRL-C twice                         - terminates running");
   console.log("");
-  console.log("acon1 <node number> <switch number>  - simulates CANACE3 switch");
+  console.log("acon1 <NN> <EN> <switch number>      - simulates CANACE3 switch");
+  console.log("aron1 <NN> <EN> <switch number>      - simulates CANPAN switch");
+  console.log("");
   console.log("events <node number>                 - toggles transmitting of events on/off for specific node");
   console.log("heartbeat <node number>              - toggles the sending of heartb messages on/off for specific module");
   console.log("help                                 - shows this text");
