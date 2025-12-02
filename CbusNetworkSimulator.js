@@ -822,7 +822,7 @@ class cbusNetworkSimulator {
       if (event != undefined) {
         if (eventVariableIndex == 0){
           if (module.isVLCB()){
-            for (let i = 0; i < module.parameters[5]; i++){
+            for (let i = 0; i <= module.parameters[5]; i++){
               this.outputEVANS(this.learningNode, eventIdentifier, i)
             }
           } else if (module.sendZeroEV) {
