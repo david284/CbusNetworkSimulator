@@ -2543,11 +2543,11 @@ module.exports.INDEXTEST = class INDEXTEST extends CbusModule{
 		this.parameters[1] = 0;								// Manufacturer Id - TEST
     this.parameters[2] = 97;								// Minor version number (a)
 		this.parameters[3] = 3;								  // Module Id
-		this.parameters[4] = 0;								// Number of supported events
-		this.parameters[5] = 0;								// Number of event variables
-		this.parameters[6] = 64;								// Number of Node Variables
+		this.parameters[4] = 8;								// Number of supported events
+		this.parameters[5] = 8;								// Number of event variables
+		this.parameters[6] = 32;								// Number of Node Variables
 		this.parameters[7] = 1;									// Major version number
-		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading;	// Flags
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.Bootloading + Flags.VLCB;	// Flags
 		this.parameters[9] = 13;								// CPU type - P18F25K80
 		this.parameters[10] = 1;								// interface type
 		this.parameters[11] = 0;                // 11-14 load address
@@ -2564,6 +2564,10 @@ module.exports.INDEXTEST = class INDEXTEST extends CbusModule{
 
     this.nodeVariables[1] = 1;
     this.nodeVariables[this.parameters[6]] = this.parameters[6];
+
+		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
+			"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
+		}	
 
 		addBulkLongEvents(this, 3, this.parameters[5])
     addBulkShortEvents(this, 2, this.parameters[5])
