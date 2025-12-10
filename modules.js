@@ -2069,6 +2069,40 @@ module.exports.CANARGB_1a = class CANARGB_1a extends CbusModule{
 }
 
 
+//
+// CANCDU_U - type 88
+//
+module.exports.CANCDU_U = class CANCDU_U extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "CDU_U  ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "d".charCodeAt(0);	// Minor version number - 98 (0x62)
+		this.parameters[3] = 88;								// Module Id - 0x58
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 20;								// Number of event variables
+		this.parameters[6] = 127;								// Number of Node Variables
+		this.parameters[7] = 4;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.VLCB + Flags.Bootloading;
+		this.parameters[9] = 23;									// CPU type
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+    // skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 2;								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+		
+		super.fillNodeVariables(this.parameters[6])
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+	}
+}
+
 
 //***************************************************************************************************************************
 //
