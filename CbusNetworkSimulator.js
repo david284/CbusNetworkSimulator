@@ -715,7 +715,7 @@ class cbusNetworkSimulator {
           // always send number of variables
           this.outputNVANS(nodeNumber, 0, nodeVariables.length-1);
           if (module.isVLCB()){
-            for (let i = 1; i < module.parameters[5]; i++){
+            for (let i = 1; i < nodeVariables.length; i++){
               this.outputNVANS(nodeNumber, i, nodeVariables[i]);
             }
           }
