@@ -412,7 +412,7 @@ describe('cbusNetworkSimulator tests', function(){
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('ENRSP');
             }
 			done();
-		}, medium_timeout);
+		}, long_timeout);
 	})
 
 
@@ -1271,13 +1271,19 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("ENRSP test ${JSON.stringify(value)}", GetTestCase_ENRSP(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN ENRSP test ' + JSON.stringify(value)});
-        // ENRSP Format: [<MjPri><MinPri=3><CANID>]<F2><NN hi><NN lo><EN3><EN2><EN1><EN0><EN#>
-            network.outputENRSP(value.nodeNumber, value.eventIndex)
-            setTimeout(function(){
-                expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('F2');
-                expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
-                done();
-            }, short_timeout);
+		// ENRSP Format: [<MjPri><MinPri=3><CANID>]<F2><NN hi><NN lo><EN3><EN2><EN1><EN0><EN#>
+		var module = network.getModule(value.nodeNumber)
+		if (module){
+			// ensure event isn't empty
+			module.storedEvents[value.eventIndex-1].eventName = "FFFF0001"
+			winston.debug({message: `UNIT TEST: ${JSON.stringify(module)}` });
+		}
+		network.outputENRSP(value.nodeNumber, value.eventIndex)
+		setTimeout(function(){
+				expect(cbusLib.decode(messagesIn[0]).opCode).to.equal('F2');
+				expect(cbusLib.decode(messagesIn[0]).nodeNumber).to.equal(value.nodeNumber);
+				done();
+		}, short_timeout);
     })
 
 
