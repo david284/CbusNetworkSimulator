@@ -383,7 +383,7 @@ class cbusNetworkSimulator {
             winston.error({message: 'CBUS Network Sim: received NVRD - length wrong'});
             this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 2, GRSP.Invalid_Command);
           } else {
-            this.processNVRD(cbusMsg.nodeNumber, cbusMsg.nodeVariableIndex)
+            this.processNVRD(cbusMsg)
           }
           break;
         case '72': // NENRD
@@ -713,7 +713,9 @@ class cbusNetworkSimulator {
   //
 	// NVRD (0x71)
   //
-  async processNVRD(nodeNumber, nodeVariableIndex) {
+  async processNVRD(cbusMsg) {
+    let nodeVariableIndex = cbusMsg.nodeVariableIndex
+    let nodeNumber = cbusMsg.nodeNumber
     var module = this.getModule(nodeNumber)
     if (module) {
       var nodeVariables = module.nodeVariables;

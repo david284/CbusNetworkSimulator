@@ -1754,6 +1754,7 @@ module.exports.CANDISP = class CANDISP extends CbusModule{
 		this.parameters[20] = 0;								// Beta version number - 0 if production
 		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
 
+		super.fillNodeVariables(this.parameters[6])
     addBulkLongEvents(this, 5, this.parameters[5])
     addBulkShortEvents(this, 2, this.parameters[5])
 	}
