@@ -1723,6 +1723,42 @@ module.exports.CANPiNODE = class CANPiNODE extends CbusModule{
 	}
 }
 
+//
+// CANDISP - ID 59
+//
+module.exports.CANDISP = class CANDISP extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "DISP   ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "D".charCodeAt(0);	// Minor version number - decimal 103 (0x67)
+		this.parameters[3] = 59;								// Module Id
+		this.parameters[4] = 128;								// Number of supported events
+		this.parameters[5] = 17;								// Number of event variables
+		this.parameters[6] = 1;									// Number of Node Variables
+		this.parameters[7] = 4;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.FLiM + Flags.Bootloading;	// Flags - not a producer
+		this.parameters[9] = 13;								// CPU type - P18F25K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+		this.parameters[15] = 228;              // 15-18 manufacturers chip ID
+		this.parameters[16] = 26;
+		this.parameters[17] = 0;
+		this.parameters[18] = 0;
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+    addBulkLongEvents(this, 5, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+	}
+}
+
 
 //
 // CANCOMPUTE - ID 60
