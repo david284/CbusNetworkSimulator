@@ -36,6 +36,7 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     ,new cbusModules.SLOTTEST (3)				    	    // TEST
     ,new cbusModules.INDEXTEST (4)				    	  // TEST
     //
+    ,new cbusModules.CANNX (7)				    	      // DEVELOPMENT
     ,new cbusModules.CAN1IN1OUT (8)				        // DEVELOPMENT
     ,new cbusModules.VLCBTEST (9)				          // DEVELOPMENT
     ,new cbusModules.CANACC4 (10)			      	    // type 01

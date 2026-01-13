@@ -2148,6 +2148,57 @@ module.exports.CANCDU_U = class CANCDU_U extends CbusModule{
 //***************************************************************************************************************************
 
 //
+// 101 - development CANNX
+//
+module.exports.CANNX = class CANNX extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+		//           1234567
+		this.NAME = "NX     ";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 13;								// Manufacturer Id - DEVELOPMENT
+    this.parameters[2] = "a".charCodeAt(0); // Minor version number (a)
+		this.parameters[3] = 101;							  // Module Id
+		this.parameters[4] = 64; 								// Number of supported events
+		this.parameters[5] = 20;								// Number of event variables
+		this.parameters[6] = 1;								// Number of Node Variables
+		this.parameters[7] = 1;								// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.VLCB;	// Flags
+		this.parameters[9] = 50;								// CPU type
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																            // skip 15 to 18
+		this.parameters[19] = 2;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
+		this.parameters[0] = 20;								// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+		
+		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
+				"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
+		}
+		
+		this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 0,
+				"Diagnostics": { "0": 2, "1": 254, "2": 126 }
+		};
+		this.services["3"] = { "ServiceIndex": 3, "ServiceType" : 3, "ServiceVersion" : 2,
+				"Diagnostics": { "0": 17, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
+								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16, 17:17, 18:18}
+		}
+	}
+  //shouldFeedback(eventIndex) { return true;}
+
+}
+
+
+//
 // 82 - Development 4IN4OUT module
 //
 module.exports.CAN4IN4OUT = class CAN4IN4OUT extends CbusModule{
