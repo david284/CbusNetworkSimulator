@@ -1943,6 +1943,43 @@ module.exports.CANXIO_27Q84_4a = class CANXIO_27Q84 extends CbusModule{
 	}
 }
 
+//
+// CANRCOM - type 66
+//
+module.exports.CANRCOM_1a = class CANRCOM_1a extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "RCOM   ";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);	// Minor version number
+		this.parameters[3] = 66;								// Module Id
+		this.parameters[4] = 0;									// Number of supported events
+		this.parameters[5] = 0;									// Number of event variables
+		this.parameters[6] = 2;									// Number of Node Variables
+		this.parameters[7] = 1;									// Major version number
+		this.parameters[8] = 31;								// Flags - producer/consumer
+		this.parameters[9] = 16;								// CPU type - P18F46K80
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																// skip 15 to 18
+		this.parameters[19] = 1;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+	}
+}
+
+
 // 71 - CANTEXT - insufficient information
 // 72 - CANASIGNAL - insufficient information
 // 73 - CANSLIDER - insufficient information
@@ -2235,6 +2272,48 @@ module.exports.CAN4IN4OUT = class CAN4IN4OUT extends CbusModule{
 }
 
 //
+// 83 - Development CAN4I4O_S module
+//
+module.exports.CAN4I4O_S = class CAN4I4O_S extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+		//           1234567
+		this.NAME = "4I4O";
+
+		// increase parameters array to 31 (plus zero)
+		while(this.parameters.length < 32) {this.parameters.push(0);}
+
+		this.parameters[1] = 13;								// Manufacturer Id - DEVELOPMENT
+    this.parameters[2] = 98;								// Minor version number (a)
+		this.parameters[3] = 83;							  // Module Id
+		this.parameters[4] = 64; 								// Number of supported events
+		this.parameters[5] = 5;								// Number of event variables
+		this.parameters[6] = 4;								// Number of Node Variables
+		this.parameters[7] = 1;								// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.VLCB;	// Flags
+		this.parameters[9] = 50;								// CPU type
+		this.parameters[10] = 1;								// interface type
+		this.parameters[11] = 0;                // 11-14 load address
+		this.parameters[12] = 8;
+		this.parameters[13] = 0;
+		this.parameters[14] = 0;
+																            // skip 15 to 18
+		this.parameters[19] = 2;								// Code for CPU manufacturer 
+		this.parameters[20] = 0;								// Beta version number - 0 if production
+		
+		this.parameters[0] = 20;								// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+		
+		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
+				"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
+		}
+		
+	}
+
+}
+
+//
 // 99 - Development CAN1IN1OUT module
 //
 module.exports.CAN1IN1OUT = class CAN1IN1OUT extends CbusModule{
@@ -2466,26 +2545,28 @@ module.exports.MMCTEST = class MMCTEST extends CbusModule{
 				"Diagnostics": { "0": 16, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}
-		this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 0,
+		this.services["4"] = {"ServiceIndex": 4, "ServiceType" : 4,	"ServiceVersion" : 1,
 				"Diagnostics": { "0": 1, "1":1 }
 		}
-		this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 0,
+		this.services["5"] = {"ServiceIndex": 5, "ServiceType" : 5,	"ServiceVersion" : 1,
 				"Diagnostics": { "0": 1, "1":1 }
 		}
-		this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 0,
+		this.services["6"] = {"ServiceIndex": 6, "ServiceType" : 6,	"ServiceVersion" : 1,
 				"Diagnostics": { "0": 1, "1":1 }
 		}
-		this.services["7"] = {"ServiceIndex": 7, "ServiceType" : 7,	"ServiceVersion" : 0 }
+		this.services["7"] = {"ServiceIndex": 7, "ServiceType" : 7,	"ServiceVersion" : 1 }
 
-		this.services["8"] = {"ServiceIndex": 8, "ServiceType" : 8,	"ServiceVersion" : 0 }
+		this.services["8"] = {"ServiceIndex": 8, "ServiceType" : 8,	"ServiceVersion" : 1 }
 
-		this.services["9"] = {"ServiceIndex": 9, "ServiceType" : 9,	"ServiceVersion" : 0 }
+		this.services["9"] = {"ServiceIndex": 9, "ServiceType" : 9,	"ServiceVersion" : 1 }
 
-		this.services["10"] = {"ServiceIndex": 10, "ServiceType" : 10,	"ServiceVersion" : 0 }
+		this.services["10"] = {"ServiceIndex": 10, "ServiceType" : 10,	"ServiceVersion" : 1 }
 
-		this.services["11"] = {"ServiceIndex": 11, "ServiceType" : 11,	"ServiceVersion" : 0 }
+		this.services["11"] = {"ServiceIndex": 11, "ServiceType" : 11,	"ServiceVersion" : 1,
+			"Diagnostics": { "0": 2, "1": 254, "2": 126 } }
 
-		this.services["12"] = {"ServiceIndex": 12, "ServiceType" : 12,	"ServiceVersion" : 0 }
+		this.services["12"] = {"ServiceIndex": 12, "ServiceType" : 12,	"ServiceVersion" : 1,
+			"Diagnostics": { "0": 2, "1": 254, "2": 126, "3": 127, "4": 1 } }
 
 		this.services["13"] = {"ServiceIndex": 13, "ServiceType" : 13,	"ServiceVersion" : 0 }
 

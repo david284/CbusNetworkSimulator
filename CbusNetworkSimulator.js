@@ -4,6 +4,7 @@ const net = require('net');
 const fs = require('fs');
 var path = require('path');
 var cbusLib = require('cbuslibrary')
+const os = require('os');
 const GRSP = require('./Definitions/GRSP_definitions.js');
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
@@ -617,6 +618,18 @@ class cbusNetworkSimulator {
             } else {
               winston.info({message: 'CBUS Network Sim: EVLRN - not in learn mode'});
               this.outputCMDERR(0, 2); // not striclty correct, as we don't know which module ought to be in learn mode, hence zero
+            }
+          }
+          break;
+        case 'EA': // Long Message (LM) 
+          winston.info({message: 'CBUS Network Sim: received LM'});
+          if (cbusMsg.encoded.length != 24) {
+            winston.error({message: 'CBUS Network Sim: received LM - length wrong'});
+            this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 0, GRSP.Invalid_Command);
+          } else {
+            if (cbusMsg.command == "REQUEST"){
+              // ok, request message, go & process it
+              this.sendLM(cbusMsg.nodeNumber, cbusMsg.channel, cbusMsg.use)
             }
           }
           break;
@@ -1411,6 +1424,47 @@ class cbusNetworkSimulator {
       + String(time.getSeconds()).padStart(2, '0') + '.' 
       + String(time.getMilliseconds()).padStart(3, '0')
     this.busTrafficLogStream.write(timeStamp + ' ' + data + "\r\n");
+  }
+
+
+  sendLM(nodeNumber, channel, use){
+    winston.info({message: name + ': sendLM '});
+    let jsonURL = {"nodeURL":os.hostname()}
+    let jsonLit = JSON.stringify(jsonURL)
+    var msgData = cbusLib.encodeLM_PROPOSE_CHANNEL(channel, nodeNumber)
+    this.broadcast(msgData)
+    msgData = cbusLib.encodeLM_CLAIM_CHANNEL(channel, nodeNumber)
+    this.broadcast(msgData)
+    //
+    msgData = cbusLib.encodeLM_START_MESSAGE(channel, use, nodeNumber, 4)
+    this.broadcast(msgData)
+    for (let i=0; i<jsonLit.length; i+=6){
+      msgData = cbusLib.encodeLM_DATA(channel,
+        jsonLit.charCodeAt(0+i),
+        jsonLit.charCodeAt(1+i),
+        jsonLit.charCodeAt(2+i),
+        jsonLit.charCodeAt(3+i),
+        jsonLit.charCodeAt(4+i),
+        jsonLit.charCodeAt(5+i))
+      this.broadcast(msgData)
+    }
+    msgData = cbusLib.encodeLM_END_MESSAGE(channel, 1234)
+    this.broadcast(msgData)
+    //
+    /*
+    msgData = cbusLib.encodeLM_START_MESSAGE(channel, 2, nodeNumber, 4)
+    this.broadcast(msgData)
+    msgData = cbusLib.encodeLM_DATA(channel, 101, 102, 103, 105, 105, 106)
+    this.broadcast(msgData)
+    msgData = cbusLib.encodeLM_DATA(channel, 107, 108, 109, 110, 111, 112)
+    this.broadcast(msgData)
+    msgData = cbusLib.encodeLM_END_MESSAGE(channel, 1234)
+    this.broadcast(msgData)
+    */
+    //
+    msgData = cbusLib.encodeLM_RELEASE_CHANNEL(channel, nodeNumber)
+    this.broadcast(msgData)
+
   }
 
 

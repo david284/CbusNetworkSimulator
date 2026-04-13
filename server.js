@@ -36,6 +36,7 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     ,new cbusModules.SLOTTEST (3)				    	    // TEST
     ,new cbusModules.INDEXTEST (4)				    	  // TEST
     //
+    ,new cbusModules.CAN4I4O_S (7)				        // DEVELOPMENT
     ,new cbusModules.CAN1IN1OUT (8)				        // DEVELOPMENT
     ,new cbusModules.VLCBTEST (9)				          // DEVELOPMENT
     ,new cbusModules.CANACC4 (10)			      	    // type 01
@@ -189,6 +190,21 @@ rl.on('line', function (cmd) {
             break;
         }
         break;
+			case "lm":
+        var nodeNumber = 9999
+        var channel = 99
+        var use = 250
+        if (msgArray.length > 1) {
+          nodeNumber = parseInt(msgArray[1]);
+        }
+        if (msgArray.length > 2) {
+          channel = parseInt(msgArray[2]);
+        }
+        if (msgArray.length > 3) {
+          use = parseInt(msgArray[3]);
+        }
+				network.sendLM(nodeNumber, channel, use);
+        break;
 			case "setup":
 					if (msgArray.length > 1) {
 						var nodeNumber = parseInt(msgArray[1]);
@@ -221,6 +237,7 @@ function showHelp() {
   console.log("help                                 - shows this text");
   console.log("list events                          - list all events");
   console.log("list modules                         - list all modules");
+  console.log("lm <NN> <channel> <use>              - simulates VLCB long message (EA opcode)");
   console.log("setup <node number>                  - forces specific node into setup mode");
   console.log("");
 }
