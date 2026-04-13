@@ -2,7 +2,7 @@
 
 This application simulates most types of modules that can exist on a CBUS/VLCB network, and would be used instead of a physical connection.  
 It presents itself on the usual network port 5550, so can accept connections from any application that can use a network connection for the CBUS connection (e.g. MMC, FCU or JMRI).  
-It was primarily intended to allow testing of various features of the Module Management Console (MMC).  
+It was primarily intended to allow testing of various features of the Module Management Console (MMC), and as I've only added the features that I've needed for testing, it isn't 100% accurate for any module.  
 One of it's advantages is that a new module type can be quickly added, as they all inherit from a base module class, so each module has very little code.  
 You can change some of the default settings - see layout.js below.  
 
