@@ -1,3 +1,4 @@
 version 1.2.0
   started tracking changes
   Added VLCB long message support
+  Added CANNX as development module

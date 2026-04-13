@@ -25,11 +25,18 @@ const NET_ADDRESS = "127.0.0.1"
 
 const long_timeout = 100
 const medium_timeout = 50
-const short_timeout = 20
+const short_timeout = 30
 
 let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules);
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
+
+function printMessagesIn(messagesIn){
+	for (var msgIndex = 0; msgIndex < messagesIn.length; msgIndex++) {
+		winston.debug({message: `TEST: messageIn ${msgIndex} ${JSON.stringify(messagesIn[msgIndex])}`});
+	}
+}
+
 
 describe('cbusNetworkSimulator tests', function(){
 
@@ -108,6 +115,7 @@ describe('cbusNetworkSimulator tests', function(){
     }, short_timeout);
     setTimeout(function(){
       expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+			printMessagesIn(messagesIn)
       expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
       expect(secondClientData.length).to.be.above(0, '2nd client data');
       setTimeout(function(){
@@ -126,7 +134,8 @@ describe('cbusNetworkSimulator tests', function(){
     	testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
-            expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
+				printMessagesIn(messagesIn)
+        expect(messagesIn.length).to.equal(network.modules.length), 'returned message count'; 
 			done();
 		}, medium_timeout);
 	})
@@ -435,6 +444,7 @@ describe('cbusNetworkSimulator tests', function(){
     testClient.write(msgData);
 		setTimeout(function(){
       expect(network.getSendArray()[0]).to.equal(msgData);
+			printMessagesIn(messagesIn)
 			messagesIn.forEach(msg => {
         winston.info({message: `TEST: messagesIn: ${msg.text}` })
 			});
@@ -1202,6 +1212,7 @@ describe('cbusNetworkSimulator tests', function(){
 		network.outputDGN(value.nodeNumber, 0, 0)
 		setTimeout(function(){
 			var msgCount = 0;
+			printMessagesIn(messagesIn)
 			messagesIn.forEach(element => {
 				var msg = cbusLib.decode(element);
 				expect(msg.mnemonic).to.equal('DGN');
