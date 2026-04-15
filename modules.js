@@ -2177,6 +2177,65 @@ module.exports.CANCDU_U = class CANCDU_U extends CbusModule{
 	}
 }
 
+//
+// CANGATEX - ID 89
+//
+module.exports.CANGATEX = class CANGATEX extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "GATEX  ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);	// Minor version number - decimal 102 (0x66)
+		this.parameters[3] = 89;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 8;								  // Number of event variables
+		this.parameters[6] = 30;								  // Number of Node Variables
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM;	// Flags
+		this.parameters[9] = 0									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 2;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+	}
+}
+
+//
+// CANGATEXL - ID 90
+//
+module.exports.CANGATEXL = class CANGATEX extends CbusModule{
+	constructor(nodeNumber) {
+		super(nodeNumber);			// Call parent class constructor
+               //1234567//
+		this.NAME = "GATEXL ";
+
+		this.parameters[1] = 165;								// Manufacturer Id - MERG
+		this.parameters[2] = "a".charCodeAt(0);	// Minor version number - decimal 102 (0x66)
+		this.parameters[3] = 90;								// Module Id
+		this.parameters[4] = 255;								// Number of supported events
+		this.parameters[5] = 8;								  // Number of event variables
+		this.parameters[6] = 30;								  // Number of Node Variables
+		this.parameters[7] = 2;									// Major version number
+		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM;	// Flags
+		this.parameters[9] = 0									// CPU
+		this.parameters[10] = 1									// Interface type - CAN
+		//
+		this.parameters[19] = 2;								// Code for CPU manufacturer 
+		this.parameters[20] = 0  								// Beta version number - 0 if production
+		this.parameters[0] = this.parameters.length - 1;		// Number of parameters (not including 0)
+
+		super.fillNodeVariables(this.parameters[6])
+    addBulkLongEvents(this, 32, this.parameters[5])
+    addBulkShortEvents(this, 2, this.parameters[5])
+	}
+}
 
 //***************************************************************************************************************************
 //

@@ -86,6 +86,8 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     ,new cbusModules.CANCMDB_4f (830)			        // type 83
     ,new cbusModules.CANARGB_1a (870)			        // type 87
     ,new cbusModules.CANCDU_U (880)			          // type 88
+    ,new cbusModules.CANGATEX (890)			          // type 89
+    ,new cbusModules.CANGATEXL (900)			        // type 90
     //
     ,new cbusModules.CANMIO_test_adapter (65000)  // type 32
     ,new cbusModules.CANMIO_UUT (65001)           // type 32
