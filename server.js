@@ -31,15 +31,7 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     new cbusModules.CANACC5 (0)				  	      	// type 02 - un-initialised
     ,new cbusModules.CANACC8 (0)					        // type 03 - un-initialised
     ,new cbusModules.CANACC8 (0)					        // type 03 - un-initialised
-    ,new cbusModules.CANTEST (1)				    	    // TEST
-    ,new cbusModules.MMCTEST (2)				    	    // TEST
-    ,new cbusModules.SLOTTEST (3)				    	    // TEST
-    ,new cbusModules.INDEXTEST (4)				    	  // TEST
     //
-    ,new cbusModules.CANNX (6)				            // DEVELOPMENT
-    ,new cbusModules.CAN4I4O_S (7)				        // DEVELOPMENT
-    ,new cbusModules.CAN1IN1OUT (8)				        // DEVELOPMENT
-    ,new cbusModules.VLCBTEST (9)				          // DEVELOPMENT
     ,new cbusModules.CANACC4 (10)			      	    // type 01
     ,new cbusModules.CANACC5 (20)				  	      // type 02
     ,new cbusModules.CANACC8 (30)					        // type 03
@@ -88,6 +80,20 @@ if (fs.existsSync(path.join(__dirname, "layout.js"))) {
     ,new cbusModules.CANCDU_U (880)			          // type 88
     ,new cbusModules.CANGATEX (890)			          // type 89
     ,new cbusModules.CANGATEXL (900)			        // type 90
+    //
+    // development ID modules
+    ,new cbusModules.CAN4IN4OUT (10001)				    // DEVELOPMENT
+    ,new cbusModules.CAN1IN1OUT (10002)				    // DEVELOPMENT
+    ,new cbusModules.CANNX (10003)				    	  // DEVELOPMENT
+    ,new cbusModules.VLCBTEST (10004)				      // DEVELOPMENT
+    ,new cbusModules.CANNX (10005)				        // DEVELOPMENT
+    ,new cbusModules.CAN4I4O_S (10006)		        // DEVELOPMENT
+    //
+    // MMC TEST modules
+    ,new cbusModules.CANTEST (20001)		    	    // TEST
+    ,new cbusModules.MMCTEST (20002)		    	    // TEST
+    ,new cbusModules.SLOTTEST (20003)		    	    // TEST
+    ,new cbusModules.INDEXTEST (20004)  	    	  // TEST
     //
     ,new cbusModules.CANMIO_test_adapter (65000)  // type 32
     ,new cbusModules.CANMIO_UUT (65001)           // type 32

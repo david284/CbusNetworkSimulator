@@ -2711,13 +2711,13 @@ module.exports.SLOTTEST = class SLOTTEST extends CbusModule{
 		// increase parameters array to 32 (plus zero)
 		while(this.parameters.length < 33) {this.parameters.push(0);}
 
-		this.parameters[1] = 0;								// Manufacturer Id - TEST
+		this.parameters[1] = 0;	 							  // Manufacturer Id - TEST
     this.parameters[2] = 97;								// Minor version number (a)
-		this.parameters[3] = 2;								  // Module Id
-		this.parameters[4] = 16;								// Number of supported events
+		this.parameters[3] = 2;							  // Module Id
+		this.parameters[4] = 20;								// Number of supported events
 		this.parameters[5] = 32;								// Number of event variables
-		this.parameters[6] = 64;								// Number of Node Variables
-		this.parameters[7] = 1;								// Major version number
+		this.parameters[6] = 8;								  // Number of Node Variables
+		this.parameters[7] = 1;								  // Major version number
 		this.parameters[8] = Flags.Consumer + Flags.Producer + Flags.FLiM + Flags.VLCB + Flags.Bootloading;	// Flags
 		this.parameters[9] = 13;								// CPU type - P18F25K80
 		this.parameters[10] = 1;								// interface type
@@ -2736,10 +2736,10 @@ module.exports.SLOTTEST = class SLOTTEST extends CbusModule{
     this.nodeVariables[1] = 1;
     this.nodeVariables[this.parameters[6]] = this.parameters[6];
 		
+    // SERVICES
 		this.services["1"] = { "ServiceIndex": 1, "ServiceType" : 1, "ServiceVersion" : 99,
 				"Diagnostics": { "0": 6, "1": 1, "2": 0, "3": 0, "4":4, "5":5, "6":6 }
 		}
-		
 		this.services["2"] = { "ServiceIndex": 2, "ServiceType" : 2, "ServiceVersion" : 0,
 				"Diagnostics": { "0": 2, "1": 254, "2": 126 }
 		};
@@ -2757,35 +2757,24 @@ module.exports.SLOTTEST = class SLOTTEST extends CbusModule{
 				"Diagnostics": { "0": 1, "1":1 }
 		}
 		this.services["7"] = {"ServiceIndex": 7, "ServiceType" : 7,	"ServiceVersion" : 0 }
-
 		this.services["8"] = {"ServiceIndex": 8, "ServiceType" : 8,	"ServiceVersion" : 0 }
-
 		this.services["9"] = {"ServiceIndex": 9, "ServiceType" : 9,	"ServiceVersion" : 0 }
-
 		this.services["10"] = {"ServiceIndex": 10, "ServiceType" : 10,	"ServiceVersion" : 0 }
-
 		this.services["11"] = {"ServiceIndex": 11, "ServiceType" : 11,	"ServiceVersion" : 0 }
-
 		this.services["12"] = {"ServiceIndex": 12, "ServiceType" : 12,	"ServiceVersion" : 0 }
-
 		this.services["13"] = {"ServiceIndex": 13, "ServiceType" : 13,	"ServiceVersion" : 0 }
-
 		this.services["14"] = {"ServiceIndex": 14, "ServiceType" : 14,	"ServiceVersion" : 0 }
-
 		this.services["15"] = {"ServiceIndex": 15, "ServiceType" : 15,	"ServiceVersion" : 0 }
-
 		this.services["16"] = {"ServiceIndex": 16, "ServiceType" : 16,	"ServiceVersion" : 0 }
-
 		this.services["17"] = {"ServiceIndex": 17, "ServiceType" : 17,	"ServiceVersion" : 0 }
-
 		this.services["18"] = { "ServiceIndex": 18, "ServiceType" : 3, "ServiceVersion" : 0,
 				"Diagnostics": { "0": 16, "1": 1, "2": 2, "3": 3, "4":4, "5":5, "6":6, "7":7, "8":8, 
 								"9":9, "10":10, "11":11, "12":12, "13":13, "14":14, "15":15, "16":16}
 		}
-		
 		this.services["30"] = {"ServiceIndex": 30, "ServiceType" : 17,	"ServiceVersion" : 1 }
-    addBulkLongEvents(this, 3, this.parameters[5])
-    addBulkShortEvents(this, 2, this.parameters[5])
+
+    // EVENTS
+    addBulkLongEvents(this, 20, this.parameters[5])
 	}
 }
 
