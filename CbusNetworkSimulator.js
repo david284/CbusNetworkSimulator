@@ -35,13 +35,13 @@ function  arrayChecksum(array, start) {
   return checksum2C
 }
 
-const busTrafficPath = path.join(__dirname, "./", "logs", "busTraffic.txt")
+//const busTrafficPath = path.join(__dirname, "./", "logs", "busTraffic.txt")
 
 
 class cbusNetworkSimulator {
-    constructor(NET_PORT, suppliedModules) {
+    constructor(NET_PORT, suppliedModules, logsPath) {
 		winston.info({message: '\nCBUS Network Sim: Starting on Port Number : ' + NET_PORT + '\n'});
-    this.busTrafficLogStream = fs.createWriteStream(busTrafficPath, {flags: 'a+'});        
+    this.busTrafficLogStream = fs.createWriteStream(path.join(logsPath, "busTraffic.txt"), {flags: 'a+'});        
     this.modules = suppliedModules;
 		this.sendArray = [];
 		this.socket;
@@ -50,6 +50,7 @@ class cbusNetworkSimulator {
     this.outDelay = 10;
     this.ackRequested = false
     this.runningChecksum = 0
+    this.inUnitTest = false;
         
     this.clients = [];
 		

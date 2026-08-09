@@ -109,7 +109,7 @@ for (var i = 0; i < modules.length; i++) {
 }
 
 
-let network = new simuator.cbusNetworkSimulator(NET_PORT, modules);
+let network = new simuator.cbusNetworkSimulator(NET_PORT, modules, path.join(__dirname, "./", "logs"));
 
 showHelp();
 

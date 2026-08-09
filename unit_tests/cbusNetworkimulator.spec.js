@@ -3,6 +3,7 @@ var winston = require('./config/winston_test.js');
 var itParam = require('mocha-param');
 const net = require('net')
 const io = require('socket.io-client');
+var path = require('path');
 var cbusLib = require('cbuslibrary')
 
 const simuator = require('./../CbusNetworkSimulator.js')
@@ -27,7 +28,7 @@ const long_timeout = 100
 const medium_timeout = 50
 const short_timeout = 30
 
-let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules);
+let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules, path.join(__dirname, "./", "logs"));
 
 function decToHex(num, len) {return parseInt(num).toString(16).toUpperCase().padStart(len, '0');}
 
