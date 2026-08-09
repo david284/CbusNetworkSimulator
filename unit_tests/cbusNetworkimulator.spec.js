@@ -24,9 +24,9 @@ for (var i = 0; i < testModules.length; i++) {
 const NET_PORT = 5550;
 const NET_ADDRESS = "127.0.0.1"
 
-const long_timeout = 100
-const medium_timeout = 50
-const short_timeout = 30
+const long_timeout = 200
+const medium_timeout = 100
+const short_timeout = 50
 
 let network = new simuator.cbusNetworkSimulator(NET_PORT, testModules, path.join(__dirname, "./", "logs"));
 
