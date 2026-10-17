@@ -58,6 +58,7 @@ class CbusModule {
 		this.services = {};
     this.NVsetNeedsLearnMode = false;
 		this.HeartBeatEnabled = false;
+    this.FCU_Compatibility = true;
 		winston.info({message: 'modules: starting CBUS module: node: ' + this.nodeNumber + " " + this.constructor.name});
 
     this.supportsNERD = true;

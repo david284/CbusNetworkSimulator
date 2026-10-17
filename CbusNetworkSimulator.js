@@ -51,6 +51,7 @@ class cbusNetworkSimulator {
     this.ackRequested = false
     this.runningChecksum = 0
     this.inUnitTest = false;
+    this.global_FCU_Compatibilty = true;
         
     this.clients = [];
 		
@@ -419,36 +420,67 @@ class cbusNetworkSimulator {
           }
           break;
         case '76': // MODE Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ModeNumber>
-          var module = this.getModule(cbusMsg.nodeNumber);
-                if (module != undefined) {
+          if (cbusMsg.nodeNumber == 0){
+            // global commands to all nodes
             switch (cbusMsg.ModeNumber){
-              case 0x0:		// setup mode
-                this.startSetup(cbusMsg.nodeNumber);
-                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+              case 0x10:
+                // Turn ON FCU compatibility
+                this.global_FCU_Compatibilty = true;
+                winston.debug({message: 'CBUS Network Sim: Global turn ON FCU compatibility'});
                 break;
-              case 0x1:   // normal 'run' mode
-                this.endSetup(module);
-                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
-                break;
-                case 0x2:   // normal 'learn' mode
-                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
-                break;
-              case 0xC:
-                // turn on heartbeat
-                this.getModule(cbusMsg.nodeNumber).setHeartBeatEnabled(true);
-                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
-                break;
-              case 0xD:
-                // turn off heartbeat
-                this.getModule(cbusMsg.nodeNumber).setHeartBeatEnabled(false);
-                this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+              case 0x11:
+                // Turn ON FCU compatibility
+                this.global_FCU_Compatibilty = false;
+                winston.debug({message: 'CBUS Network Sim: Global turn OFF FCU compatibility'});
                 break;
               default:
-              winston.info({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
+              winston.warn({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
             }
           } else {
-            winston.info({message: 'CBUS Network Sim: No module found for Node Number ' + cbusMsg.nodeNumber});
-          }
+            // commands targetting one node
+            var module = this.getModule(cbusMsg.nodeNumber);
+            if (module != undefined) {
+              switch (cbusMsg.ModeNumber){
+                case 0x0:		// setup mode
+                  this.startSetup(cbusMsg.nodeNumber);
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                  break;
+                case 0x1:   // normal 'run' mode
+                  this.endSetup(module);
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                  break;
+                  case 0x2:   // normal 'learn' mode
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                  break;
+                case 0xC:
+                  // turn on heartbeat
+                  this.getModule(cbusMsg.nodeNumber).setHeartBeatEnabled(true);
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                  break;
+                case 0xD:
+                  // turn off heartbeat
+                  this.getModule(cbusMsg.nodeNumber).setHeartBeatEnabled(false);
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                  break;
+                case 0x10:
+                  // Turn ON FCU compatibility
+                  winston.debug({message: 'CBUS Network Sim: Turn ON FCU compatibility'});
+                  this.getModule(cbusMsg.nodeNumber).FCU_Compatibilty = true;
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                  break;
+                case 0x11:
+                  // Turn OFF FCU compatibility
+                  winston.debug({message: 'CBUS Network Sim: Turn OFF FCU compatibility'});
+                  this.getModule(cbusMsg.nodeNumber).FCU_Compatibilty = false;
+                  this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
+                  break;
+                default:
+                winston.warn({message: 'CBUS Network Sim: unsupported ModeNumber ' + cbusMsg.ModeNumber});
+              }
+            } else {
+              winston.info({message: 'CBUS Network Sim: No module found for Node Number ' + cbusMsg.nodeNumber});
+            }
+          } 
           break;
         case '78': // RQSD Format: [<MjPri><MinPri=3><CANID>]<78><NN hi><NN lo><ServiceIndex>
           if (cbusMsg.encoded.length != 16) {

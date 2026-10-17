@@ -750,14 +750,15 @@ describe('cbusNetworkSimulator tests', function(){
     //
 	function GetTestCase_MODE () {
 		var testCases = [];
-		for (a1 = 1; a1 < 4; a1++) {
-			if (a1 == 1) arg1 = 0;
-			if (a1 == 2) arg1 = 1;
-			if (a1 == 3) arg1 = 65535;
-            for (a2 = 1; a2 < 4; a2++) {
+		for (a1 = 1; a1 < 3; a1++) {
+			if (a1 == 1) arg1 = 1;
+			if (a1 == 2) arg1 = 65535;
+            for (a2 = 1; a2 < 6; a2++) {
                 if (a2 == 1) arg2 = 0;		// setup mode
                 if (a2 == 2) arg2 = 1;		// normal mode
                 if (a2 == 3) arg2 = 2;		// learn mode
+                if (a2 == 4) arg2 = 16;		// set FCU_compatibilty ON
+                if (a2 == 5) arg2 = 17;		// set FCU_compatibilty OFF
 				testCases.push({'nodeNumber':arg1, 
 					'ModeNumber':arg2});
             }
@@ -792,6 +793,52 @@ describe('cbusNetworkSimulator tests', function(){
 					break;
 				case 1:
 					expect(module.inSetupMode()).to.be.false;
+					break;
+			}
+			expect(hasTestPassed).to.be.true;
+			done();
+		}, short_timeout);
+	})
+
+	function GetTestCase_MODE_Global () {
+		var testCases = [];
+		for (a1 = 1; a1 < 3; a1++) {
+			if (a1 == 1) arg1 = 16;
+			if (a1 == 2) arg1 = 17;
+				testCases.push({'ModeNumber':arg1 })
+		}
+		return testCases;
+	}
+
+	itParam("MODE test ${JSON.stringify(value)}", GetTestCase_MODE_Global(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN MODE test ' + JSON.stringify(value)});
+		expected = ":SB780N76" + decToHex(0, 4) + decToHex(0, 2) + ";";
+        msgData = cbusLib.encodeMODE(0, value.ModeNumber);
+    	testClient.write(msgData);
+		setTimeout(function(){
+			var hasTestPassed = false;
+			// check data is written as expected
+     		expect(network.getSendArray()[0]).to.equal(msgData, ' sent message');
+			//
+			messagesIn.forEach(element => {
+				var msg = cbusLib.decode(element);
+				expect(msg.nodeNumber).to.equal(value.nodeNumber);
+				if(msg.mnemonic == 'GRSP'){
+					hasTestPassed = true;
+				}
+			});
+			
+			// now check mode has actually changed
+			switch(value.ModeNumber){
+				case 16:
+       		winston.info({message: 'TEST: global_FCU_Compatibilty ' + network.global_FCU_Compatibilty});
+					expect(network.global_FCU_Compatibilty).to.be.true;
+					hasTestPassed = true;
+          break;
+				case 17:
+       		winston.info({message: 'TEST: global_FCU_Compatibilty ' + network.global_FCU_Compatibilty});
+					expect(network.global_FCU_Compatibilty).to.be.false;
+					hasTestPassed = true;
 					break;
 			}
 			expect(hasTestPassed).to.be.true;
