@@ -637,12 +637,46 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("NVRD test ${JSON.stringify(value)}", GetTestCase_NVRD(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN NVRD test ' + JSON.stringify(value)});
-        msgData = cbusLib.encodeNVRD(value.nodeNumber, value.nvIndex);
-    	testClient.write(msgData);
+    msgData = cbusLib.encodeNVRD(value.nodeNumber, value.nvIndex);
+    testClient.write(msgData);
 		setTimeout(function(){
      		expect(network.getSendArray()[0]).to.equal(msgData);
             if (messagesIn.length > 0) {
                 expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NVANS');
+            }
+			done();
+		}, long_timeout);
+	})
+
+	function GetTestCase_NVRD_VLCB () {
+		var testCases = [];
+		for (NN = 1; NN < 3; NN++) {
+			if (NN == 1) FCU_Compatibility = false;
+			if (NN == 2) FCU_Compatibility = true;
+				testCases.push({'FCU_Compatibility':FCU_Compatibility});
+		}
+		return testCases;
+	}
+
+  // Expects node 0 to be a VLCB node
+  //
+	itParam("NVRD_VLCB test ${JSON.stringify(value)}", GetTestCase_NVRD_VLCB(), function (done, value) {
+		winston.info({message: 'TEST: BEGIN NVRD test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN NVRD VLCB test '});
+    network.global_FCU_Compatibility = false
+    testModules[0].setVLCB(true)
+    testModules[0].FCU_Compatibility = value.FCU_Compatibility
+    msgData = cbusLib.encodeNVRD(0, 0);
+    testClient.write(msgData);
+		setTimeout(function(){
+     		expect(network.getSendArray()[0]).to.equal(msgData);
+            if (messagesIn.length > 0) {
+                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('NVANS');
+            }
+            if (value.FCU_Compatibility){
+              expect(messagesIn.length).to.be.equal(1)
+            } else {
+              expect(messagesIn.length).to.be.greaterThan(1)
             }
 			done();
 		}, long_timeout);
@@ -831,13 +865,13 @@ describe('cbusNetworkSimulator tests', function(){
 			// now check mode has actually changed
 			switch(value.ModeNumber){
 				case 16:
-       		winston.info({message: 'TEST: global_FCU_Compatibilty ' + network.global_FCU_Compatibilty});
-					expect(network.global_FCU_Compatibilty).to.be.true;
+       		winston.info({message: 'TEST: global_FCU_Compatibilty ' + network.global_FCU_Compatibility});
+					expect(network.global_FCU_Compatibility).to.be.true;
 					hasTestPassed = true;
           break;
 				case 17:
-       		winston.info({message: 'TEST: global_FCU_Compatibilty ' + network.global_FCU_Compatibilty});
-					expect(network.global_FCU_Compatibilty).to.be.false;
+       		winston.info({message: 'TEST: global_FCU_Compatibilty ' + network.global_FCU_Compatibility});
+					expect(network.global_FCU_Compatibility).to.be.false;
 					hasTestPassed = true;
 					break;
 			}
@@ -1436,6 +1470,46 @@ describe('cbusNetworkSimulator tests', function(){
 			done();
 		}, short_timeout);
     })
+
+
+	function GetTestCase_FCU_compatibility () {
+		var testCases = [], global_FCU_Compatibility, module_FCU_Compatibility;
+		for (NN = 1; NN < 3; NN++) {
+			if (NN == 1) global_FCU_Compatibility = false;
+			if (NN == 2) global_FCU_Compatibility = true;
+      for (B = 1; B < 3; B++) {
+        if (B == 1) module_FCU_Compatibility = false;
+        if (B == 2) module_FCU_Compatibility = true;
+				testCases.push({
+          'global_FCU_Compatibility':global_FCU_Compatibility, 
+          'module_FCU_Compatibility':module_FCU_Compatibility
+        });
+      }
+		}
+		return testCases;
+	}
+
+  // expects node 0 to be VLCB
+  //
+	itParam("FCU_compatibility test ${JSON.stringify(value)}", GetTestCase_FCU_compatibility(), function (value) {
+		winston.info({message: 'TEST: BEGIN FCU_compatibility test ' + JSON.stringify(value)});
+		winston.info({message: 'TEST: BEGIN FCU_compatibility test '});
+    network.global_FCU_Compatibility = value.global_FCU_Compatibility
+    testModules[0].setVLCB(true)
+    testModules[0].FCU_Compatibility = value.module_FCU_Compatibility
+    result = network.get_FCU_compatibility(testModules[0])
+    if (value.global_FCU_Compatibility == true){
+      expect(result).to.equal(true)
+    } else {
+      if (value.module_FCU_Compatibility == true){
+      expect(result).to.equal(true)
+      } else {
+      expect(result).to.equal(false)
+      }
+    }
+	})
+
+
 
 
 })

@@ -51,7 +51,7 @@ class cbusNetworkSimulator {
     this.ackRequested = false
     this.runningChecksum = 0
     this.inUnitTest = false;
-    this.global_FCU_Compatibilty = true;
+    this.global_FCU_Compatibility = true;
         
     this.clients = [];
 		
@@ -425,12 +425,12 @@ class cbusNetworkSimulator {
             switch (cbusMsg.ModeNumber){
               case 0x10:
                 // Turn ON FCU compatibility
-                this.global_FCU_Compatibilty = true;
+                this.global_FCU_Compatibility = true;
                 winston.debug({message: 'CBUS Network Sim: Global turn ON FCU compatibility'});
                 break;
               case 0x11:
                 // Turn ON FCU compatibility
-                this.global_FCU_Compatibilty = false;
+                this.global_FCU_Compatibility = false;
                 winston.debug({message: 'CBUS Network Sim: Global turn OFF FCU compatibility'});
                 break;
               default:
@@ -465,13 +465,13 @@ class cbusNetworkSimulator {
                 case 0x10:
                   // Turn ON FCU compatibility
                   winston.debug({message: 'CBUS Network Sim: Turn ON FCU compatibility'});
-                  this.getModule(cbusMsg.nodeNumber).FCU_Compatibilty = true;
+                  this.getModule(cbusMsg.nodeNumber).FCU_Compatibility = true;
                   this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
                   break;
                 case 0x11:
                   // Turn OFF FCU compatibility
                   winston.debug({message: 'CBUS Network Sim: Turn OFF FCU compatibility'});
-                  this.getModule(cbusMsg.nodeNumber).FCU_Compatibilty = false;
+                  this.getModule(cbusMsg.nodeNumber).FCU_Compatibility = false;
                   this.outputGRSP(cbusMsg.nodeNumber, cbusMsg.opCode, 1, GRSP.OK);
                   break;
                 default:
@@ -773,7 +773,9 @@ class cbusNetworkSimulator {
         if (nodeVariableIndex == 0){
           // always send number of variables
           this.outputNVANS(nodeNumber, 0, nodeVariables.length-1);
-          if (module.isVLCB()){
+          winston.debug({message: 'CBUS Network Sim: VLCB ' + module.isVLCB()});
+          winston.debug({message: 'CBUS Network Sim: FCU_Compatibility ' + this.get_FCU_compatibility(module)});
+          if (module.isVLCB() && (this.get_FCU_compatibility(module) == false)){
             for (let i = 1; i < nodeVariables.length; i++){
               this.outputNVANS(nodeNumber, i, nodeVariables[i]);
             }
@@ -1500,7 +1502,19 @@ class cbusNetworkSimulator {
 
   }
 
-
+  get_FCU_compatibility(module){
+    if (this.global_FCU_Compatibility == true){
+      winston.debug({message: 'CBUS Network Sim: get_FCU_compatibility true '}) 
+      return true;
+    }
+    if (module.FCU_Compatibility == true){
+      winston.debug({message: 'CBUS Network Sim: get_FCU_compatibility true '}) 
+      return true;
+    } 
+    // neither, so FCU_Compatibility not set
+      winston.debug({message: 'CBUS Network Sim: get_FCU_compatibility false '}) 
+    return false
+  }
 
 }
 
@@ -1515,6 +1529,8 @@ function sleep(timeout) {
 	});
 };
 	
+
+
 
 
 module.exports = {

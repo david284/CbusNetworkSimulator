@@ -194,7 +194,18 @@ class CbusModule {
     return this.parameters[8] & Flags.Producer
   }
   isVLCB() {
-    return this.parameters[8] & Flags.VLCB
+    var value = this.parameters[8] & Flags.VLCB ? true : false
+		winston.debug({message: 'modules: Module VLCB ' + value});
+    return value
+  }
+  setVLCB(target){
+    if (target == true){
+      this.parameters[8] &= Flags.VLCB  // set bit
+			winston.debug({message: 'modules: Module now VLCB '});
+    } else {
+      this.parameters[8] &= ~Flags.VLCB // clear bit
+			winston.debug({message: 'modules: Module now CBUS '});
+    }
   }
 	
 
