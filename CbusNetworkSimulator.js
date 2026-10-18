@@ -815,7 +815,7 @@ class cbusNetworkSimulator {
           var msgData = cbusLib.encodePARAN(nodeNumber, parameterIndex, numberOfParameters)
           this.broadcast(msgData)
           // now check if VLCB
-          if (module.isVLCB()) {
+          if (module.isVLCB() && (this.get_FCU_compatibility(module) == false)){
             for (var i = 1; i <= numberOfParameters; i++ ){
               var parameterValue = module.getParameter(i);
               var msgData1 = cbusLib.encodePARAN(nodeNumber, i, parameterValue)
@@ -883,7 +883,7 @@ class cbusNetworkSimulator {
       var event = this.getEventByName2(this.learningNode, eventIdentifier);
       if (event != undefined) {
         if (eventVariableIndex == 0){
-          if (module.isVLCB()){
+          if (module.isVLCB() && (this.get_FCU_compatibility(module) == false)){
             for (let i = 0; i <= module.parameters[5]; i++){
               this.outputEVANS(this.learningNode, eventIdentifier, i)
             }

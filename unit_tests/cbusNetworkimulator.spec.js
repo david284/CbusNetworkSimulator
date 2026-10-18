@@ -737,13 +737,14 @@ describe('cbusNetworkSimulator tests', function(){
 
 	itParam("RQNPN test ${JSON.stringify(value)}", GetTestCase_RQNPN(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN RQNPN test ' + JSON.stringify(value)});
-        msgData = cbusLib.encodeRQNPN(value.nodeNumber, value.paramIndex);
-    	testClient.write(msgData);
+    msgData = cbusLib.encodeRQNPN(value.nodeNumber, value.paramIndex);
+  	testClient.write(msgData);
 		setTimeout(function(){
-     		expect(network.getSendArray()[0]).to.equal(msgData);
-            if (messagesIn.length > 0) {
-                expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('PARAN');
-            }
+      expect(network.getSendArray()[0]).to.equal(msgData);
+      if (messagesIn.length > 0) {
+        expect(cbusLib.decode(messagesIn[0]).mnemonic).to.equal('PARAN');
+        expect(messagesIn.length).to.equal(1)
+      }
 			done();
 		}, medium_timeout);
 	})
