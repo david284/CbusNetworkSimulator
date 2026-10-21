@@ -663,7 +663,7 @@ describe('cbusNetworkSimulator tests', function(){
 	itParam("NVRD_VLCB test ${JSON.stringify(value)}", GetTestCase_NVRD_VLCB(), function (done, value) {
 		winston.info({message: 'TEST: BEGIN NVRD test ' + JSON.stringify(value)});
 		winston.info({message: 'TEST: BEGIN NVRD VLCB test '});
-    network.global_FCU_Compatibility = false
+    network.global_FCU_Compatibility = true
     testModules[0].setVLCB(true)
     testModules[0].FCU_Compatibility = value.FCU_Compatibility
     msgData = cbusLib.encodeNVRD(0, 0);
@@ -1495,17 +1495,17 @@ describe('cbusNetworkSimulator tests', function(){
 	itParam("FCU_compatibility test ${JSON.stringify(value)}", GetTestCase_FCU_compatibility(), function (value) {
 		winston.info({message: 'TEST: BEGIN FCU_compatibility test ' + JSON.stringify(value)});
 		winston.info({message: 'TEST: BEGIN FCU_compatibility test '});
-    network.global_FCU_Compatibility = value.global_FCU_Compatibility
     testModules[0].setVLCB(true)
     testModules[0].FCU_Compatibility = value.module_FCU_Compatibility
+    network.global_FCU_Compatibility = value.global_FCU_Compatibility
     result = network.get_FCU_compatibility(testModules[0])
-    if (value.global_FCU_Compatibility == true){
-      expect(result).to.equal(true)
-    } else {
-      if (value.module_FCU_Compatibility == true){
-      expect(result).to.equal(true)
-      } else {
+    if (value.global_FCU_Compatibility == false){
       expect(result).to.equal(false)
+    } else {
+      if (value.module_FCU_Compatibility == false){
+      expect(result).to.equal(false)
+      } else {
+      expect(result).to.equal(true)
       }
     }
 	})

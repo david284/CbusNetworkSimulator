@@ -1503,17 +1503,17 @@ class cbusNetworkSimulator {
   }
 
   get_FCU_compatibility(module){
-    if (this.global_FCU_Compatibility == true){
-      winston.debug({message: 'CBUS Network Sim: get_FCU_compatibility true '}) 
-      return true;
+    if (this.global_FCU_Compatibility == false){
+      winston.debug({message: 'CBUS Network Sim: get_FCU_compatibility global true '}) 
+      return false;
     }
-    if (module.FCU_Compatibility == true){
-      winston.debug({message: 'CBUS Network Sim: get_FCU_compatibility true '}) 
-      return true;
+    if (module.FCU_Compatibility == false){
+      winston.debug({message: 'CBUS Network Sim: get_FCU_compatibility node true '}) 
+      return false;
     } 
     // neither, so FCU_Compatibility not set
       winston.debug({message: 'CBUS Network Sim: get_FCU_compatibility false '}) 
-    return false
+    return true
   }
 
 }
