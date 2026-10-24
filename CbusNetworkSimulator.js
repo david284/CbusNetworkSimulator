@@ -429,7 +429,7 @@ class cbusNetworkSimulator {
                 winston.debug({message: 'CBUS Network Sim: Global turn ON FCU compatibility'});
                 break;
               case 0x11:
-                // Turn ON FCU compatibility
+                // Turn OFF FCU compatibility
                 this.global_FCU_Compatibility = false;
                 winston.debug({message: 'CBUS Network Sim: Global turn OFF FCU compatibility'});
                 break;
