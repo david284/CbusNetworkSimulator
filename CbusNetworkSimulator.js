@@ -843,28 +843,45 @@ class cbusNetworkSimulator {
   // REVAL (0x9C)
   // eventIndex starts from 1
   // storedEvents array starts at 0, so subtract 1
+  // some CBUS modules respond to an EV of 0
+  // VLCB modules respond to EV0 with all the EV's
+  // but only if FCU_compatibility is zero
 	processREVAL(nodeNumber, eventIndex, eventVariableIndex) {
-    if (this.getModule(nodeNumber) != undefined) {
-      cbusLib.setCanHeader(2, this.getModule(nodeNumber).CanId);
-      var storedEvents = this.getModule(nodeNumber).storedEvents;
+    var module = this.getModule(nodeNumber)
+    if (module != undefined) {
+      cbusLib.setCanHeader(2, module.CanId);
+      var storedEvents = module.storedEvents;
       if (eventIndex > 0) {
         if (eventIndex <= storedEvents.length) {
-          if (eventVariableIndex < storedEvents[eventIndex-1].variables.length) {
-            var eventVariableValue = storedEvents[eventIndex-1].variables[eventVariableIndex];
-            var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
-            if ((eventVariableValue > 0) || (this.getModule(nodeNumber).sendZeroEV)){            
+          if (eventVariableIndex == 0){
+            // send back number of variables
+            if(this.getModule(nodeNumber).sendZeroEV){
+              var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, 0, storedEvents[eventIndex-1].variables.length)
               this.broadcast(msgData)
             }
-          } else {
-            this.getModule(nodeNumber).storedEvents[eventIndex-1] = {
-              'eventName': "00000000", 
-              'eventIndex': eventIndex, 
-              "variables": []
+            if (module.isVLCB() && (this.get_FCU_compatibility(module) == false)){
+              for (var i = 1; i <= storedEvents[eventIndex-1].variables.length; i++ ){
+                var eventVariableValue = storedEvents[eventIndex-1].variables[i];
+                var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, i, eventVariableValue)
+                this.broadcast(msgData)
+              }
             }
-            var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, 0)
-            this.broadcast(msgData)
-            //winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
-            //this.outputCMDERR(nodeNumber, 6)                    
+          } else {
+            if (eventVariableIndex < storedEvents[eventIndex-1].variables.length) {
+              var eventVariableValue = storedEvents[eventIndex-1].variables[eventVariableIndex];
+              var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, eventVariableValue)
+              this.broadcast(msgData)
+            } else {
+              module.storedEvents[eventIndex-1] = {
+                'eventName': "00000000", 
+                'eventIndex': eventIndex, 
+                "variables": []
+              }
+              var msgData = cbusLib.encodeNEVAL(nodeNumber, eventIndex, eventVariableIndex, 0)
+              this.broadcast(msgData)
+              //winston.info({message: 'CBUS Network Sim:  ************ event variable index exceeded ' + eventVariableIndex + ' ************'});
+              //this.outputCMDERR(nodeNumber, 6)                    
+            }
           }
         } else {
           winston.info({message: 'CBUS Network Sim:  ************ event index exceeded ' + eventIndex + ' ************'});
